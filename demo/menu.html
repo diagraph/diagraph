@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Menu Demo</title>
+<script type="text/javascript" src="../lib/jquery-1.4.4.min.js"></script>
+<script>
+window.vonline = {};
+</script>
+<script type="text/javascript" src="../src/menu.js"></script>
+<script type="text/javascript" src="../src/menuitem.js"></script>
+<link href="../styles/sidebar.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div id="menu"></div>
+
+<script>
+var menu = new vonline.Menu();
+var item1 = new vonline.MenuItem('open', '../images/menu/open_document_view', function() {alert('clicked');item1.disable();})
+menu.addItem(item1);
+var item2 = new vonline.MenuItem('undo', '../images/menu/undo', function() {alert('clicked');item2.disable();})
+menu.addItem(item2);
+var item3 = new vonline.MenuItem('redo', '../images/menu/redo', function() {alert('clicked');item3.disable();})
+menu.addItem(item3);
+var item4 = new vonline.MenuItem('save', '../images/menu/save', function() {alert('clicked');item4.disable();})
+menu.addItem(item4);
+var item5 = new vonline.MenuItem('history', '../images/menu/open_history', function() {alert('clicked');item5.disable();})
+menu.addItem(item5);
+$('#menu').append(menu.getHTML());
+</script>
+</body>
+</html>
