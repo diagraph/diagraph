@@ -1,21 +1,14 @@
-
-var b_menu_history = false;
-function menu_toggle_history() {
-	b_menu_history ^= true;
+/**
+ * container for the menu items
+ */
+vonline.Menu = function() {
+	var container = $('<ul/>').addClass('menu');
 	
-	var history_div = document.getElementById("history");
-	var canvas_div = document.getElementById("canvas");
-	
-	// enable/view snapshot history
-	if(b_menu_history) {
-		history_div.style.display = "inline-block";
-		canvas_div.style.left = "454px";
-	}
-	// disable snapshot history
-	else {
-		history_div.style.display = "none";
-		canvas_div.style.left = "204px";
+	this.getHTML = function() {
+		return container;
 	}
 	
-	// TODO: update snapshot history content
+	this.addItem = function(item) {
+		container.append(item.getHTML());
+	}
 }
