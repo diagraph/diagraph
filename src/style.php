@@ -4,8 +4,8 @@
 	
 	// select color scheme
 	// TODO: let the user select a color scheme (+ save and load in/from cookie)
-	$color_scheme = "dark";
-	//$color_scheme = "light";
+	//$color_scheme = "dark";
+	$color_scheme = "light";
 	if($color_scheme == "dark") {
 		$color["bg_1"] = "#5f5f5f"; // darkest
 		$color["bg_2"] = "#888888"; //    -

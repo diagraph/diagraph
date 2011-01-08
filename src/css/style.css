@@ -27,6 +27,13 @@ body {
 	top: 0px;
 	color: $color_font;
 	
+	border-style: solid;
+	border-color: $color_menu_border;
+	border-left-width: 0px;
+	border-bottom-width: 0px;
+	border-right-width: 1px;
+	border-top-width: 0px;
+	
 	background-size: 0.75%;
 	-moz-background-size: 0.75%;
 	-webkit-background-size: 0.75%;
@@ -36,13 +43,7 @@ body {
 }
 #history {
 	display: none;
-	border-style: solid;
-	border-color: $color_menu_border;
-	border-left-width: 1px;
-	border-bottom-width: 0px;
-	border-right-width: 1px;
-	border-top-width: 0px;
-	left: 204px;
+	left: 205px;
 	width: 250px;
 	z-index: 1;
 }
@@ -55,7 +56,7 @@ body {
 	width: 100%;
 	z-index: 0;
 	position: fixed;
-	left: 204px; /* with history menu: 454px */
+	left: 205px; /* with history menu: 456px */
 	top: 0px;
 }
 #canvas_bg {
@@ -202,13 +203,11 @@ body {
 	-webkit-border-radius: 2px;
 }
 
-#category_more:link, #category_more:visited {
+#lower_toolbar {
 	padding-left: 0px;
 	padding-bottom: 2px;
 	padding-right: 0px;
 	padding-top: 2px;
-	font-weight: bold;
-	text-align: center;
 	bottom: 0px;
 	width: 100%;
 	position: absolute;
@@ -223,8 +222,28 @@ body {
 	background-image: -moz-linear-gradient(top, $color_bg_2, $color_bg_1);
 	background-image: -webkit-gradient(linear, left top, left bottom, from($color_bg_2), to($color_bg_1));
 }
-
-#category_more:hover, #category_more:active {
+#lower_toolbar button {
+	z-index: 2;
+	float: left;
+	position: relative;
+	display: inline-block;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	margin: 0px;
+	border-width: 0px;
+	color: $color_font;
+	
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	
+	background-color: $color_bg_2;
+	background-image: -moz-linear-gradient(top, $color_bg_2, $color_bg_1);
+	background-image: -webkit-gradient(linear, left top, left bottom, from($color_bg_2), to($color_bg_1));
+}
+#lower_toolbar button:hover {
 	background-color: $color_bg_2;
 	background-image: -moz-linear-gradient(top, $color_bg_1, $color_bg_2);
 	background-image: -webkit-gradient(linear, left top, left bottom, from($color_bg_1), to($color_bg_2));

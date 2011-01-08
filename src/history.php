@@ -18,7 +18,7 @@
 			$item_data = str_replace("{VO_SNAPSHOT_HISTORY_ITEM_ID}", $i, $history_item_html);
 			$item_data = str_replace("{VO_SNAPSHOT_HISTORY_ITEM_NUMBER}", $item_num, $item_data);
 			$item_data = str_replace("{VO_SNAPSHOT_HISTORY_ITEM_DATE}", $item_date, $item_data);
-			$item_data = str_replace("{VO_SNAPSHOT_HISTORY_ITEM_PREVIEW}", "images/doc_preview_".$i.".png", $item_data);
+			$item_data = str_replace("{VO_SNAPSHOT_HISTORY_ITEM_PREVIEW}", "images/dummy/doc_preview_".$i.".png", $item_data);
 			
 			$history_content .= $item_data;
 		}
