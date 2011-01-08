@@ -1,0 +1,11 @@
+<?php
+
+	$config["db.type"] = "MySQL";
+	$config["db.host"] = "localhost";
+	$config["db.port"] = "3306";
+	$config["db.user"] = "root";
+	$config["db.password"] = "";
+	$config["db.name"] = "visio_online";
+	$config["db.version"] = "1";
+
+?>
