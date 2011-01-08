@@ -1,11 +1,16 @@
 /**
  * menu item, containing an image and a click-event handler
  */
-vonline.MenuItem = function(name, src, onclick) {
-	var li = $('<li/>').attr('title', name).addClass('item'),
+vonline.MenuItem = function(name, src, clickHandler) {
+	var that = this,
+	li = $('<li/>').attr('title', name).addClass('item'),
 	image = $('<img/>').appendTo(li).bind('load', function() {
 		$(window).trigger('resize'); // layout changes if images are loaded (see sidebar)
-	});
+	}),
+	onclick = function() {
+		// get the correct context (this object instead of the li-element)
+		clickHandler.apply(that);
+	};
 	
 	this.getHTML = function() {
 		this.enable();

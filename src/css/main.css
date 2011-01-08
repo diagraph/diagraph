@@ -1,0 +1,8 @@
+@CHARSET "UTF-8";
+
+html, body {
+	margin: 0px;
+	padding: 0px;
+	font: 12px "Lucida Grande", "Lucida Sans Unicode", "DejaVu", sans-serif;
+	text-rendering: optimizeLegibility;
+}
