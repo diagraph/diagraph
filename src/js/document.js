@@ -15,11 +15,8 @@ vonline.Document = function() {
 
 	// init bottom menu
 	this.sidebar.setBottomMenu(this.initBottomMenu());
-
-	// add a category - testing only
-	var category = new vonline.Category('Test');
-	this.sidebar.addCategory(category);
 	
+	this.loadCategories();
 	// TODO: init canvas, loading categories & document data
 }
 
@@ -119,4 +116,22 @@ vonline.Document.prototype.loadSnapshot = function(id) {
  */
 vonline.Document.prototype.saveSnapshot = function() {
 	// TODO
+}
+
+/**
+ * load the categories for the document
+ * @deprecated should be placed in another class
+ */
+vonline.Document.prototype.loadCategories = function() {
+	var that = this;
+	$.ajax({
+		data: {task: 'getCategories'},
+		dataType: 'json',
+		success: function(json) {
+			for (var category in json) {
+				that.sidebar.addCategory(new vonline.Category(category));
+				// TODO: add components
+			}
+		}
+	});
 }
