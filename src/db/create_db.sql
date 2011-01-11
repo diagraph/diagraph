@@ -15,19 +15,20 @@ create table users (
 	name varchar(32) unique not null,
 	email varchar(128) unique not null, -- 128 chars have to suffice for now
 	password varchar(128) not null, -- SHA512
-	type integer not null check (type between 0 and 1) -- 0: root, 1: user
+	type integer default 1 check (type between 0 and 1) -- 0: root, 1: user
 );
 
 create table categories (
 	id integer not null primary key auto_increment,
-	name tinytext not null
+	name varchar(32) unique not null
 );
 
 create table objects (
 	id integer not null primary key auto_increment,
 	category integer not null references categories(id) on delete cascade,
 	name tinytext not null,
-	data tinytext not null -- TODO: svg image? sth else?
+	icon tinytext not null, -- image to be used in the menu
+	data tinytext not null -- TODO: what data?
 );
 
 create table documents (
@@ -52,6 +53,25 @@ insert into documents values (default, 1, "test doc", default, default);
 insert into snapshots values (default, 1, default, "");
 
 insert into categories values (default, "Basics");
-insert into objects values (default, 1, "Rectangle", "rect");
-insert into objects values (default, 1, "Circle", "circle");
+select id into @cat_id from categories where name = "Basics" limit 1;
+insert into objects values (default, @cat_id, "Rectangle", "rectangle.svg", ""),
+						   (default, 1, "Circle", "circle.svg", ""),
+						   (default, 1, "Triangle", "triangle.svg", "");
 
+insert into categories values (default, "UML");
+select id into @cat_id from categories where name = "UML" limit 1;
+insert into objects values (default, @cat_id, "UML #1", "rectangle.svg", ""),
+						   (default, @cat_id, "UML #2", "circle.svg", ""),
+						   (default, @cat_id, "UML #3", "rectangle.svg", ""),
+						   (default, @cat_id, "UML #4", "circle.svg", ""),
+						   (default, @cat_id, "UML #5", "rectangle.svg", ""),
+						   (default, @cat_id, "UML #6", "circle.svg", "");
+
+insert into categories values (default, "Simulink");
+select id into @cat_id from categories where name = "Simulink" limit 1;
+insert into objects values (default, @cat_id, "SL #1", "rectangle.svg", ""),
+						   (default, @cat_id, "SL #2", "rectangle.svg", ""),
+						   (default, @cat_id, "SL #3", "rectangle.svg", ""),
+						   (default, @cat_id, "SL #4", "circle.svg", ""),
+						   (default, @cat_id, "SL #5", "circle.svg", ""),
+						   (default, @cat_id, "SL #6", "circle.svg", "");

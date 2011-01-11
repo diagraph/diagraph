@@ -1,11 +1,13 @@
 <?php
 
-	$config["db.type"] = "MySQL";
-	$config["db.host"] = "localhost";
-	$config["db.port"] = "3306";
-	$config["db.user"] = "root";
-	$config["db.password"] = "";
-	$config["db.name"] = "visio_online";
-	$config["db.version"] = "1";
+	final class config {
+		const db_type = "MySQL";
+		const db_host = "localhost";
+		const db_port = "3306";
+		const db_user = "root";
+		const db_password = "";
+		const db_name = "visio_online";
+		const db_version = "1";
+	}
 
 ?>

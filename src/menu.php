@@ -3,7 +3,7 @@
 	
 	function display_menu() {
 		//
-		$menu_html = file_get_contents("html/menu.html");
+		/*$menu_html = file_get_contents("html/menu.html");
 		$menu_category_html = file_get_contents("html/menu_category.html");
 		$menu_category_item_html = file_get_contents("html/menu_category_item.html");
 		
@@ -59,7 +59,8 @@
 		
 		$menu_data = str_replace("{VO_MENU_CONTENT}", $category_data, $menu_html);
 		
-		echo $menu_data;
+		echo $menu_data;*/
+		echo file_get_contents("html/menu.html");
 	}
 	
 ?>
