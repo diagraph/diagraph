@@ -1,5 +1,12 @@
 @CHARSET "UTF-8";
 
+#sidebar {
+	float: left;
+	-webkit-box-shadow: 0px 1px 3px #333333;
+	-moz-box-shadow: 0px 1px 3px #333333;
+	box-shadow: 0px 1px 3px #333333;
+}
+
 .menu, .category .header {
 	margin: 0;
 	padding: 0;

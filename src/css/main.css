@@ -3,6 +3,9 @@
 html, body {
 	margin: 0px;
 	padding: 0px;
+	width: 100%;
+	height: 100%;
 	font: 12px "Lucida Grande", "Lucida Sans Unicode", "DejaVu", sans-serif;
 	text-rendering: optimizeLegibility;
+	overflow: hidden;
 }

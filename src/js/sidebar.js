@@ -7,10 +7,10 @@ vonline.Sidebar = function(container) {
 	categories  = $('<div/>').appendTo(container),
 	bottommenu  = $('<div/>').appendTo(container);
 	
-	function update() {
+	function onResize() {
 		categories.height($(window).height() - topmenu.height() - bottommenu.height());
 	}
-	$(window).bind('resize', update);
+	$(window).bind('resize', onResize);
 	
 	this.setTopMenu = function(menu) {
 		topmenu.html(menu.getHTML());

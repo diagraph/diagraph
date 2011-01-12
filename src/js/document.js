@@ -17,7 +17,11 @@ vonline.Document = function() {
 	this.sidebar.setBottomMenu(this.initBottomMenu());
 	
 	this.loadCategories();
-	// TODO: init canvas, loading categories & document data
+	
+	this.canvas = new vonline.Canvas();
+	
+	// example
+	this.canvas.load([{path:'rectangle', id:1, scaleX:1, scaleY:1, x: 100, y:50}])
 }
 
 /**
