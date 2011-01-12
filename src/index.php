@@ -1,8 +1,8 @@
 <?php
-	include("global.php");
-	include("menu.php");
-	include("canvas.php");
-	include("history.php");
+	include("php/global.php");
+	include("php/menu.php");
+	include("php/canvas.php");
+	include("php/history.php");
 	
 	// display
 	include("html/header.html");

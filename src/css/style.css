@@ -71,7 +71,7 @@ body {
 	
 	background-position: 0px 0px;
 	background-repeat: repeat;
-	background-image: url('images/grid_16x.svg');
+	background-image: url('../images/grid_16x.svg');
 	background-size: 8px;
 	-moz-background-size: 8px;
 	-webkit-background-size: 8px;

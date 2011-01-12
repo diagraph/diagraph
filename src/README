@@ -1,4 +1,4 @@
 
 Install:
-	* copy and rename config.inc.php-default to config.inc.php and edit it accordingly
+	* copy and rename php/config.inc.php-default to php/config.inc.php and edit it accordingly
 	* create database using db/create_db.sql

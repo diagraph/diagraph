@@ -27,7 +27,7 @@
 	else error("unknown color scheme");
 	
 	// get style content and replace all color variables
-	$style_data = file_get_contents("css/style.css");
+	$style_data = file_get_contents("../css/style.css");
 	reset($color);
 	while(list($color_name, $color_val) = each($color)) {
 		$style_data = str_replace("\$color_".$color_name, $color_val, $style_data);

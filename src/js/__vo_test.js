@@ -9,7 +9,7 @@ vonline.menu_content = function(container) {
 	// *schachtel schachtel*
 	$.get('html/menu_category.html', function(menu_category_data) {
 		$.get('html/menu_category_item.html', function(menu_category_item_data) {
-			$.post('db.php', { type: "get_categories" }, function(category_data) {
+			$.post('php/db.php', { type: "get_categories" }, function(category_data) {
 				var menu_data = "";
 				for(cat = 0; cat < category_data.category_count; cat++) {
 				   var cur_data = menu_category_data;
