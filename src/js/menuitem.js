@@ -11,7 +11,8 @@ vonline.MenuItem = function(name, src, clickHandler) {
 	onclick = function() {
 		// get the correct context (this object instead of the li-element)
 		clickHandler.apply(that);
-	};
+	},
+	enabled = false;
 	
 	this.getHTML = function() {
 		this.enable();
@@ -19,12 +20,18 @@ vonline.MenuItem = function(name, src, clickHandler) {
 	}
 	
 	this.disable = function() {
-		image.attr('src', src + '_disabled.png');
-		li.unbind('click', onclick);
+		if (enabled) {
+			image.attr('src', src + '_disabled.png');
+			li.unbind('click', onclick);
+			enabled = false;
+		}
 	}
 	
 	this.enable = function() {
-		image.attr('src', src + '.png');
-		li.click(onclick);
+		if (!enabled) {
+			image.attr('src', src + '.png');
+			li.click(onclick);
+			enabled = true;
+		}
 	}
 }

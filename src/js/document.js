@@ -6,6 +6,13 @@ vonline.Document = function() {
 	// storage for undo-/redoable actions
 	this.undoList = [];
 	this.redoList = [];
+	// observe if command was executed
+	var that = this;
+	vonline.events.bind('commandexec', function(event, command) {
+		that.undoList.push(command);
+		that.redoList = [];
+		that.updateMenu();
+	});
 	
 	// initialization of UI
 	this.sidebar = new vonline.Sidebar('#sidebar');
@@ -80,8 +87,14 @@ vonline.Document.prototype.updateMenu = function() {
 	if (this.undoList.length == 0) {
 		this.undoItem.disable();
 	}
+	else {
+		this.undoItem.enable();
+	}
 	if (this.redoList.length == 0) {
 		this.redoItem.disable();
+	}
+	else {
+		this.redoItem.enable();
 	}
 }
 
@@ -97,16 +110,24 @@ vonline.Document.prototype.openDocumentView = function() {
  * undo action (if possible)
  */
 vonline.Document.prototype.undoCommand = function() {
-	// TODO
-	this.updateMenu();
+	if (this.undoList.length > 0) {
+		var command = this.undoList.pop();
+		command.undo();
+		this.redoList.push(command);
+		this.updateMenu();
+	}
 }
 
 /**
  * redo action (if possible)
  */
 vonline.Document.prototype.redoCommand = function() {
-	// TODO
-	this.updateMenu();
+	if (this.redoList.length > 0) {
+		var command = this.redoList.pop();
+		command.execute();
+		this.undoList.push(command);
+		this.updateMenu();
+	}
 }
 
 /**

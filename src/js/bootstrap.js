@@ -7,7 +7,10 @@ if (!window.vonline) {
 	 * global application scope
 	 * @name vonline
 	 */
-	window.vonline = {};
+	window.vonline = {
+		/** used for custom events */
+		events: $({})
+	};
 }
 
 // use always POST-method on ajax calls

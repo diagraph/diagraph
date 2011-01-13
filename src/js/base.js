@@ -34,6 +34,7 @@ vonline.Base.prototype.getId = function() {
 }
 
 /**
+ * Displays the element on the canvas
  * @param {vonline.Canvas} canvas
  */
 vonline.Base.prototype.setCanvas = function(canvas) {
@@ -42,9 +43,13 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 	this.setScale(this.data.scaleX, this.data.scaleY);
 	this.setRotation(this.data.rotation);
 	this.setColor(this.data.color);
+	
+	this.initDraggingEvent();
 }
 
 /**
+ * Set the position of the component
+ * Note that this function sets the absolute position by the top-left edge of the bounding box
  * @param {integer} x
  * @param {integer} y
  */
@@ -53,8 +58,19 @@ vonline.Base.prototype.setPosition = function(x, y) {
 		currentX = bbox.x,
 		currentY = bbox.y;
 	this.obj.translate(x - currentX, y - currentY);
-	this.x = x;
-	this.y = y;
+	this.data.x = x;
+	this.data.y = y;
+}
+
+/**
+ * Translates the object by the given values
+ * @param {integer} x
+ * @param {integer} y
+ */
+vonline.Base.prototype.setTranslation = function(x, y) {
+	this.obj.translate(x, y);
+	this.data.x += x;
+	this.data.y += y;
 }
 
 /**
@@ -89,5 +105,32 @@ vonline.Base.prototype.setColor = function(color) {
  * @return {json} this.data 
  */
 vonline.Base.prototype.toJSON = function() {
-	return data;
+	return this.data;
+}
+
+vonline.Base.prototype.initDraggingEvent = function() {
+	var that = this;
+	this.obj.attr('cursor', 'move');
+	$(this.obj.node).mousedown(function(event) {
+		// catch mouse movement
+		// prevent selecting text
+		event.preventDefault();
+		var origX = x = event.pageX,
+			origY = y = event.pageY;
+		var moveEvent = function(event) {
+			event.preventDefault();
+			that.obj.translate(event.pageX - x, event.pageY - y);
+			x = event.pageX;
+			y = event.pageY;
+		} 
+		$(window).mousemove(moveEvent);
+		$(window).one('mouseup', function() {
+			$(window).unbind('mousemove', moveEvent);
+			var translateX = (x - origX),
+				translateY = (y - origY);
+			that.data.x += translateX;
+			that.data.y += translateY;
+			vonline.events.trigger('commandexec', new vonline.TranslateCommand(that, translateX, translateY));
+		});
+	});
 }

@@ -48,8 +48,8 @@ vonline.Canvas.prototype.getPaper = function() {
 
 vonline.Canvas.prototype.exportJSON = function() {
 	var json = [];
-	for (var i = 0, count = objects.length; i < count; i++) {
-		json.push(objects[i].toJSON());
+	for (var i = 0, count = this.objects.length; i < count; i++) {
+		json.push(this.objects[i].toJSON());
 	}
 	return json;
 }
