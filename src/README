@@ -2,3 +2,8 @@
 Install:
 	* copy and rename php/config.inc.php-default to php/config.inc.php and edit it accordingly
 	* create database using db/create_db.sql
+
+Documentation:
+	* Create JavaScript documentation (JSDoc):
+		* download from http://code.google.com/p/jsdoc-toolkit/
+		* $ java -jar jsrun.jar app/run.js -a -p -t=templates/jsdoc {PATH_TO_VISIO_ONLINE}/src/js/

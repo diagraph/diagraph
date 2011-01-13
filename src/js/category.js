@@ -1,5 +1,5 @@
 /**
- * 
+ * @namespace
  */
 vonline.Category = function(name) {
 	var container = $('<div/>').addClass('category'),

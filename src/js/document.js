@@ -1,5 +1,6 @@
 /**
  * application class, cares on initialization and maintenance
+ * @namespace
  */
 vonline.Document = function() {
 	// storage for undo-/redoable actions

@@ -1,5 +1,5 @@
 /**
- * 
+ * @namespace
  */
 vonline.Sidebar = function(container) {
 	container = $(container).css('width', '200px');

@@ -3,6 +3,10 @@
  */
 
 if (!window.vonline) {
+	/**
+	 * global application scope
+	 * @name vonline
+	 */
 	window.vonline = {};
 }
 

@@ -1,5 +1,6 @@
 /**
  * menu item, containing an image and a click-event handler
+ * @namespace
  */
 vonline.MenuItem = function(name, src, clickHandler) {
 	var that = this,

@@ -1,5 +1,6 @@
 /**
  * container for the menu items
+ * @namespace
  */
 vonline.Menu = function() {
 	var container = $('<ul/>').addClass('menu');
