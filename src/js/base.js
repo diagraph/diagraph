@@ -38,6 +38,11 @@ vonline.Base.prototype.getId = function() {
  * @param {vonline.Canvas} canvas
  */
 vonline.Base.prototype.setCanvas = function(canvas) {
+	if (!canvas && this.obj) {
+		// remove
+		this.obj.remove();
+		return;
+	}
 	this.obj = this.createObject(canvas.getPaper());
 	this.setPosition(this.data.x, this.data.y);
 	this.setColor(this.data.color);

@@ -1,21 +1,29 @@
 /**
  * @namespace
  */
-vonline.Category = function(name) {
-	var container = $('<div/>').addClass('category'),
-	header = $('<div/>').addClass('header').appendTo(container).text(name),
-	handle = $('<span/>').addClass('handle active').appendTo(header).click(function() {
-		if (handle.hasClass('active')) {
-			body.hide();
+vonline.Category = function(name, id) {
+	var that = this;
+	this.container = $('<div/>').addClass('category');
+	this.header = $('<div/>').addClass('header').appendTo(this.container).text(name);
+	this.handle = $('<span/>').addClass('handle active').appendTo(this.header).click(function() {
+		if (that.handle.hasClass('active')) {
+			that.body.hide();
 		}
 		else {
-			body.show();
+			that.body.show();
 		}
-		handle.toggleClass('active');
-	}),
-	body = $('<div/>').appendTo(container).text('test');
-	
-	this.getHTML = function() {
-		return container;
-	}
+		that.handle.toggleClass('active');
+	});
+	this.body = $('<div/>').appendTo(this.container);
+}
+
+vonline.Category.prototype.getHTML = function() {
+	return this.container;
+}
+
+/**
+ * @param {vonline.CategoryItem}
+ */
+vonline.Category.prototype.add = function(element) {
+	this.body.append(element.getHTML());
 }

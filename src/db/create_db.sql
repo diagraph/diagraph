@@ -54,24 +54,24 @@ insert into snapshots values (default, 1, default, "");
 
 insert into categories values (default, "Basics");
 select id into @cat_id from categories where name = "Basics" limit 1;
-insert into objects values (default, @cat_id, "Rectangle", "rectangle.svg", ""),
-						   (default, 1, "Circle", "circle.svg", ""),
-						   (default, 1, "Triangle", "triangle.svg", "");
+insert into objects values (default, @cat_id, "Rectangle", "rectangle.svg", "rectangle"),
+						   (default, 1, "Circle", "circle.svg", "rectangle"),
+						   (default, 1, "Triangle", "triangle.svg", "rectangle");
 
 insert into categories values (default, "UML");
 select id into @cat_id from categories where name = "UML" limit 1;
-insert into objects values (default, @cat_id, "UML #1", "rectangle.svg", ""),
-						   (default, @cat_id, "UML #2", "circle.svg", ""),
-						   (default, @cat_id, "UML #3", "rectangle.svg", ""),
-						   (default, @cat_id, "UML #4", "circle.svg", ""),
-						   (default, @cat_id, "UML #5", "rectangle.svg", ""),
-						   (default, @cat_id, "UML #6", "circle.svg", "");
+insert into objects values (default, @cat_id, "UML #1", "rectangle.svg", "rectangle"),
+						   (default, @cat_id, "UML #2", "circle.svg", "rectangle"),
+						   (default, @cat_id, "UML #3", "rectangle.svg", "rectangle"),
+						   (default, @cat_id, "UML #4", "circle.svg", "rectangle"),
+						   (default, @cat_id, "UML #5", "rectangle.svg", "rectangle"),
+						   (default, @cat_id, "UML #6", "circle.svg", "rectangle");
 
 insert into categories values (default, "Simulink");
 select id into @cat_id from categories where name = "Simulink" limit 1;
-insert into objects values (default, @cat_id, "SL #1", "rectangle.svg", ""),
-						   (default, @cat_id, "SL #2", "rectangle.svg", ""),
-						   (default, @cat_id, "SL #3", "rectangle.svg", ""),
-						   (default, @cat_id, "SL #4", "circle.svg", ""),
-						   (default, @cat_id, "SL #5", "circle.svg", ""),
-						   (default, @cat_id, "SL #6", "circle.svg", "");
+insert into objects values (default, @cat_id, "SL #1", "rectangle.svg", "rectangle"),
+						   (default, @cat_id, "SL #2", "rectangle.svg", "rectangle"),
+						   (default, @cat_id, "SL #3", "rectangle.svg", "rectangle"),
+						   (default, @cat_id, "SL #4", "circle.svg", "rectangle"),
+						   (default, @cat_id, "SL #5", "circle.svg", "rectangle"),
+						   (default, @cat_id, "SL #6", "circle.svg", "rectangle");

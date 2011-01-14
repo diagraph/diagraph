@@ -28,6 +28,12 @@ vonline.Document = function() {
 	
 	this.canvas = new vonline.Canvas();
 	
+	vonline.events.bind('drop', function(event, data) {
+		var command = new vonline.CreateCommand(that.canvas, data);
+		command.execute();
+		vonline.events.trigger('commandexec', command);
+	});
+	
 	// example
 	this.canvas.load([
 	                  {type:'rectangle', id:1, x: 100, y:50},
@@ -158,9 +164,12 @@ vonline.Document.prototype.loadCategories = function() {
 		data: {task: 'getCategories'},
 		dataType: 'json',
 		success: function(json) {
-			for (var category in json) {
-				that.sidebar.addCategory(new vonline.Category(category));
-				// TODO: add components
+			for (var name in json) {
+				var category = new vonline.Category(name, json[name].id)
+				that.sidebar.addCategory(category);
+				for (var item in json[name].elements) {
+					category.add(new vonline.CategoryItem(item, json[name].elements[item]));
+				}
 			}
 		}
 	});

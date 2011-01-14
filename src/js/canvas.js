@@ -27,12 +27,15 @@ vonline.Canvas = function() {
  */
 vonline.Canvas.prototype.load = function(json) {
 	for (var i = 0, count = json.length; i < count; i++) {
-		switch (json[i].type) {
-			case 'rectangle':
-				var obj = new vonline.Rectangle(json[i]);
-				this.add(obj);
-			break;
-		}
+		this.add(this.createObject(json[i]));
+	}
+}
+
+vonline.Canvas.prototype.createObject = function(data) {
+	switch (data.type) {
+	case 'rectangle':
+		return new vonline.Rectangle(data);
+	break;
 	}
 }
 
@@ -42,6 +45,16 @@ vonline.Canvas.prototype.load = function(json) {
 vonline.Canvas.prototype.add = function(obj) {
 	obj.setCanvas(this);
 	this.objects.push(obj);
+}
+
+/**
+ * @param {vonline.Base} obj
+ */
+vonline.Canvas.prototype.remove = function(obj) {
+	obj.setCanvas(null);
+	this.objects = $.grep(this.objects, function(object) {
+		return object != obj;
+	});
 }
 
 vonline.Canvas.prototype.getPaper = function() {

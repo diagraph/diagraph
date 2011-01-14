@@ -4,7 +4,7 @@
 vonline.Sidebar = function(container) {
 	container = $(container).css('width', '200px');
 	var topmenu = $('<div/>').appendTo(container),
-	categories  = $('<div/>').appendTo(container),
+	categories  = $('<div/>').appendTo(container).css('overflow', 'auto'),
 	bottommenu  = $('<div/>').appendTo(container);
 	
 	function onResize() {

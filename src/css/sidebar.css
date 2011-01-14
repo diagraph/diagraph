@@ -50,3 +50,7 @@
     border-right: 8px solid transparent;
     border-top: 8px solid white;
 }
+.category .item {
+	/*padding: 20px;*/
+	display: inline-block;
+}

@@ -17,7 +17,12 @@ else {
 			$result = db::query('SELECT id, name FROM categories');
 			foreach ($result as $row) {
 				// category objects
-				$json[$row['name']] = array();
+				$result2 = db::query('SELECT name, data FROM objects WHERE category = '.$row['id']);
+				$elements = array();
+				foreach ($result2 as $row2) {
+					$elements[$row2['name']] = $row2['data'];
+				}
+				$json[$row['name']] = array('id'=>$row['id'], 'elements'=>$elements);
 			}
 			echo json_encode($json);
 	}
