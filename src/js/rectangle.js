@@ -4,10 +4,11 @@
  */
 vonline.Rectangle = function(data) {
 	// inherit default values
-	this.data = $.extend(this.data, data);
+	this.data = $.extend(vonline.Base.defaultData, data);
 }
 
-vonline.Rectangle.prototype = new vonline.Base();
+//vonline.Rectangle.prototype = new vonline.Base();
+vonline.Rectangle.prototype = vonline.Base.prototype;
 
 /**
  * Creates the object on the given canvas

@@ -5,29 +5,31 @@
  */
 vonline.Base = function() {
 	// data and object needs to be always in sync
-	/** default values and json format specification */
-	this.data = {
-		/** unique identifier */
-		id: 0,
-		/** 'rectangle', 'circle', 'path', 'image', 'annotation', 'connection' */
-		type: null,
-		/** SVG path or further differentation of type, e.g. 'arrow', 'line' */
-		path: null,
-		x: 0,
-		y: 0,
-		width: 50,
-		height: 50,
-		rotation: 0,
-		/** see: http://raphaeljs.com/reference.html#colour */
-		color: 'white',
-		text: null,
-		/** [width, color] */
-		border: null,
-		/** [[id, side], ...] */
-		connect: null
-	};
+	this.data = null;
 	this.obj = null;
 }
+
+/** default values and json format specification */
+vonline.Base.defaultData = {
+	/** unique identifier */
+	id: 0,
+	/** 'rectangle', 'circle', 'path', 'image', 'annotation', 'connection' */
+	type: null,
+	/** SVG path or further differentation of type, e.g. 'arrow', 'line' */
+	path: null,
+	x: 0,
+	y: 0,
+	width: 50,
+	height: 50,
+	rotation: 0,
+	/** see: http://raphaeljs.com/reference.html#colour */
+	color: 'white',
+	text: null,
+	/** [width, color] */
+	border: null,
+	/** [[id, side], ...] */
+	connect: null
+};
 
 vonline.Base.prototype.getId = function() {
 	return this.data.id;
