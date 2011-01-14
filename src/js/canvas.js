@@ -8,9 +8,7 @@ vonline.Canvas = function() {
 	this.paper = Raphael('canvas', this.container.width(), this.container.height());
 	this.objects = [];
 	this.selection = new vonline.Selection(this);
-	this.container.click(function() {
-		that.selection.clear();
-	});
+	this.initRectangleSelection();
 	
 	function onResize() {
 		var sidebarwidth = $('#sidebar').width(),
@@ -25,11 +23,11 @@ vonline.Canvas = function() {
  * loads a document from its json representation
  * @param {array} json array containing the components
  * @exmaple
- * vonline.document.canvas.load([{path:'rectangle', id:1, scaleX:1, scaleY:1, x: 100, y:50}]);
+ * vonline.document.canvas.load([{type:'rectangle', id:1, scaleX:1, scaleY:1, x: 100, y:50}]);
  */
 vonline.Canvas.prototype.load = function(json) {
 	for (var i = 0, count = json.length; i < count; i++) {
-		switch (json[i].path) {
+		switch (json[i].type) {
 			case 'rectangle':
 				var obj = new vonline.Rectangle(json[i]);
 				this.add(obj);
@@ -56,4 +54,48 @@ vonline.Canvas.prototype.exportJSON = function() {
 		json.push(this.objects[i].toJSON());
 	}
 	return json;
+}
+
+vonline.Canvas.prototype.initRectangleSelection = function() {
+	var that = this;
+	this.container.mousedown(function(event) {
+		var x = event.offsetX,
+			y = event.offsetY,
+			rect = that.paper.rect(x, y).attr({stroke: 'blue', fill: 'rgba(0,100,255,.5)'});
+		
+		var moveEvent = function(event) {
+			//console.log(event.offsetX, event.offsetY);
+			var width = (event.offsetX - x),
+				height = (event.offsetY - y);
+			if (width < 0) {
+				rect.attr('width', -width);
+				rect.attr('x', event.offsetX);
+			}
+			else {
+				rect.attr('width', width);
+				rect.attr('x', x);
+			}
+			if (height < 0) {
+				rect.attr('height', -height);
+				rect.attr('y', event.offsetY);
+			}
+			else {
+				rect.attr('height', height);
+				rect.attr('y', y);
+			}
+		}
+		that.container.mousemove(moveEvent);
+		
+		that.container.one('mouseup', function() {
+			that.container.unbind('mousemove', moveEvent);
+			that.selection.clear();
+			var bbox = rect.getBBox();
+			rect.remove();
+			for (var i = 0, count = that.objects.length; i < count; i++) {
+				if (that.objects[i].fitsIn(bbox)) {
+					that.selection.add(that.objects[i]);
+				}
+			}
+		})
+	});
 }

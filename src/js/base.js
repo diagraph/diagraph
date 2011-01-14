@@ -48,7 +48,7 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 
 /**
  * Set the position of the component
- * Note that this function sets the absolute position by the top-left edge of the bounding box
+ * Note that this function sets the absolute position by the top-left corner of the bounding box
  * @param {integer} x
  * @param {integer} y
  */
@@ -166,4 +166,15 @@ vonline.Base.prototype.initClickEventHandler = function() {
 			that.wasDragging = false;
 		}
 	});
+}
+
+/**
+ * Checks if bounding contains the current object
+ * @param {object} bounding Specified by (x, y, width, height)
+ */
+vonline.Base.prototype.fitsIn = function(bounding) {
+	var bbox = this.obj.getBBox();
+	return (bbox.x >= bounding.x && bbox.y >= bounding.y
+			&& bbox.x + bbox.width <= bounding.x + bounding.width
+			&& bbox.y + bbox.height <= bounding.y + bounding.height);
 }
