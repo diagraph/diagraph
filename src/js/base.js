@@ -134,11 +134,18 @@ vonline.Base.prototype.initDragEventHandler = function() {
 			event.preventDefault();
 			event.stopPropagation();
 			
+			var deltaX = event.pageX - x,
+				deltaY = event.pageY - y;
 			if (!event.altKey) {
+				var bbox = that.obj.getBBox();
+				// adjust object
+				that.obj.translate((Raphael.snapTo(vonline.GRIDSIZE, bbox.x) - bbox.x), (Raphael.snapTo(vonline.GRIDSIZE, bbox.y) - bbox.y));
 				event.pageX = Raphael.snapTo(vonline.GRIDSIZE, event.pageX);
+				deltaX = Raphael.snapTo(vonline.GRIDSIZE, event.pageX - x);
 				event.pageY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY);
+				deltaY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY - y);
 			}
-			that.obj.translate(event.pageX - x, event.pageY - y);
+			that.obj.translate(deltaX, deltaY);
 			x = event.pageX;
 			y = event.pageY;
 		} 

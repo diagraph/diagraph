@@ -4,7 +4,7 @@
  */
 vonline.Rectangle = function(data) {
 	// inherit default values
-	this.data = $.extend(vonline.Base.defaultData, data);
+	this.data = $.extend({}, vonline.Base.defaultData, data);
 }
 
 //vonline.Rectangle.prototype = new vonline.Base();
