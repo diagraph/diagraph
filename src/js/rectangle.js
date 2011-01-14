@@ -5,8 +5,6 @@
 vonline.Rectangle = function(data) {
 	// inherit default values
 	this.data = $.extend(this.data, data);
-	this.defaultWidth = 50;
-	this.defaultHeight = 50;
 }
 
 vonline.Rectangle.prototype = new vonline.Base();
@@ -16,5 +14,14 @@ vonline.Rectangle.prototype = new vonline.Base();
  * @param {vonline.Canvas} canvas
  */
 vonline.Rectangle.prototype.createObject = function(canvas) {
-	return canvas.rect(this.data.x, this.data.y, this.defaultWidth * this.data.scaleX, this.defaultHeight * this.data.scaleY);
+	return canvas.rect(this.data.x, this.data.y, this.data.width, this.data.height);
+}
+
+vonline.Rectangle.prototype.setScale = function(x, y, origX, origY) {
+	this.obj.scale(x, y, origX, origY);
+	this.obj.resetScale();  // get cumulative scaling
+	this.data.x = this.obj.attr('x');
+	this.data.y = this.obj.attr('y');
+	this.data.width = this.obj.attr('width');
+	this.data.height = this.obj.attr('height');
 }

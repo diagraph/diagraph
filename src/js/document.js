@@ -29,7 +29,10 @@ vonline.Document = function() {
 	this.canvas = new vonline.Canvas();
 	
 	// example
-	this.canvas.load([{path:'rectangle', id:1, scaleX:1, scaleY:1, x: 100, y:50}])
+	this.canvas.load([
+	                  {path:'rectangle', id:1, scaleX:1, scaleY:1, x: 100, y:50},
+	                  {path:'rectangle', id:2, scaleX:1, scaleY:1, x: 200, y:100},
+	                  ])
 }
 
 /**
@@ -96,6 +99,7 @@ vonline.Document.prototype.updateMenu = function() {
 	else {
 		this.redoItem.enable();
 	}
+	vonline.events.trigger('canvaschanged');
 }
 
 /**

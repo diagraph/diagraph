@@ -3,10 +3,14 @@
  * @namespace
  */
 vonline.Canvas = function() {
+	var that = this;
 	this.container = $('#canvas');
 	this.paper = Raphael('canvas', this.container.width(), this.container.height());
 	this.objects = [];
-	var that = this;
+	this.selection = new vonline.Selection(this);
+	this.container.click(function() {
+		that.selection.clear();
+	});
 	
 	function onResize() {
 		var sidebarwidth = $('#sidebar').width(),

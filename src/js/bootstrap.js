@@ -9,7 +9,8 @@ if (!window.vonline) {
 	 */
 	window.vonline = {
 		/** used for custom events */
-		events: $({})
+		events: $({}),
+		GRIDSIZE: 8
 	};
 }
 

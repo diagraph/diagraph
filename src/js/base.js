@@ -15,8 +15,8 @@ vonline.Base = function() {
 		path: null,
 		x: 0,
 		y: 0,
-		scaleX: 1,
-		scaleY: 1,
+		width: 50,
+		height: 50,
 		rotation: 0,
 		/** see: http://raphaeljs.com/reference.html#colour */
 		color: 'white',
@@ -40,11 +40,10 @@ vonline.Base.prototype.getId = function() {
 vonline.Base.prototype.setCanvas = function(canvas) {
 	this.obj = this.createObject(canvas.getPaper());
 	this.setPosition(this.data.x, this.data.y);
-	this.setScale(this.data.scaleX, this.data.scaleY);
-	this.setRotation(this.data.rotation);
 	this.setColor(this.data.color);
 	
-	this.initDraggingEvent();
+	this.initClickEventHandler();
+	this.initDragEventHandler();
 }
 
 /**
@@ -76,11 +75,11 @@ vonline.Base.prototype.setTranslation = function(x, y) {
 /**
  * @param {float} x
  * @param {float} y
+ * @param {number} origX
+ * @param {number} origY
  */
-vonline.Base.prototype.setScale = function(x, y) {
-	this.obj.scale(x, y);
-	this.scaleX = x;
-	this.scaleY = y;
+vonline.Base.prototype.setScale = function(x, y, origX, origY) {
+	throw 'vonline.Base.setScale must be implemented in subclass';
 }
 
 /**
@@ -108,29 +107,63 @@ vonline.Base.prototype.toJSON = function() {
 	return this.data;
 }
 
-vonline.Base.prototype.initDraggingEvent = function() {
+vonline.Base.prototype.initDragEventHandler = function() {
 	var that = this;
-	this.obj.attr('cursor', 'move');
+	this.obj.attr('cursor', 'pointer');
 	$(this.obj.node).mousedown(function(event) {
 		// catch mouse movement
+		
+		that.obj.attr('cursor', 'move');
+		
 		// prevent selecting text
 		event.preventDefault();
+		event.stopPropagation();
+		
 		var origX = x = event.pageX,
 			origY = y = event.pageY;
 		var moveEvent = function(event) {
+			// distinguish between click and drag-event, see initClickHandler 
+			that.wasDragging = true;
 			event.preventDefault();
+			event.stopPropagation();
+			
+			if (!event.altKey) {
+				event.pageX = Raphael.snapTo(vonline.GRIDSIZE, event.pageX);
+				event.pageY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY);
+			}
 			that.obj.translate(event.pageX - x, event.pageY - y);
 			x = event.pageX;
 			y = event.pageY;
 		} 
 		$(window).mousemove(moveEvent);
-		$(window).one('mouseup', function() {
+		$(window).one('mouseup', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			
 			$(window).unbind('mousemove', moveEvent);
-			var translateX = (x - origX),
-				translateY = (y - origY);
-			that.data.x += translateX;
-			that.data.y += translateY;
-			vonline.events.trigger('commandexec', new vonline.TranslateCommand(that, translateX, translateY));
+			if (that.wasDragging) {
+				var translateX = (x - origX),
+					translateY = (y - origY);
+				that.data.x += translateX;
+				that.data.y += translateY;
+				vonline.events.trigger('commandexec', new vonline.TranslateCommand(that, translateX, translateY));
+			}
+			that.obj.attr('cursor', 'pointer');
 		});
+	});
+}
+
+vonline.Base.prototype.initClickEventHandler = function() {
+	var that = this;
+	$(this.obj.node).click(function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		
+		if (!that.wasDragging) {
+			vonline.document.canvas.selection.toggle(that);
+		}
+		else {
+			that.wasDragging = false;
+		}
 	});
 }
