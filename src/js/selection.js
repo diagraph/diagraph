@@ -21,6 +21,7 @@ vonline.Selection = function(canvas) {
 vonline.Selection.prototype.add = function(object) {
 	this.data.push(object);
 	this.obj.push(object.obj);
+	object.setRotationMode(true);
 	
 	this.updateResizeBox();
 }
@@ -36,6 +37,7 @@ vonline.Selection.prototype.remove = function(object) {
 		return obj != object.obj;
 	});
 	this.obj = this.canvas.getPaper().set(hold);
+	object.setRotationMode(false);
 
 	this.updateResizeBox();
 }

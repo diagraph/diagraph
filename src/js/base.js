@@ -41,11 +41,13 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 	if (!canvas && this.obj) {
 		// remove
 		this.obj.remove();
+		this.text.remove();
 		return;
 	}
 	this.canvas = canvas;
 	this.obj = this.createObject(canvas.getPaper());
 	this.setPosition(this.data.x, this.data.y);
+	this.setRotation(this.data.rotation);
 	this.setColor(this.data.color);
 	this.createText(canvas);
 	
@@ -94,8 +96,9 @@ vonline.Base.prototype.setScale = function(x, y, origX, origY) {
  * @param {int} deg Degree between 0...360°
  */
 vonline.Base.prototype.setRotation = function(deg) {
-	this.obj.rotate(deg);
+	this.obj.rotate(deg, true);
 	this.data.rotation = deg;
+	$(this.obj.node).trigger('changed');
 }
 
 /**
@@ -167,10 +170,14 @@ vonline.Base.prototype.changeText = function(text) {
 	this.createText();
 }
 
+/**
+ * sets the correct position of the inlined text
+ */
 vonline.Base.prototype.adjustText = function() {
 	var bbox = this.obj.getBBox();
 	this.text.attr('x', bbox.x + bbox.width / 2);
 	this.text.attr('y', bbox.y + bbox.height / 2);
+	this.text.rotate(this.data.rotation, true);
 }
 
 /**
@@ -248,6 +255,44 @@ vonline.Base.prototype.initClickEventHandler = function() {
 			that.wasDragging = false;
 		}
 	});
+}
+
+/**
+ * @param {boolean} active
+ */
+vonline.Base.prototype.setRotationMode = function(active) {
+	if (active) {
+		var bbox = this.obj.getBBox(),
+			radius = Math.max(bbox.width / 2, bbox.height / 2) + 25,
+			centerX = bbox.x + bbox.width / 2,
+			centerY = bbox.y + bbox.height / 2,
+			that = this;
+		this.rotationCircle = this.canvas.getPaper().circle(centerX, centerY, radius).attr('stroke', 'orange').attr('stroke-width', '2');
+		this.rotationHandle = this.canvas.getPaper().circle(centerX, centerY - radius, 4).attr('stroke', 'none').attr('fill', 'orange').attr('cursor', 'pointer').rotate(this.data.rotation, centerX, centerY);
+		$(this.rotationHandle.node).mousedown(function(event) {
+			event.stopPropagation();
+			
+			var deg = that.data.rotation,
+			rotationEvent = function(event) {
+				deg = Raphael.angle(centerX, centerY, event.offsetX, event.offsetY);
+				deg -= 90;
+				deg = deg < 0 ? 360 + deg : deg;
+				that.rotationHandle.rotate(deg, centerX, centerY);
+				that.obj.rotate(deg, true);
+			};
+			$(window).mousemove(rotationEvent);
+			$(window).one('mouseup', function() {
+				$(window).unbind('mousemove', rotationEvent);
+				var command = new vonline.RotateCommand(that, deg);
+				command.execute();
+				vonline.events.trigger('commandexec', command);
+			});
+		});
+	}
+	else {
+		this.rotationCircle.remove();
+		this.rotationHandle.remove();
+	}
 }
 
 /**
