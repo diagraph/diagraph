@@ -5,31 +5,29 @@
  */
 vonline.Base = function() {
 	// data and object needs to be always in sync
-	this.data = null;
+	/** default values and json format specification */
+	this.data = {
+		/** unique identifier */
+		id: 0,
+		/** 'rectangle', 'circle', 'path', 'image', 'annotation', 'connection' */
+		type: null,
+		/** SVG path or further differentation of type, e.g. 'arrow', 'line' */
+		path: null,
+		x: 0,
+		y: 0,
+		width: 50,
+		height: 50,
+		rotation: 0,
+		/** see: http://raphaeljs.com/reference.html#colour */
+		color: 'white',
+		text: null,
+		/** [width, color] */
+		border: null,
+		/** [[id, side], ...] */
+		connect: null
+	};
 	this.obj = null;
 }
-
-/** default values and json format specification */
-vonline.Base.defaultData = {
-	/** unique identifier */
-	id: 0,
-	/** 'rectangle', 'circle', 'path', 'image', 'annotation', 'connection' */
-	type: null,
-	/** SVG path or further differentation of type, e.g. 'arrow', 'line' */
-	path: null,
-	x: 0,
-	y: 0,
-	width: 50,
-	height: 50,
-	rotation: 0,
-	/** see: http://raphaeljs.com/reference.html#colour */
-	color: 'white',
-	text: null,
-	/** [width, color] */
-	border: null,
-	/** [[id, side], ...] */
-	connect: null
-};
 
 vonline.Base.prototype.getId = function() {
 	return this.data.id;
@@ -45,9 +43,11 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 		this.obj.remove();
 		return;
 	}
+	this.canvas = canvas;
 	this.obj = this.createObject(canvas.getPaper());
 	this.setPosition(this.data.x, this.data.y);
 	this.setColor(this.data.color);
+	this.createText(canvas);
 	
 	this.initClickEventHandler();
 	this.initDragEventHandler();
@@ -77,6 +77,7 @@ vonline.Base.prototype.setTranslation = function(x, y) {
 	this.obj.translate(x, y);
 	this.data.x += x;
 	this.data.y += y;
+	$(this.obj.node).trigger('changed');
 }
 
 /**
@@ -104,6 +105,72 @@ vonline.Base.prototype.setRotation = function(deg) {
 vonline.Base.prototype.setColor = function(color) {
 	this.obj.attr({fill: color});
 	this.data.color = color;
+}
+
+/**
+ * craetes a text within the object
+ */
+vonline.Base.prototype.createText = function() {
+	var that = this;
+	this.textShowEvent = function() {
+		that.text.show();
+	};
+	this.textHideEvent = function(event) {
+		if (!$(event.relatedTarget).is('tspan')) {
+			that.text.hide();
+		}
+	};
+	
+	if (this.data.text) {
+		this.text = this.canvas.getPaper().text(this.data.x, this.data.y, this.data.text);
+	}
+	else {
+		this.text = this.canvas.getPaper().text(this.data.x, this.data.y, 'dblclick\nto add');
+		this.text.hide();
+		$(this.obj.node).mouseenter(this.textShowEvent);
+		$(this.obj.node).mouseout(this.textHideEvent);
+	}
+	
+	// redirect events to object
+	$(this.text.node).click(function(event) {
+		$(that.obj.node).trigger(event);
+	});
+	$(this.text.node).mousedown(function(event) {
+		$(that.obj.node).trigger(event);
+	});
+	
+	// reposition on change
+	this.adjustText();
+	$(this.obj.node).bind('changed', function() {
+		that.adjustText();
+	});
+	
+	// text changing
+	$(this.text.node).dblclick(function() {
+		var entered = window.prompt('Enter a new value:');
+		if (entered !== null) {
+			var command = new vonline.TextChangeCommand(that, entered);
+			command.execute();
+			vonline.events.trigger('commandexec', command);
+		}
+	});
+}
+
+/**
+ * @param {string} text
+ */
+vonline.Base.prototype.changeText = function(text) {
+	this.data.text = text;
+	this.text.remove();
+	$(this.obj.node).unbind('mouseenter', this.textShowEvent);
+	$(this.obj.node).unbind('mouseout', this.textHideEvent);
+	this.createText();
+}
+
+vonline.Base.prototype.adjustText = function() {
+	var bbox = this.obj.getBBox();
+	this.text.attr('x', bbox.x + bbox.width / 2);
+	this.text.attr('y', bbox.y + bbox.height / 2);
 }
 
 /**
@@ -145,7 +212,8 @@ vonline.Base.prototype.initDragEventHandler = function() {
 				event.pageY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY);
 				deltaY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY - y);
 			}
-			that.obj.translate(deltaX, deltaY);
+			that.setTranslation(deltaX, deltaY);
+			// that.obj.translate(deltaX, deltaY);
 			x = event.pageX;
 			y = event.pageY;
 		} 

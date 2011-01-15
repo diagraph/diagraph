@@ -36,7 +36,7 @@ vonline.Document = function() {
 	
 	// example
 	this.canvas.load([
-	                  {type:'rectangle', id:1, x: 100, y:50},
+	                  {type:'rectangle', id:1, x: 100, y:50, text: 'rectangle'},
 	                  {type:'rectangle', id:2, x: 200, y:100},
 	                  ]);
 }

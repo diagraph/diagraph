@@ -4,11 +4,11 @@
  */
 vonline.Rectangle = function(data) {
 	// inherit default values
-	this.data = $.extend({}, vonline.Base.defaultData, data);
+	this.data = $.extend({}, this.data, data);
 }
 
 //vonline.Rectangle.prototype = new vonline.Base();
-vonline.Rectangle.prototype = vonline.Base.prototype;
+vonline.Rectangle.prototype = new vonline.Base();
 
 /**
  * Creates the object on the given canvas
@@ -25,4 +25,5 @@ vonline.Rectangle.prototype.setScale = function(x, y, origX, origY) {
 	this.data.y = this.obj.attr('y');
 	this.data.width = this.obj.attr('width');
 	this.data.height = this.obj.attr('height');
+	$(this.obj.node).trigger('changed');
 }
