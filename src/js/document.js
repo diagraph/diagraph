@@ -64,6 +64,7 @@ vonline.Document.prototype.initTopMenu = function() {
 	}));
 	topmenu.addItem(new vonline.MenuItem('view the history of the current document', 'images/menu/open_history', function() {
 		// TODO: init history view
+		that.loadSnapshot(1); // for the moment: just load a snapshot
 	}));
 	return topmenu;
 }
@@ -144,14 +145,50 @@ vonline.Document.prototype.redoCommand = function() {
  * loads specific snapshot and display the corresponding document
  */
 vonline.Document.prototype.loadSnapshot = function(id) {
-	// TODO
+	var that = this;
+	$.ajax({
+		data: {task: 'loadSnapshot', snapshotID: id},
+		dataType: 'json',
+		success: function(json) {
+			// TODO: better way to remove all objects/clear the canvas?
+			//that.canvas.objects = [];
+			var len = that.canvas.objects.length;
+			for(var i = 0; i < len; i++) {
+				that.canvas.remove(that.canvas.objects[len-i-1]);
+			}
+			
+			// load objects
+			that.canvas.load(json.objects);
+		}
+	});
 }
 
 /**
  * save a snapshot of the current document / send document data to server
  */
 vonline.Document.prototype.saveSnapshot = function() {
-	// TODO
+	var that = this;
+	
+	var documentData = '{ ';
+	//documentData += '\"objects\": ' + this.canvas.exportJSON(); // TODO: make this work
+	documentData += '\"objects\": ' + JSON.stringify(this.canvas.objects);
+	// TODO: add other stuff that needs to be saved
+	documentData += ' }';
+	
+	$.ajax({
+		data: {task: 'saveSnapshot', documentData: documentData},
+		dataType: 'text',
+		success: function(data) {
+			//
+			var currentTime = new Date();
+			if(data == '1') {
+				var status = 'Snapshot saved ' + currentTime.getFullYear() + '/' + (currentTime.getMonth()+1) + '/' + currentTime.getDate() + ' ';
+				status += currentTime.getHours() + ':' + currentTime.getMinutes() + ':' + currentTime.getSeconds();
+				window.status = status;
+			}
+			else window.status = 'Saving Snapshot failed!';
+		}
+	});
 }
 
 /**

@@ -3,13 +3,18 @@
 require_once 'php/config.inc.php';
 require_once 'php/db.php';
 
-db::connect();
 
-if (!isset($_POST['task'])) {
+if (!isset($_POST['task']) && ((config::debug_mode && !isset($_GET['task'])) || !config::debug_mode)) {
 	// display the html page
 	include_once 'html/template.phtml';
 }
 else {
+	if(config::debug_mode && !isset($_POST['task']) && isset($_GET['task'])) {
+		$_POST['task'] = $_GET['task'];
+	}
+	
+	db::connect();
+	
 	switch ($_POST['task']) {
 		case 'getCategories':
 			// TODO: move in seperate class
@@ -25,5 +30,32 @@ else {
 				$json[$row['name']] = array('id'=>$row['id'], 'elements'=>$elements);
 			}
 			echo json_encode($json);
+			break;
+		case 'saveSnapshot':
+			if(!isset($_POST['documentData'])) {
+				echo "-1";
+				break;
+			}
+			
+			// TODO: escape and check
+			$result = db::query('insert into snapshots values (default, 1, default, \''.$_POST['documentData'].'\')');
+			echo $result[0];
+			
+			break;
+		case 'loadSnapshot':
+			if(!isset($_POST['snapshotID']) && ((config::debug_mode && !isset($_GET['snapshotID'])) || !config::debug_mode)) {
+				break;
+			}
+			if(config::debug_mode && !isset($_POST['snapshotID']) && isset($_GET['snapshotID'])) {
+				$_POST['snapshotID'] = $_GET['snapshotID'];
+			}
+			
+			// TODO: escape and check
+			$result = db::query('select data from snapshots where id = '.$_POST['snapshotID'].' limit 1');
+			echo $result;
+			break;
+		default: break;
 	}
+	
+	db::disconnect();
 }

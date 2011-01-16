@@ -51,7 +51,6 @@ create table snapshots (
 insert into users values (default, "root", "root@localhost", '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', 0); -- pw == "123"
 
 insert into documents values (default, 1, "test doc", default, default, default);
-insert into snapshots values (default, 1, default, "");
 
 insert into categories values (default, "Basics");
 select id into @cat_id from categories where name = "Basics" limit 1;

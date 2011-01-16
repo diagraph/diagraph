@@ -1,6 +1,7 @@
 <?php
 
 	final class config {
+		const debug_mode = false;
 		const db_type = "MySQL";
 		const db_host = "localhost";
 		const db_port = "3306";

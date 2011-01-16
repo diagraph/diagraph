@@ -95,40 +95,4 @@ class db {
 	}
 }
 
-// TODO: move this somewhere else?
-//if(isset($_GET["type"])) $_POST["type"] = $_GET["type"]; // for debugging purposes
-if(isset($_POST["type"])) {
-	$type = $_POST["type"];
-	switch($type) {
-		case "get_categories":
-			db::connect();
-			$categories = db::get_categories();
-			db::disconnect();
-			
-			// output category info in json format
-			$category_count = sizeof($categories);
-			echo "{\n";
-			echo "\"category_count\": " . $category_count . ",\n";
-			echo "\"categories\":\n[\n";
-			for($cat = 0; $cat < $category_count; $cat++) {
-				echo "{\n";
-				echo "\"id\": " . $categories[$cat][0] . ",\n";
-				echo "\"name\": \"" . $categories[$cat][1] . "\"\n";
-				echo "}" . ($cat+1 == $category_count ? "" : ",") . "\n";
-			}
-			echo "]\n";
-			echo "}\n";
-			
-			break;
-		case "get_category_objects":
-			if(!isset($_POST["category_id"])) break;
-			$category_id = $_POST["category_id"];
-			echo "::objects";
-			break;
-		default:
-			echo "Error: unknown type";
-			break;
-	}
-}
-
 ?>
