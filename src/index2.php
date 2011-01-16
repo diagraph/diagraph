@@ -3,15 +3,25 @@
 require_once 'php/config.inc.php';
 require_once 'php/db.php';
 
+function post_isset($name) {
+	if(!isset($_POST[$name]) && ((config::debug_mode && !isset($_GET[$name])) || !config::debug_mode)) {
+		return false;
+	}
+	return true;
+}
+function dbg_set($name) {
+	if(config::debug_mode && !isset($_POST[$name]) && isset($_GET[$name])) {
+		$_POST[$name] = $_GET[$name];
+	}
+}
 
-if (!isset($_POST['task']) && ((config::debug_mode && !isset($_GET['task'])) || !config::debug_mode)) {
+
+if (!post_isset('task')) {
 	// display the html page
 	include_once 'html/template.phtml';
 }
 else {
-	if(config::debug_mode && !isset($_POST['task']) && isset($_GET['task'])) {
-		$_POST['task'] = $_GET['task'];
-	}
+	dbg_set('task');
 	
 	db::connect();
 	
@@ -31,6 +41,19 @@ else {
 			}
 			echo json_encode($json);
 			break;
+		case 'getSnapshots':
+			if(!post_isset('documentID')) break;
+			dbg_set('documentID');
+			
+			$json = array();
+			// TODO: escape and check
+			$result = db::query('select id, creation_date from snapshots where document = '.$_POST['documentID']);
+			foreach ($result as $row) {
+				$json[$row['id']] = array('creation_date' => $row['creation_date']);
+			}
+			echo json_encode($json);
+			
+			break;
 		case 'saveSnapshot':
 			if(!isset($_POST['documentData'])) {
 				echo "-1";
@@ -43,12 +66,8 @@ else {
 			
 			break;
 		case 'loadSnapshot':
-			if(!isset($_POST['snapshotID']) && ((config::debug_mode && !isset($_GET['snapshotID'])) || !config::debug_mode)) {
-				break;
-			}
-			if(config::debug_mode && !isset($_POST['snapshotID']) && isset($_GET['snapshotID'])) {
-				$_POST['snapshotID'] = $_GET['snapshotID'];
-			}
+			if(!post_isset('snapshotID')) break;
+			dbg_set('snapshotID');
 			
 			// TODO: escape and check
 			$result = db::query('select data from snapshots where id = '.$_POST['snapshotID'].' limit 1');
