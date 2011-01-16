@@ -76,9 +76,11 @@ vonline.Document.prototype.initTopMenu = function() {
  * @return vonline.Menu
  */
 vonline.Document.prototype.initBottomMenu = function() {
-	var bottommenu = new vonline.Menu();
+	var bottommenu = new vonline.Menu(),
+	that = this;
+	
 	bottommenu.addItem(new vonline.MenuItem('edit categories', 'images/menu/open_category_edit_view', function() {
-		// TODO: init category edit view
+		that.categoryEditView.toggle();
 	}));
 	bottommenu.addItem(new vonline.MenuItem('zoom in', 'images/menu/zoom_in', function() {
 		// TODO: canvas viewport manipulation
@@ -154,6 +156,9 @@ vonline.Document.prototype.loadSnapshot = function(id) {
 		success: function(json) {
 			// load objects
 			that.canvas.load(json.objects);
+			that.undoList = [];
+			that.redoList = [];
+			that.updateMenu();
 		}
 	});
 }
@@ -164,11 +169,8 @@ vonline.Document.prototype.loadSnapshot = function(id) {
 vonline.Document.prototype.saveSnapshot = function() {
 	var that = this;
 	
-	var documentData = '{ ';
-	//documentData += '\"objects\": ' + this.canvas.exportJSON(); // TODO: make this work
-	documentData += '\"objects\": ' + JSON.stringify(this.canvas.objects);
+	documentData = JSON.stringify({objects: this.canvas.exportJSON()});
 	// TODO: add other stuff that needs to be saved
-	documentData += ' }';
 	
 	$.ajax({
 		data: {task: 'saveSnapshot', documentData: documentData},
@@ -206,15 +208,25 @@ vonline.Document.prototype.loadCategories = function() {
 		data: {task: 'getCategories', documentID: this.id},
 		dataType: 'json',
 		success: function(json) {
+			var visible = [],
+			notvisible = [];
+			
 			for (var name in json) {
+				var category = new vonline.Category(name, json[name].id)
+				for (var item in json[name].elements) {
+					category.add(new vonline.CategoryItem(item, json[name].elements[item]));
+				}
+				
 				if (json[name].show) {
-					var category = new vonline.Category(name, json[name].id)
+					visible.push(category);
 					that.sidebar.addCategory(category);
-					for (var item in json[name].elements) {
-						category.add(new vonline.CategoryItem(item, json[name].elements[item]));
-					}
+				}
+				else {
+					notvisible.push(category);
 				}
 			}
+			
+			that.categoryEditView = new vonline.CategoryEditView(that.sidebar, visible, notvisible);
 		}
 	});
 }

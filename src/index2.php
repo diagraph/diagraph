@@ -70,7 +70,9 @@ else {
 				break;
 			}
 			
-			$result = db::query('insert into snapshots values (default, 1, default, '.db::value($_POST['documentData']).')');
+			$data = stripslashes($_POST['documentData']);
+			
+			$result = db::query('insert into snapshots values (default, 1, default, '.db::value($data).')');
 			echo $result[0];
 			
 			break;

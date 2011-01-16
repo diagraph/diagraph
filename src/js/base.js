@@ -233,8 +233,6 @@ vonline.Base.prototype.initDragEventHandler = function() {
 			if (that.wasDragging) {
 				var translateX = (x - origX),
 					translateY = (y - origY);
-				that.data.x += translateX;
-				that.data.y += translateY;
 				vonline.events.trigger('commandexec', new vonline.TranslateCommand(that, translateX, translateY));
 			}
 			that.obj.attr('cursor', 'pointer');

@@ -36,3 +36,14 @@ vonline.parseQueryString = function() {
 	}
 	return query;
 }
+
+/**
+ * returns an array without the value elements
+ * @param {array} array
+ * @param {mixed} value
+ */
+jQuery.without = function(array, value) {
+	return jQuery.grep(array, function(val) {
+		return val != value;
+	});
+}
