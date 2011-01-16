@@ -211,7 +211,12 @@ vonline.Document.prototype.loadCategories = function() {
 		data: {task: 'getCategories'},
 		dataType: 'json',
 		success: function(json) {
+			if(json['_restrict'] != undefined) {
+				// TODO: implement this
+			}
+			
 			for (var name in json) {
+				if(name == '_restrict') continue;
 				var category = new vonline.Category(name, json[name].id)
 				that.sidebar.addCategory(category);
 				for (var item in json[name].elements) {

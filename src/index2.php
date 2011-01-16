@@ -28,6 +28,16 @@ else {
 	switch ($_POST['task']) {
 		case 'getCategories':
 			// TODO: move in seperate class
+			
+			// check if the document restricts the visible categories
+			$restrict_categories = false;
+			if(post_isset('documentID')) {
+				dbg_set('documentID');
+				$restrict_categories = true;
+				// TODO: escape and check
+				$categories_result = db::query('select categories from documents where id = '.$_POST['documentID'].' limit 1');
+			}
+			
 			$json = array();
 			$result = db::query('SELECT id, name FROM categories');
 			foreach ($result as $row) {
@@ -39,7 +49,15 @@ else {
 				}
 				$json[$row['name']] = array('id'=>$row['id'], 'elements'=>$elements);
 			}
-			echo json_encode($json);
+			$json_data = json_encode($json);
+			
+			// if there is a restriction, add it to the beginning of the json data
+			if($restrict_categories) {
+				$restrict = '"_restrict":'.$categories_result.',';
+				$json_data = substr_replace($json_data, $restrict, strpos($json_data, '{')+1, 0);
+			}
+			
+			echo $json_data;			
 			break;
 		case 'getSnapshots':
 			if(!post_isset('documentID')) break;
