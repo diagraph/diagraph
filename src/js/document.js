@@ -180,11 +180,21 @@ vonline.Document.prototype.saveSnapshot = function() {
 		dataType: 'text',
 		success: function(data) {
 			//
-			var currentTime = new Date();
 			if(data == '1') {
-				var status = 'Snapshot saved ' + currentTime.getFullYear() + '/' + (currentTime.getMonth()+1) + '/' + currentTime.getDate() + ' ';
-				status += currentTime.getHours() + ':' + currentTime.getMinutes() + ':' + currentTime.getSeconds();
-				window.status = status;
+				var currentTime = new Date();
+				var month = currentTime.getMonth()+1;
+				var day = currentTime.getDate();
+				var hours = currentTime.getHours();
+				var mins = currentTime.getMinutes();
+				var secs = currentTime.getSeconds();
+				if(month < 10) month = '0'+month;
+				if(day < 10) day = '0'+day;
+				if(hours < 10) hours = '0'+hours;
+				if(mins < 10) mins = '0'+mins;
+				if(secs < 10) secs = '0'+secs;
+				
+				var status = 'Snapshot saved ' + currentTime.getFullYear() + '/' + month + '/' + day + ' ' + hours + ':' + mins + ':' + secs;
+				window.status = status; // TODO: also output this somewhere else
 			}
 			else window.status = 'Saving Snapshot failed!';
 		}
