@@ -93,6 +93,20 @@ class db {
 			return $all;
 		}
 	}
+	
+	/**
+	 * wrapper for mysql_real_escape
+	 * @param string $string
+	 * @throws InvalidArgumentException
+	 */
+	public static function value($string) {
+		if (is_object($string)) {
+			throw new InvalidArgumentException("not a string given");
+		}
+		$string = mysql_real_escape_string($string);
+		$string = "'".$string."'";
+		return $string;
+	}
 }
 
 ?>

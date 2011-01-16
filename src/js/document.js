@@ -1,8 +1,10 @@
 /**
  * application class, cares on initialization and maintenance
  * @namespace
+ * @param {int} id
  */
-vonline.Document = function() {
+vonline.Document = function(id) {
+	this.id = id;
 	// storage for undo-/redoable actions
 	this.undoList = [];
 	this.redoList = [];
@@ -150,13 +152,6 @@ vonline.Document.prototype.loadSnapshot = function(id) {
 		data: {task: 'loadSnapshot', snapshotID: id},
 		dataType: 'json',
 		success: function(json) {
-			// TODO: better way to remove all objects/clear the canvas?
-			//that.canvas.objects = [];
-			var len = that.canvas.objects.length;
-			for(var i = 0; i < len; i++) {
-				that.canvas.remove(that.canvas.objects[len-i-1]);
-			}
-			
 			// load objects
 			that.canvas.load(json.objects);
 		}
@@ -208,19 +203,16 @@ vonline.Document.prototype.saveSnapshot = function() {
 vonline.Document.prototype.loadCategories = function() {
 	var that = this;
 	$.ajax({
-		data: {task: 'getCategories'},
+		data: {task: 'getCategories', documentID: this.id},
 		dataType: 'json',
 		success: function(json) {
-			if(json['_restrict'] != undefined) {
-				// TODO: implement this
-			}
-			
 			for (var name in json) {
-				if(name == '_restrict') continue;
-				var category = new vonline.Category(name, json[name].id)
-				that.sidebar.addCategory(category);
-				for (var item in json[name].elements) {
-					category.add(new vonline.CategoryItem(item, json[name].elements[item]));
+				if (json[name].show) {
+					var category = new vonline.Category(name, json[name].id)
+					that.sidebar.addCategory(category);
+					for (var item in json[name].elements) {
+						category.add(new vonline.CategoryItem(item, json[name].elements[item]));
+					}
 				}
 			}
 		}

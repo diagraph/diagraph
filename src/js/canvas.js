@@ -26,6 +26,9 @@ vonline.Canvas = function() {
  * vonline.document.canvas.load([{type:'rectangle', id:1, scaleX:1, scaleY:1, x: 100, y:50}]);
  */
 vonline.Canvas.prototype.load = function(json) {
+	
+	this.clear();
+	
 	for (var i = 0, count = json.length; i < count; i++) {
 		this.add(this.createObject(json[i]));
 	}
@@ -55,6 +58,15 @@ vonline.Canvas.prototype.remove = function(obj) {
 	this.objects = $.grep(this.objects, function(object) {
 		return object != obj;
 	});
+}
+
+/**
+ * Deletes all object from canvas
+ */
+vonline.Canvas.prototype.clear = function() {
+	for (var i = this.objects.length - 1; i >= 0; i--) {
+		this.remove(this.objects[i]);
+	}
 }
 
 vonline.Canvas.prototype.getPaper = function() {

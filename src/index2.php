@@ -17,6 +17,10 @@ function dbg_set($name) {
 
 
 if (!post_isset('task')) {
+	// for debugging
+	if (!isset($_GET['documentID'])) {
+		header('Location: ?documentID=1');
+	}
 	// display the html page
 	include_once 'html/template.phtml';
 }
@@ -30,13 +34,7 @@ else {
 			// TODO: move in seperate class
 			
 			// check if the document restricts the visible categories
-			$restrict_categories = false;
-			if(post_isset('documentID')) {
-				dbg_set('documentID');
-				$restrict_categories = true;
-				// TODO: escape and check
-				$categories_result = db::query('select categories from documents where id = '.$_POST['documentID'].' limit 1');
-			}
+			$categories_result = json_decode(db::query('select categories from documents where id = '.db::value($_POST['documentID']).' limit 1'), true);
 			
 			$json = array();
 			$result = db::query('SELECT id, name FROM categories');
@@ -47,25 +45,19 @@ else {
 				foreach ($result2 as $row2) {
 					$elements[$row2['name']] = $row2['data'];
 				}
-				$json[$row['name']] = array('id'=>$row['id'], 'elements'=>$elements);
+				$json[$row['name']] = array('id'=>$row['id'], 'show'=>false, 'elements'=>$elements);
+				if (in_array($row['id'], $categories_result)) {
+					$json[$row['name']]['show'] = true;
+				}
 			}
-			$json_data = json_encode($json);
-			
-			// if there is a restriction, add it to the beginning of the json data
-			if($restrict_categories) {
-				$restrict = '"_restrict":'.$categories_result.',';
-				$json_data = substr_replace($json_data, $restrict, strpos($json_data, '{')+1, 0);
-			}
-			
-			echo $json_data;			
+			echo json_encode($json);
 			break;
 		case 'getSnapshots':
 			if(!post_isset('documentID')) break;
 			dbg_set('documentID');
 			
 			$json = array();
-			// TODO: escape and check
-			$result = db::query('select id, creation_date from snapshots where document = '.$_POST['documentID']);
+			$result = db::query('select id, creation_date from snapshots where document = '.db::value($_POST['documentID']));
 			foreach ($result as $row) {
 				$json[$row['id']] = array('creation_date' => $row['creation_date']);
 			}
@@ -78,8 +70,7 @@ else {
 				break;
 			}
 			
-			// TODO: escape and check
-			$result = db::query('insert into snapshots values (default, 1, default, \''.$_POST['documentData'].'\')');
+			$result = db::query('insert into snapshots values (default, 1, default, '.db::value($_POST['documentData']).')');
 			echo $result[0];
 			
 			break;
@@ -87,8 +78,7 @@ else {
 			if(!post_isset('snapshotID')) break;
 			dbg_set('snapshotID');
 			
-			// TODO: escape and check
-			$result = db::query('select data from snapshots where id = '.$_POST['snapshotID'].' limit 1');
+			$result = db::query('select data from snapshots where id = '.db::value($_POST['snapshotID']).' limit 1');
 			echo $result;
 			break;
 		default: break;
