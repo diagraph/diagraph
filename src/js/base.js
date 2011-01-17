@@ -277,14 +277,22 @@ vonline.Base.prototype.setRotationMode = function(active) {
 				deg = deg < 0 ? 360 + deg : deg;
 				that.rotationHandle.rotate(deg, centerX, centerY);
 				that.obj.rotate(deg, true);
+				that.rotationHandle.attr({fill: 'yellow'});
 			};
 			$(window).mousemove(rotationEvent);
 			$(window).one('mouseup', function() {
+				that.rotationHandle.attr({fill: 'orange'});
 				$(window).unbind('mousemove', rotationEvent);
 				var command = new vonline.RotateCommand(that, deg);
 				command.execute();
 				vonline.events.trigger('commandexec', command);
 			});
+		})
+		.mouseover(function(event) {
+			that.rotationHandle.attr({fill: 'yellow'});
+		})
+		.mouseout(function(event) {
+			that.rotationHandle.attr({fill: 'orange'});
 		});
 	}
 	else {

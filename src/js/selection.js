@@ -111,6 +111,8 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					event.preventDefault();
 					event.stopPropagation();
 					
+					that.handles[direction].attr({fill: '#3BB9FF'});
+					
 					var delta = null;
 					switch (direction) {
 					case 'w':
@@ -119,7 +121,12 @@ vonline.Selection.prototype.updateResizeBox = function() {
 						delta = !delta ? (event.pageX - origX) : delta;
 						
 						that.resizeBox.scale(1 + delta / (bbox.width + that.padding), 1, scalingPoints[direction][0], scalingPoints[direction][1]);
+						
+						// object rotation has to be reset before we scale the object (otherwise the object will be rotated around the new center)
+						that.obj.rotate(0, true);
 						that.obj.scale(1 + delta / bbox.width, 1, scalingPoints[direction][2], scalingPoints[direction][3]);
+						that.obj.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
+						
 						that.handles[direction].translate(event.pageX - x, 0);
 						
 						scaleX = 1 + delta / bbox.width;
@@ -132,7 +139,12 @@ vonline.Selection.prototype.updateResizeBox = function() {
 						delta = !delta ? (event.pageY - origY) : delta;
 						
 						that.resizeBox.scale(1, 1 + delta / (bbox.height + that.padding), scalingPoints[direction][0], scalingPoints[direction][1]);
+						
+						// see above
+						that.obj.rotate(0, true);
 						that.obj.scale(1, 1 + delta / bbox.height, scalingPoints[direction][2], scalingPoints[direction][3]);
+						that.obj.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
+						
 						that.handles[direction].translate(0, event.pageY - y);
 						
 						scaleY = 1 + delta / bbox.height;
@@ -154,6 +166,12 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					command.execute();
 					vonline.events.trigger('commandexec', command);
 				});
+			})
+			.mouseover(function(event) {
+				that.handles[direction].attr({fill: '#3BB9FF'});
+			})
+			.mouseout(function(event) {
+				that.handles[direction].attr({fill: 'blue'});
 			});
 		}
 		
