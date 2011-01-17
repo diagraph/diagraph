@@ -259,12 +259,43 @@ vonline.Base.prototype.initClickEventHandler = function() {
  * @param {boolean} active
  */
 vonline.Base.prototype.setRotationMode = function(active) {
+	var bbox = this.obj.getBBox(),
+	radius = Math.max(bbox.width / 2, bbox.height / 2) + 25,
+	centerX = bbox.x + bbox.width / 2,
+	centerY = bbox.y + bbox.height / 2,
+	that = this;
+	
 	if (active) {
-		var bbox = this.obj.getBBox(),
-			radius = Math.max(bbox.width / 2, bbox.height / 2) + 25,
-			centerX = bbox.x + bbox.width / 2,
-			centerY = bbox.y + bbox.height / 2,
-			that = this;
+		/**
+		 * updates rotation-circle and rotation-handle on object changes
+		 */
+		this.updateHandles = function() {
+			var newBBox = that.obj.getBBox(),
+			newRadius = Math.max(newBBox.width / 2, newBBox.height / 2) + 25,
+			newCenterX = newBBox.x + newBBox.width / 2,
+			newCenterY = newBBox.y + newBBox.height / 2;
+			if (that.rotationCircle) {
+				if (radius != newRadius) {
+					that.rotationCircle.scale(newRadius/radius, newRadius/radius);
+					that.rotationCircle.resetScale();
+					that.rotationCircle.translate(newCenterX - centerX, newCenterY - centerY);
+					that.rotationHandle.rotate(0, centerX, centerY);
+					that.rotationHandle.translate(newCenterX - centerX, newCenterY - newRadius - (centerY - radius));
+					that.rotationHandle.rotate(that.data.rotation, newCenterX, newCenterY);
+					radius = newRadius;
+					centerX = newCenterX;
+					centerY = newCenterY;
+				}
+				else if (centerX != newCenterX || centerY != newCenterY) {
+					that.rotationCircle.translate(newCenterX - centerX, newCenterY - centerY);
+					that.rotationHandle.translate(newCenterX - centerX, newCenterY - newRadius - (centerY - radius));
+					centerX = newCenterX;
+					centerY = newCenterY;
+				}
+			}
+		}
+		$(this.obj.node).bind('changed', this.updateHandles);
+		
 		this.rotationCircle = this.canvas.getPaper().circle(centerX, centerY, radius).attr('stroke', 'orange').attr('stroke-width', '2');
 		this.rotationHandle = this.canvas.getPaper().circle(centerX, centerY - radius, 4).attr('stroke', 'none').attr('fill', 'orange').attr('cursor', 'pointer').rotate(this.data.rotation, centerX, centerY);
 		$(this.rotationHandle.node).mousedown(function(event) {
@@ -288,8 +319,11 @@ vonline.Base.prototype.setRotationMode = function(active) {
 		});
 	}
 	else {
+		$(this.obj.node).unbind('changed', this.updateHandles);
 		this.rotationCircle.remove();
+		this.rotationCircle = null;
 		this.rotationHandle.remove();
+		this.rotationHandle = null;
 	}
 }
 
