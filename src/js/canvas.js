@@ -7,6 +7,7 @@ vonline.Canvas = function() {
 	this.container = $('#canvas');
 	this.paper = Raphael('canvas', this.container.width(), this.container.height());
 	this.objects = [];
+	this.maxId = 0;
 	this.selection = new vonline.Selection(this);
 	this.initRectangleSelection();
 	
@@ -30,7 +31,11 @@ vonline.Canvas.prototype.load = function(json) {
 	this.clear();
 	
 	for (var i = 0, count = json.length; i < count; i++) {
-		this.add(this.createObject(json[i]));
+		var object = this.createObject(json[i]);
+		if (object.data.id > this.maxId) {
+			this.maxId = object.data.id;
+		}
+		this.add(object);
 	}
 }
 
@@ -47,6 +52,9 @@ vonline.Canvas.prototype.createObject = function(data) {
  */
 vonline.Canvas.prototype.add = function(obj) {
 	obj.setCanvas(this);
+	if (!obj.data.id) {
+		obj.data.id = ++this.maxId;
+	}
 	this.objects.push(obj);
 }
 
