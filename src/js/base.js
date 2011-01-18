@@ -328,6 +328,18 @@ vonline.Base.prototype.setRotationMode = function(active) {
 }
 
 /**
+ * show connection handles
+ */
+vonline.Base.prototype.setConnectionMode = function(active) {
+	if (active) {
+		var bbox = this.obj.getBBox();
+		this.connectionHandle = this.canvas.getPaper().path('M25.06,13.719c-0.944-5.172-5.461-9.094-10.903-9.094v4c3.917,0.006,7.085,3.176,7.094,7.094c-0.009,3.917-3.177,7.085-7.094,7.093v4.002c5.442-0.004,9.959-3.926,10.903-9.096h4.69v-3.999H25.06zM20.375,15.719c0-3.435-2.784-6.219-6.219-6.219c-2.733,0-5.05,1.766-5.884,4.218H1.438v4.001h6.834c0.833,2.452,3.15,4.219,5.884,4.219C17.591,21.938,20.375,19.153,20.375,15.719z').attr({fill: "green", stroke: "none"}).scale(.6,.6,0,0);
+		var handleBBox = this.connectionHandle.getBBox();
+		this.connectionHandle.translate(bbox.x + bbox.width - handleBBox.width - 3, bbox.y + bbox.height - handleBBox.height - 5);
+	}
+}
+
+/**
  * Checks if bounding contains the current object
  * @param {object} bounding Specified by (x, y, width, height)
  */
