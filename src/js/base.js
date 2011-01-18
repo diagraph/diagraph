@@ -54,7 +54,7 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 	this.createText(canvas);
 	
 	this.setClickEventHandler(true);
-	this.initDragEventHandler();
+	this.setDragEventMode(this);
 	
 	this.obj.node.id = 'object_'+this.data.id;
 }
@@ -190,6 +190,86 @@ vonline.Base.prototype.adjustText = function() {
  */
 vonline.Base.prototype.toJSON = function() {
 	return this.data;
+}
+
+/**
+ * @param {array / vonline.Base} objects
+ * @param {function} ondrag is executed on drag (e.g. for updating interface)
+ */
+vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
+	if (!$.isArray(objects)) {
+		objects = [objects];
+	}
+	if (!ondrag) {
+		ondrag = function() {};
+	}
+	
+	var that = this;
+	this.obj.attr('cursor', 'pointer');
+	
+	if (this.dragEventHandler) {
+		$(this.obj.node).unbind('mousedown', this.dragEventHandler);
+	}
+	/**
+	 * catches the mouse events
+	 */
+	this.dragEventHandler = function(event) {
+		that.obj.attr('cursor', 'move');
+		
+		// prevent selecting text
+		event.preventDefault();
+		event.stopPropagation();
+		
+		var origX = x = event.pageX,
+			origY = y = event.pageY;
+		var moveEvent = function(event) {
+			// distinguish between click and drag-event, see setClickHandler 
+			that.wasDragging = true;
+			that.setClickEventHandler(false);
+			
+			event.preventDefault();
+			event.stopPropagation();
+			
+			var deltaX = event.pageX - x,
+				deltaY = event.pageY - y;
+			if (!event.altKey) {
+				$.each(objects, function(i, object) {
+					var bbox = object.obj.getBBox();
+					// adjust object
+					object.obj.translate((Raphael.snapTo(vonline.GRIDSIZE, bbox.x) - bbox.x), (Raphael.snapTo(vonline.GRIDSIZE, bbox.y) - bbox.y));
+				});
+				event.pageX = Raphael.snapTo(vonline.GRIDSIZE, event.pageX);
+				deltaX = Raphael.snapTo(vonline.GRIDSIZE, event.pageX - x);
+				event.pageY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY);
+				deltaY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY - y);
+			}
+			$.each(objects, function(i, object) {
+				object.setTranslation(deltaX, deltaY);
+			});
+			x = event.pageX;
+			y = event.pageY;
+			
+			ondrag();
+		} 
+		$(window).mousemove(moveEvent);
+		$(window).one('mouseup', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			
+			$(window).unbind('mousemove', moveEvent);
+			if (that.wasDragging) {
+				var translateX = (x - origX),
+					translateY = (y - origY);
+				vonline.events.trigger('commandexec', new vonline.TranslateCommand(objects, translateX, translateY));
+				that.wasDragging = false;
+				window.setTimeout(function() {
+					that.setClickEventHandler(true);
+				}, 0);
+			}
+			that.obj.attr('cursor', 'pointer');
+		});
+	};
+	$(this.obj.node).mousedown(this.dragEventHandler);
 }
 
 vonline.Base.prototype.initDragEventHandler = function() {

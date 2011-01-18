@@ -19,10 +19,14 @@ vonline.Selection = function(canvas) {
  * @param {vonline.Base} object
  */
 vonline.Selection.prototype.add = function(object) {
+	var that = this;
 	this.data.push(object);
 	this.obj.push(object.obj);
 	object.setRotationMode(true);
 	object.setConnectionMode(true);
+	object.setDragEventMode(this.data, function() {
+		that.updateResizeBox();
+	});
 	
 	this.updateResizeBox();
 }
@@ -31,15 +35,16 @@ vonline.Selection.prototype.add = function(object) {
  * @param {vonline.Base} object
  */
 vonline.Selection.prototype.remove = function(object) {
-	this.data = $.grep(this.data, function(obj) {
-		return obj != object;
-	});
-	var hold = $.grep(this.obj, function(obj) {
-		return obj != object.obj;
-	});
+	this.data = $.without(this.data, object);
+	var hold = $.without(this.obj, object.obj);
 	this.obj = this.canvas.getPaper().set(hold);
 	object.setRotationMode(false);
 	object.setConnectionMode(false);
+	object.setDragEventMode(object);
+	
+	for (var i = 0, len = this.data.length; i < len; i++) {
+		this.data[i].setDragEventMode(this.data);
+	}
 
 	this.updateResizeBox();
 }
