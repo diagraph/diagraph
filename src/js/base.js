@@ -161,6 +161,8 @@ vonline.Base.prototype.createText = function() {
 			vonline.events.trigger('commandexec', command);
 		}
 	});
+	
+	$(this.obj.node).trigger('textchanged');
 }
 
 /**
@@ -420,6 +422,49 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 		$(this.obj.node).unbind('changed', this.updateConnectionHandles);
 		this.connectionHandle.remove();
 		this.connectionHandle = null;
+	}
+}
+
+/**
+ * show annotation handles
+ */
+vonline.Base.prototype.setAnnotationMode = function(active) {
+	var that = this
+	
+	if (active) {
+		var bbox = this.obj.getBBox();
+		this.updateAnnotationHandle = function() {
+			if (that.annotationHandle) {
+				newBBox = that.obj.getBBox();
+				that.annotationHandle.translate(newBBox.x - bbox.x + newBBox.width - bbox.width, newBBox.y - bbox.y + newBBox.height - bbox.height);
+				bbox = newBBox;
+			}
+		}
+		$(this.obj.node).bind('changed', this.updateAnnotationHandle);
+		
+		// create connection handle
+		this.annotationHandle = this.canvas.getPaper().path('M14.263,2.826H7.904L2.702,8.028v6.359L18.405,30.09l11.561-11.562L14.263,2.826zM6.495,8.859c-0.619-0.619-0.619-1.622,0-2.24C7.114,6,8.117,6,8.736,6.619c0.62,0.62,0.619,1.621,0,2.241C8.117,9.479,7.114,9.479,6.495,8.859z').attr({fill: "black", stroke: "none"}).scale(.6,.6,0,0).attr('cursor', 'pointer');
+		var handleBBox = this.annotationHandle.getBBox();
+		this.annotationHandle.translate(bbox.x + bbox.width - handleBBox.width - 3, bbox.y);
+		
+		// handles events
+		$(this.annotationHandle.node).mousedown(function(event) {
+			event.stopPropagation();
+		});
+		$(this.annotationHandle.node).click(function(event) {
+			event.stopPropagation();
+			
+			var annotation = window.prompt('Enter an annotation:');
+			if (annotation) {
+				// see vonline.Document
+				vonline.events.trigger('drop', {type:'annotation', text: annotation, connect: that.data.id, x: that.data.width + 20, y: 0});
+			}
+		});
+	}
+	else {
+		$(this.obj.node).unbind('changed', this.updateAnnotationHandle);
+		this.annotationHandle.remove();
+		this.annotationHandle = null;
 	}
 }
 

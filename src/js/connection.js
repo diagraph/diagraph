@@ -54,3 +54,4 @@ vonline.Connection.prototype.setDragEventMode = function() {}
 vonline.Connection.prototype.setClickEventMode = function() {}
 vonline.Connection.prototype.setRotationMode = function() {}
 vonline.Connection.prototype.setConnectionMode = function() {}
+vonline.Connection.prototype.setAnnotationMode = function() {}

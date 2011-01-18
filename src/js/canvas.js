@@ -47,6 +47,9 @@ vonline.Canvas.prototype.createObject = function(data) {
 	case 'connection':
 		return new vonline.Connection(data);
 	break;
+	case 'annotation':
+		return new vonline.Annotation(data);
+	break;
 	}
 }
 

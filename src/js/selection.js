@@ -24,6 +24,7 @@ vonline.Selection.prototype.add = function(object) {
 	this.obj.push(object.obj);
 	object.setRotationMode(true);
 	object.setConnectionMode(true);
+	object.setAnnotationMode(true);
 	object.setDragEventMode(this.data, function() {
 		that.updateResizeBox();
 	});
@@ -40,6 +41,7 @@ vonline.Selection.prototype.remove = function(object) {
 	this.obj = this.canvas.getPaper().set(hold);
 	object.setRotationMode(false);
 	object.setConnectionMode(false);
+	object.setAnnotationMode(false);
 	object.setDragEventMode(object);
 	
 	for (var i = 0, len = this.data.length; i < len; i++) {
@@ -204,6 +206,7 @@ vonline.Selection.prototype.setConnectionMode = function(active) {
 		$.each(this.data, function(i, object) {
 			object.setRotationMode(false);
 			object.setConnectionMode(false);
+			object.setAnnotationMode(false);
 		});
 		$.each(this.canvas.objects, function(i, object) {
 			object.setClickEventMode(false);
@@ -219,6 +222,7 @@ vonline.Selection.prototype.setConnectionMode = function(active) {
 		$.each(this.data, function(i, object) {
 			object.setRotationMode(true);
 			object.setConnectionMode(true);
+			object.setAnnotationMode(true);
 		});
 		$.each(this.canvas.objects, function(i, object) {
 			object.setClickEventMode(true);
