@@ -22,6 +22,7 @@ vonline.Selection.prototype.add = function(object) {
 	this.data.push(object);
 	this.obj.push(object.obj);
 	object.setRotationMode(true);
+	object.setConnectionMode(true);
 	
 	this.updateResizeBox();
 }
@@ -38,6 +39,7 @@ vonline.Selection.prototype.remove = function(object) {
 	});
 	this.obj = this.canvas.getPaper().set(hold);
 	object.setRotationMode(false);
+	object.setConnectionMode(false);
 
 	this.updateResizeBox();
 }
@@ -161,6 +163,42 @@ vonline.Selection.prototype.updateResizeBox = function() {
 		handleResize('w');
 		handleResize('n');
 		handleResize('s');
+	}	
+}
+
+/**
+ * hides the resize/rotation handles and handles clicks
+ * @param {boolean} active
+ */
+vonline.Selection.prototype.setConnectionMode = function(active) {
+	if (active) {
+		if (this.resizeBox) {
+			this.resizeBox.hide();
+			for (var e in this.handles) {
+				this.handles[e].hide();
+			}
+		}
+		$.each(this.data, function(i, object) {
+			object.setRotationMode(false);
+			object.setConnectionMode(false);
+		});
+		$.each(this.canvas.objects, function(i, object) {
+			object.setClickEventHandler(false);
+		});
 	}
-	
+	else {
+		if (this.resizeBox) {
+			this.resizeBox.show();
+			for (var e in this.handles) {
+				this.handles[e].show();
+			}
+		}
+		$.each(this.data, function(i, object) {
+			object.setRotationMode(true);
+			object.setConnectionMode(true);
+		});
+		$.each(this.canvas.objects, function(i, object) {
+			object.setClickEventHandler(true);
+		});
+	}
 }

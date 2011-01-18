@@ -44,6 +44,9 @@ vonline.Canvas.prototype.createObject = function(data) {
 	case 'rectangle':
 		return new vonline.Rectangle(data);
 	break;
+	case 'connection':
+		return new vonline.Connection(data);
+	break;
 	}
 }
 
@@ -79,6 +82,19 @@ vonline.Canvas.prototype.clear = function() {
 
 vonline.Canvas.prototype.getPaper = function() {
 	return this.paper;
+}
+
+/**
+ * @param {number} id
+ * @return {vonline.Base} object
+ */
+vonline.Canvas.prototype.getObjectById = function(id) {
+	for (var i = 0, len = this.objects.length; i < len; i++) {
+		if (this.objects[i].data.id == id) {
+			return this.objects[i];
+		}
+	}
+	return null;
 }
 
 vonline.Canvas.prototype.exportJSON = function() {

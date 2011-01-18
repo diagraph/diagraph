@@ -29,6 +29,7 @@ vonline.CategoryItem = function(name, data) {
 			that.data.x = offset.left + event.pageX - x - $('#sidebar').width() + that.padding;
 			that.data.y = offset.top + event.pageY - y + that.padding;
 			if (that.data.x > 0) {
+				// see vonline.Document
 				vonline.events.trigger('drop', that.data);
 			}
 			element.detach();

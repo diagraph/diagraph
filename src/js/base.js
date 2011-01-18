@@ -23,7 +23,7 @@ vonline.Base = function() {
 		text: null,
 		/** [width, color] */
 		border: null,
-		/** [[id, side], ...] */
+		/** [id, id] */
 		connect: null
 	};
 	this.obj = null;
@@ -41,18 +41,22 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 	if (!canvas && this.obj) {
 		// remove
 		this.obj.remove();
-		this.text.remove();
+		if (this.text) {
+			this.text.remove();
+		}
 		return;
 	}
 	this.canvas = canvas;
-	this.obj = this.createObject(canvas.getPaper());
+	this.obj = this.createObject(canvas);
 	this.setPosition(this.data.x, this.data.y);
 	this.setRotation(this.data.rotation);
 	this.setColor(this.data.color);
 	this.createText(canvas);
 	
-	this.initClickEventHandler();
+	this.setClickEventHandler(true);
 	this.initDragEventHandler();
+	
+	this.obj.node.id = 'object_'+this.data.id;
 }
 
 /**
@@ -111,7 +115,7 @@ vonline.Base.prototype.setColor = function(color) {
 }
 
 /**
- * craetes a text within the object
+ * creates a text within the object
  */
 vonline.Base.prototype.createText = function() {
 	var that = this;
@@ -203,8 +207,10 @@ vonline.Base.prototype.initDragEventHandler = function() {
 		var origX = x = event.pageX,
 			origY = y = event.pageY;
 		var moveEvent = function(event) {
-			// distinguish between click and drag-event, see initClickHandler 
+			// distinguish between click and drag-event, see setClickHandler 
 			that.wasDragging = true;
+			that.setClickEventHandler(false);
+			
 			event.preventDefault();
 			event.stopPropagation();
 			
@@ -234,25 +240,33 @@ vonline.Base.prototype.initDragEventHandler = function() {
 				var translateX = (x - origX),
 					translateY = (y - origY);
 				vonline.events.trigger('commandexec', new vonline.TranslateCommand(that, translateX, translateY));
+				that.wasDragging = false;
+				window.setTimeout(function() {
+					that.setClickEventHandler(true);
+				}, 0);
 			}
 			that.obj.attr('cursor', 'pointer');
 		});
 	});
 }
 
-vonline.Base.prototype.initClickEventHandler = function() {
+/**
+ * @param {boolean} active
+ */
+vonline.Base.prototype.setClickEventHandler = function(active) {
 	var that = this;
-	$(this.obj.node).click(function(event) {
-		event.preventDefault();
-		event.stopPropagation();
-		
-		if (!that.wasDragging) {
+	if (active) {
+		this.clickEventHandler = function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			
 			vonline.document.canvas.selection.toggle(that);
 		}
-		else {
-			that.wasDragging = false;
-		}
-	});
+		$(this.obj.node).click(this.clickEventHandler);
+	}
+	else {
+		$(this.obj.node).unbind('click', this.clickEventHandler);
+	}
 }
 
 /**
@@ -320,10 +334,14 @@ vonline.Base.prototype.setRotationMode = function(active) {
 	}
 	else {
 		$(this.obj.node).unbind('changed', this.updateHandles);
-		this.rotationCircle.remove();
-		this.rotationCircle = null;
-		this.rotationHandle.remove();
-		this.rotationHandle = null;
+		if (this.rotationCircle) {
+			this.rotationCircle.remove();
+			this.rotationCircle = null;
+		}
+		if (this.rotationHandle) {
+			this.rotationHandle.remove();
+			this.rotationHandle = null;
+		}
 	}
 }
 
@@ -331,11 +349,31 @@ vonline.Base.prototype.setRotationMode = function(active) {
  * show connection handles
  */
 vonline.Base.prototype.setConnectionMode = function(active) {
+	var that = this;
 	if (active) {
 		var bbox = this.obj.getBBox();
-		this.connectionHandle = this.canvas.getPaper().path('M25.06,13.719c-0.944-5.172-5.461-9.094-10.903-9.094v4c3.917,0.006,7.085,3.176,7.094,7.094c-0.009,3.917-3.177,7.085-7.094,7.093v4.002c5.442-0.004,9.959-3.926,10.903-9.096h4.69v-3.999H25.06zM20.375,15.719c0-3.435-2.784-6.219-6.219-6.219c-2.733,0-5.05,1.766-5.884,4.218H1.438v4.001h6.834c0.833,2.452,3.15,4.219,5.884,4.219C17.591,21.938,20.375,19.153,20.375,15.719z').attr({fill: "green", stroke: "none"}).scale(.6,.6,0,0);
+		this.connectionHandle = this.canvas.getPaper().path('M25.06,13.719c-0.944-5.172-5.461-9.094-10.903-9.094v4c3.917,0.006,7.085,3.176,7.094,7.094c-0.009,3.917-3.177,7.085-7.094,7.093v4.002c5.442-0.004,9.959-3.926,10.903-9.096h4.69v-3.999H25.06zM20.375,15.719c0-3.435-2.784-6.219-6.219-6.219c-2.733,0-5.05,1.766-5.884,4.218H1.438v4.001h6.834c0.833,2.452,3.15,4.219,5.884,4.219C17.591,21.938,20.375,19.153,20.375,15.719z').attr({fill: "green", stroke: "none"}).scale(.6,.6,0,0).attr('cursor', 'pointer');
 		var handleBBox = this.connectionHandle.getBBox();
 		this.connectionHandle.translate(bbox.x + bbox.width - handleBBox.width - 3, bbox.y + bbox.height - handleBBox.height - 5);
+		$(this.connectionHandle.node).mousedown(function(event) {
+			event.stopPropagation();
+		});
+		$(this.connectionHandle.node).click(function(event) {
+			event.stopPropagation();
+			
+			that.canvas.selection.setConnectionMode(true);
+			that.canvas.container.one('click', function(event) {
+				that.canvas.selection.setConnectionMode(false);
+				// abort if user clicks on canvas or the same object
+				if (event.target.id && event.target.id.substr(0, 7) == 'object_' && that.obj.node.id != event.target.id) {
+					// see vonline.Document
+					vonline.events.trigger('drop', {type:'connection', connect: [that.obj.node.id.replace(/object_/, ''), event.target.id.replace(/object_/, '')]});
+				}
+			});
+		});
+	}
+	else {
+		this.connectionHandle.remove();
 	}
 }
 
