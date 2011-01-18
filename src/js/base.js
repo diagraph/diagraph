@@ -339,6 +339,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 			
 			var deg = that.data.rotation,
 			rotationEvent = function(event) {
+				event = that.canvas.normalizeEvent(event);
 				deg = Raphael.angle(centerX, centerY, event.offsetX, event.offsetY);
 				deg -= 90;
 				deg = deg < 0 ? 360 + deg : deg;

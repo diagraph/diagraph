@@ -108,12 +108,13 @@ vonline.Canvas.prototype.exportJSON = function() {
 vonline.Canvas.prototype.initRectangleSelection = function() {
 	var that = this;
 	this.container.mousedown(function(event) {
+		event = that.normalizeEvent(event);
 		var x = event.offsetX,
 			y = event.offsetY,
 			rect = that.paper.rect(x, y).attr({stroke: 'blue', fill: 'rgba(0,100,255,.5)'});
 		
 		var moveEvent = function(event) {
-			//console.log(event.offsetX, event.offsetY);
+			event = that.normalizeEvent(event);
 			var width = (event.offsetX - x),
 				height = (event.offsetY - y);
 			if (width < 0) {
@@ -147,4 +148,18 @@ vonline.Canvas.prototype.initRectangleSelection = function() {
 			}
 		})
 	});
+}
+
+/**
+ * normalizes the event.offsetX and event.offsetY value
+ */
+vonline.Canvas.prototype.normalizeEvent = function(event) {
+	var offset = this.container.offset();
+	if (!event.offsetX) {
+		event.offsetX = event.pageX - offset.left;
+	}
+	if (!event.offsetY) {
+		event.offsetY = event.pageY - offset.top;
+	}
+	return event;
 }
