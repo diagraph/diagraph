@@ -80,6 +80,11 @@ else {
 			if(!post_isset('snapshotID')) break;
 			dbg_set('snapshotID');
 			
+			if($_POST['snapshotID'] == -1) {
+				// find latest snapshot
+				$_POST['snapshotID'] = db::query('select id from snapshots order by id desc limit 1');
+			}
+			
 			$result = db::query('select data from snapshots where id = '.db::value($_POST['snapshotID']).' limit 1');
 			echo $result;
 			break;
