@@ -53,7 +53,7 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 	this.setColor(this.data.color);
 	this.createText(canvas);
 	
-	this.setClickEventHandler(true);
+	this.setClickEventMode(true);
 	this.setDragEventMode(this);
 	
 	this.obj.node.id = 'object_'+this.data.id;
@@ -225,7 +225,7 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 		var moveEvent = function(event) {
 			// distinguish between click and drag-event, see setClickHandler 
 			that.wasDragging = true;
-			that.setClickEventHandler(false);
+			that.setClickEventMode(false);
 			
 			event.preventDefault();
 			event.stopPropagation();
@@ -263,7 +263,7 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 				vonline.events.trigger('commandexec', new vonline.TranslateCommand(objects, translateX, translateY));
 				that.wasDragging = false;
 				window.setTimeout(function() {
-					that.setClickEventHandler(true);
+					that.setClickEventMode(true);
 				}, 0);
 			}
 			that.obj.attr('cursor', 'pointer');
@@ -272,68 +272,10 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 	$(this.obj.node).mousedown(this.dragEventHandler);
 }
 
-vonline.Base.prototype.initDragEventHandler = function() {
-	var that = this;
-	this.obj.attr('cursor', 'pointer');
-	$(this.obj.node).mousedown(function(event) {
-		// catch mouse movement
-		
-		that.obj.attr('cursor', 'move');
-		
-		// prevent selecting text
-		event.preventDefault();
-		event.stopPropagation();
-		
-		var origX = x = event.pageX,
-			origY = y = event.pageY;
-		var moveEvent = function(event) {
-			// distinguish between click and drag-event, see setClickHandler 
-			that.wasDragging = true;
-			that.setClickEventHandler(false);
-			
-			event.preventDefault();
-			event.stopPropagation();
-			
-			var deltaX = event.pageX - x,
-				deltaY = event.pageY - y;
-			if (!event.altKey) {
-				var bbox = that.obj.getBBox();
-				// adjust object
-				that.obj.translate((Raphael.snapTo(vonline.GRIDSIZE, bbox.x) - bbox.x), (Raphael.snapTo(vonline.GRIDSIZE, bbox.y) - bbox.y));
-				event.pageX = Raphael.snapTo(vonline.GRIDSIZE, event.pageX);
-				deltaX = Raphael.snapTo(vonline.GRIDSIZE, event.pageX - x);
-				event.pageY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY);
-				deltaY = Raphael.snapTo(vonline.GRIDSIZE, event.pageY - y);
-			}
-			that.setTranslation(deltaX, deltaY);
-			// that.obj.translate(deltaX, deltaY);
-			x = event.pageX;
-			y = event.pageY;
-		} 
-		$(window).mousemove(moveEvent);
-		$(window).one('mouseup', function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-			
-			$(window).unbind('mousemove', moveEvent);
-			if (that.wasDragging) {
-				var translateX = (x - origX),
-					translateY = (y - origY);
-				vonline.events.trigger('commandexec', new vonline.TranslateCommand(that, translateX, translateY));
-				that.wasDragging = false;
-				window.setTimeout(function() {
-					that.setClickEventHandler(true);
-				}, 0);
-			}
-			that.obj.attr('cursor', 'pointer');
-		});
-	});
-}
-
 /**
  * @param {boolean} active
  */
-vonline.Base.prototype.setClickEventHandler = function(active) {
+vonline.Base.prototype.setClickEventMode = function(active) {
 	var that = this;
 	if (active) {
 		this.clickEventHandler = function(event) {

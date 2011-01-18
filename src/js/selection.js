@@ -206,7 +206,7 @@ vonline.Selection.prototype.setConnectionMode = function(active) {
 			object.setConnectionMode(false);
 		});
 		$.each(this.canvas.objects, function(i, object) {
-			object.setClickEventHandler(false);
+			object.setClickEventMode(false);
 		});
 	}
 	else {
@@ -221,7 +221,7 @@ vonline.Selection.prototype.setConnectionMode = function(active) {
 			object.setConnectionMode(true);
 		});
 		$.each(this.canvas.objects, function(i, object) {
-			object.setClickEventHandler(true);
+			object.setClickEventMode(true);
 		});
 	}
 }
