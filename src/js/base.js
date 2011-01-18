@@ -305,7 +305,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 		/**
 		 * updates rotation-circle and rotation-handle on object changes
 		 */
-		this.updateHandles = function() {
+		this.updateRotationHandles = function() {
 			var newBBox = that.obj.getBBox(),
 			newRadius = Math.max(newBBox.width / 2, newBBox.height / 2) + 25,
 			newCenterX = newBBox.x + newBBox.width / 2,
@@ -330,7 +330,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 				}
 			}
 		}
-		$(this.obj.node).bind('changed', this.updateHandles);
+		$(this.obj.node).bind('changed', this.updateRotationHandles);
 		
 		this.rotationCircle = this.canvas.getPaper().circle(centerX, centerY, radius).attr('stroke', 'orange').attr('stroke-width', '2');
 		this.rotationHandle = this.canvas.getPaper().circle(centerX, centerY - radius, 4).attr('stroke', 'none').attr('fill', 'orange').attr('cursor', 'pointer').rotate(this.data.rotation, centerX, centerY);
@@ -363,7 +363,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 		});
 	}
 	else {
-		$(this.obj.node).unbind('changed', this.updateHandles);
+		$(this.obj.node).unbind('changed', this.updateRotationHandles);
 		if (this.rotationCircle) {
 			this.rotationCircle.remove();
 			this.rotationCircle = null;
@@ -379,12 +379,25 @@ vonline.Base.prototype.setRotationMode = function(active) {
  * show connection handles
  */
 vonline.Base.prototype.setConnectionMode = function(active) {
-	var that = this;
+	var that = this
+	
 	if (active) {
 		var bbox = this.obj.getBBox();
+		this.updateConnectionHandles = function() {
+			if (that.connectionHandle) {
+				newBBox = that.obj.getBBox();
+				that.connectionHandle.translate(newBBox.x - bbox.x + newBBox.width - bbox.width, newBBox.y - bbox.y + newBBox.height - bbox.height);
+				bbox = newBBox;
+			}
+		}
+		$(this.obj.node).bind('changed', this.updateConnectionHandles);
+		
+		// create connection handle
 		this.connectionHandle = this.canvas.getPaper().path('M25.06,13.719c-0.944-5.172-5.461-9.094-10.903-9.094v4c3.917,0.006,7.085,3.176,7.094,7.094c-0.009,3.917-3.177,7.085-7.094,7.093v4.002c5.442-0.004,9.959-3.926,10.903-9.096h4.69v-3.999H25.06zM20.375,15.719c0-3.435-2.784-6.219-6.219-6.219c-2.733,0-5.05,1.766-5.884,4.218H1.438v4.001h6.834c0.833,2.452,3.15,4.219,5.884,4.219C17.591,21.938,20.375,19.153,20.375,15.719z').attr({fill: "green", stroke: "none"}).scale(.6,.6,0,0).attr('cursor', 'pointer');
 		var handleBBox = this.connectionHandle.getBBox();
 		this.connectionHandle.translate(bbox.x + bbox.width - handleBBox.width - 3, bbox.y + bbox.height - handleBBox.height - 5);
+		
+		// handles events
 		$(this.connectionHandle.node).mousedown(function(event) {
 			event.stopPropagation();
 		});
@@ -403,7 +416,9 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 		});
 	}
 	else {
+		$(this.obj.node).unbind('changed', this.updateConnectionHandles);
 		this.connectionHandle.remove();
+		this.connectionHandle = null;
 	}
 }
 
