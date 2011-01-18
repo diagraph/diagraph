@@ -15,7 +15,7 @@ vonline.Rectangle.prototype = new vonline.Base();
  * @param {vonline.Canvas} canvas
  */
 vonline.Rectangle.prototype.createObject = function(canvas) {
-	return canvas.rect(this.data.x, this.data.y, this.data.width, this.data.height);
+	return canvas.getPaper().rect(this.data.x, this.data.y, this.data.width, this.data.height);
 }
 
 vonline.Rectangle.prototype.setScale = function(x, y, origX, origY) {
