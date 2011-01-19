@@ -7,7 +7,7 @@ vonline.Selection = function(canvas) {
 	this.obj = canvas.getPaper().set();
 	this.padding = 20;
 	this.resizeBox = null;
-	this.handlePath = 'M0,10 L10,0 L10,5 L30,5 L30,0 L40,10 L30,20 L30,15 L10,15 L10,20z';
+	this.handlePath = 'M-20,0 L-10,-10 L-10,-5 L10,-5 L10,-10 L20,0 L10,10 L10,5 L-10,5 L-10,10z';
 	
 	var that = this;
 	vonline.events.bind('canvaschanged', function() {
@@ -86,16 +86,47 @@ vonline.Selection.prototype.updateResizeBox = function() {
 			bbox.width + this.padding,
 			bbox.height + this.padding
 		).attr('stroke', 'blue').attr('stroke-width', 2);
-		var handle = this.canvas.getPaper().path(this.handlePath).translate(bbox.x, bbox.y).scale(.5, .5, bbox.x, bbox.y).attr({fill: 'blue', stroke: 'none'}).hide();
+		var handle = this.canvas.getPaper().path(this.handlePath).attr({fill: 'blue', stroke: 'none'}).hide();
 		var handlebox = handle.getBBox();
+		var angle = -this.data[0].data.rotation * Math.PI/180; 
+		
+		//
+		var handlePositions = {
+			w: { x: bbox.x - this.padding + handlebox.width/4, y: bbox.y + bbox.height/2 },
+			o: { x: bbox.x + bbox.width + this.padding - handlebox.width/4, y: bbox.y + bbox.height/2 },
+			n: { x: bbox.x + bbox.width/2, y: bbox.y - this.padding + handlebox.height/2 },
+			s: { x: bbox.x + bbox.width/2, y: bbox.y + bbox.height + this.padding - handlebox.height/2 },
+		}
+		// if only one object is selected, the resize box + handles will be rotated according to the object
+		if(this.data.length == 1) {
+			// rotate handles manually (-> compute rotated position on the resize box)
+			var p = { x: bbox.x + bbox.width/2, y: bbox.y + bbox.height/2 };
+			for(var h in handlePositions) {
+				var tp = { x: handlePositions[h].x - p.x, y: -(handlePositions[h].y - p.y) };
+				handlePositions[h].x = p.x + tp.x*Math.cos(angle) - tp.y*Math.sin(angle);
+				handlePositions[h].y = p.y - (tp.x*Math.sin(angle) + tp.y*Math.cos(angle));
+			}
+		}
 		
 		this.handles = {
-			w: handle.clone().translate(-this.padding, bbox.height / 2 - handlebox.height / 2),
-			o: handle.clone().translate(bbox.width + this.padding - handlebox.width, bbox.height / 2 - handlebox.height / 2),
-			n: handle.clone().translate(bbox.width / 2 - handlebox.width / 2, -this.padding + handlebox.height / 2).rotate(90),
-			s: handle.clone().translate(bbox.width / 2 - handlebox.width / 2, bbox.height + handlebox.height / 2).rotate(90)
+			w: handle.clone().translate(handlePositions['w'].x, handlePositions['w'].y).scale(.5, .5),
+			o: handle.clone().translate(handlePositions['o'].x, handlePositions['o'].y).scale(.5, .5),
+			n: handle.clone().translate(handlePositions['n'].x, handlePositions['n'].y).scale(.5, .5).rotate(90),
+			s: handle.clone().translate(handlePositions['s'].x, handlePositions['s'].y).scale(.5, .5).rotate(90)
 		}
 		handle.remove();
+		
+		// rotate resize box and handles
+		if(this.data.length == 1) {
+			var rotDeg = this.data[0].data.rotation,
+				rotOrigX = bbox.x + bbox.width/2,
+				rotOrigY = bbox.y + bbox.height/2;
+			this.resizeBox.rotate(rotDeg, rotOrigX, rotOrigY);
+			this.handles['w'].rotate(rotDeg, true);
+			this.handles['o'].rotate(rotDeg, true);
+			this.handles['n'].rotate(rotDeg, true).rotate(90);
+			this.handles['s'].rotate(rotDeg, true).rotate(90);
+		}
 		
 		/** points for resizing (top-left and bottom-right) */
 		var scalingPoints = {
@@ -115,52 +146,89 @@ vonline.Selection.prototype.updateResizeBox = function() {
 				var origX = x = event.pageX,
 					origY = y = event.pageY,
 					scaleX = scaleY = 1,
-					scaleFromX = scaleFromY = 0;
+					scaleFromX = scaleFromY = 0,
+					singleObject = (that.data.length == 1),
+					scaleDirection = direction;
 				var moveEvent = function(event) {
 					event.preventDefault();
 					event.stopPropagation();
 					
 					that.handles[direction].attr({fill: '#3BB9FF'});
 					
-					var delta = null;
-					switch (direction) {
-					case 'w':
-						delta = -(event.pageX - origX);
-					case 'o':
-						delta = !delta ? (event.pageX - origX) : delta;
-						
-						that.resizeBox.scale(1 + delta / (bbox.width + that.padding), 1, scalingPoints[direction][0], scalingPoints[direction][1]);
-						
-						// object rotation has to be reset before we scale the object (otherwise the object will be rotated around the new center)
+					// compute delta
+					var delta;
+					if(singleObject) {
+						// if singleObject: object rotation has to be unset before we scale the object (otherwise the object will be rotated around the new center)
 						that.obj.rotate(0, true);
-						that.obj.scale(1 + delta / bbox.width, 1, scalingPoints[direction][2], scalingPoints[direction][3]);
-						that.obj.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
+						that.resizeBox.rotate(0, true);
 						
-						that.handles[direction].translate(event.pageX - x, 0);
+						// no, i'm not going to create ascii art for this
+						var delta_vec = { x: (event.pageX - origX), y: -(event.pageY - origY) };
+						var line_vec = { x: -Math.sin(angle), y: Math.cos(angle) }; // "zero"/origin line
+						var normal_vec = { x: Math.cos(angle), y: Math.sin(angle) }; // normal from the line
 						
-						scaleX = 1 + delta / bbox.width;
-						scaleFromX = scalingPoints[direction][2];
-						scaleFromY = scalingPoints[direction][3];
-						break;
-					case 'n':
-						delta = -(event.pageY - origY);
-					case 's':
-						delta = !delta ? (event.pageY - origY) : delta;
+						// swap line/normal vector for north/south scale
+						if(direction == 'n' || direction == 's') {
+							var tmp = line_vec;
+							line_vec = normal_vec;
+							normal_vec = tmp;
+						}
 						
-						that.resizeBox.scale(1, 1 + delta / (bbox.height + that.padding), scalingPoints[direction][0], scalingPoints[direction][1]);
+						// project delta vector onto line vector and compute the distance
+						var proj_len = (delta_vec.x * line_vec.x + delta_vec.y * line_vec.y);
+						var proj_vec = { x: proj_len*line_vec.x, y: proj_len*line_vec.y };
+						var dist_vec = { x: delta_vec.x-proj_vec.x, y: delta_vec.y-proj_vec.y };
+						delta = Math.sqrt(dist_vec.x*dist_vec.x + dist_vec.y*dist_vec.y);
 						
-						// see above
-						that.obj.rotate(0, true);
-						that.obj.scale(1, 1 + delta / bbox.height, scalingPoints[direction][2], scalingPoints[direction][3]);
-						that.obj.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
-						
-						that.handles[direction].translate(0, event.pageY - y);
-						
-						scaleY = 1 + delta / bbox.height;
-						scaleFromX = scalingPoints[direction][2];
-						scaleFromY = scalingPoints[direction][3];
-						break;
+						// normalize delta vector, compute on which side we're on and multiply with delta
+						var delta_vec_len = Math.sqrt(delta_vec.x*delta_vec.x + delta_vec.y*delta_vec.y);
+						delta_vec.x /= delta_vec_len;
+						delta_vec.y /= delta_vec_len;
+						var side = (delta_vec.x*normal_vec.x + delta_vec.y*normal_vec.y) < 0 ? -1 : 1;
+						delta *= side;
 					}
+					else {
+						// if multiple objects are selected, the resize box isn't rotated, so the delta is simply the x or y distance
+						switch (direction) {
+							case 'w':
+							case 'o':
+								delta = (event.pageX - origX);
+								break;
+							case 'n':
+							case 's':
+								delta = (event.pageY - origY);
+								break;
+						}
+					}
+					
+					// finally: scale
+					switch (direction) {
+						case 'w':
+							delta = -delta;
+						case 'o':
+							that.resizeBox.scale(1 + delta / (bbox.width + that.padding), 1, scalingPoints[direction][0], scalingPoints[direction][1]);
+							that.obj.scale(1 + delta / bbox.width, 1, scalingPoints[direction][2], scalingPoints[direction][3]);						
+							scaleX = 1 + delta / bbox.width;
+							break;
+						case 's':
+							delta = -delta;
+						case 'n':
+							that.resizeBox.scale(1, 1 + delta / (bbox.height + that.padding), scalingPoints[direction][0], scalingPoints[direction][1]);
+							that.obj.scale(1, 1 + delta / bbox.height, scalingPoints[direction][2], scalingPoints[direction][3]);
+							scaleY = 1 + delta / bbox.height;
+							break;
+					}
+					
+					if(singleObject) {
+						// if singleObject: reset rotation again
+						that.obj.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
+						that.resizeBox.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
+						//that.handles[direction].translate(handleTranslate.x, handleTranslate.y);
+					}
+					// TODO: reposition handles
+					
+					scaleFromX = scalingPoints[direction][2];
+					scaleFromY = scalingPoints[direction][3];
 					x = event.pageX;
 					y = event.pageY;
 				} 
@@ -171,7 +239,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					
 					$(window).unbind('mousemove', moveEvent);
 					
-					var command = new vonline.ScaleCommand(that.data, scaleX, scaleY, scaleFromX, scaleFromY);
+					var command = new vonline.ScaleCommand(that.data, scaleX, scaleY, scaleFromX, scaleFromY, scaleDirection);
 					command.execute();
 					vonline.events.trigger('commandexec', command);
 				});
