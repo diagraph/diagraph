@@ -172,9 +172,8 @@ vonline.Document.prototype.saveSnapshot = function() {
 	documentData = JSON.stringify({objects: this.canvas.exportJSON()});
 	// TODO: add other stuff that needs to be saved
 	
-	$.ajax({
+	vonline.transport.ajax({
 		data: {task: 'saveSnapshot', documentData: documentData},
-		dataType: 'text',
 		success: function(data) {
 			//
 			if(data == '1') {
@@ -204,9 +203,9 @@ vonline.Document.prototype.saveSnapshot = function() {
  */
 vonline.Document.prototype.loadCategories = function() {
 	var that = this;
-	$.ajax({
+	vonline.transport.ajax({
+		cacheOffline: true,
 		data: {task: 'getCategories', documentID: this.id},
-		dataType: 'json',
 		success: function(json) {
 			var visible = [],
 			notvisible = [];

@@ -14,11 +14,10 @@ if (!window.vonline) {
 	};
 }
 
-// use always POST-method on ajax calls
-$.ajaxSetup({type: 'post'});
-
 // calls when dom is ready
 $(function() {
+	vonline.transport = new vonline.Transport();
+	
 	var query = vonline.parseQueryString();
 	vonline.document = new vonline.Document(query.documentID);
 });
