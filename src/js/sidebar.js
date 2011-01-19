@@ -3,7 +3,7 @@
  */
 vonline.Sidebar = function(container) {
 	var that = this;
-	this.container = $(container).css({width: '200px', position: 'relative'});
+	this.container = $(container).css({width: '200px'});
 	this.topmenu = $('<div/>').appendTo(this.container),
 	this.categories  = $('<div/>').appendTo(this.container).addClass('categories').css('width', '200px'),
 	this.extraview = $('<div/>').appendTo(this.container).addClass('extraview').hide().css('width', '200px'),
