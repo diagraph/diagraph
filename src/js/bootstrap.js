@@ -17,6 +17,7 @@ if (!window.vonline) {
 // calls when dom is ready
 $(function() {
 	vonline.transport = new vonline.Transport();
+	vonline.notification = new vonline.Notification();
 	
 	var query = vonline.parseQueryString();
 	vonline.document = new vonline.Document(query.documentID);

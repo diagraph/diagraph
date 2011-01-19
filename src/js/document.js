@@ -190,7 +190,7 @@ vonline.Document.prototype.saveSnapshot = function() {
 				if(secs < 10) secs = '0'+secs;
 				
 				var status = 'Snapshot saved ' + currentTime.getFullYear() + '/' + month + '/' + day + ' ' + hours + ':' + mins + ':' + secs;
-				window.status = status; // TODO: also output this somewhere else
+				vonline.notification.add(status);
 			}
 			else window.status = 'Saving Snapshot failed!';
 		}

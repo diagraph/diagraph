@@ -9,6 +9,7 @@
 		const db_password = "";
 		const db_name = "visio_online";
 		const db_version = "1";
+		const enable_offline_mode = true; //disable for development
 	}
 
 ?>

@@ -17,7 +17,7 @@ vonline.Transport = function() {
 	}, true);
 		 
 	window.addEventListener("offline", function() {
-		alert("You're now offline. If you update your status, it will be sent when you go back online");
+		vonline.notification.add("You're now offline. If you save the document, it will be sent when you go back online");
 	}, true);
 }
 
