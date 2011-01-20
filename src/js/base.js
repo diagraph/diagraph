@@ -528,10 +528,12 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
  */
 vonline.Base.prototype.setTextMode = function(active) {
 	if (active) {
-		this.text.show();
 		if (!this.data.text) {
 			$(this.obj.node).mouseenter(this.textShowEvent);
 			$(this.obj.node).mouseout(this.textHideEvent);
+		}
+		else {
+			this.text.show();
 		}
 	}
 	else {

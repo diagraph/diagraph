@@ -29,19 +29,30 @@ vonline.CategoryItem = function(name, data) {
 			y = event.pageY,
 			offset = that.container.offset(),
 			element = that.container.clone().css({position:'absolute', zIndex:2, top: offset.top+'px', left: offset.left+'px'}).appendTo(document.body);
+		that.wasDragging = false;
 		var dragEvent = function(event) {
+			that.wasDragging = true;
 			element.css({left: (offset.left + event.pageX - x)+'px', top: (offset.top + event.pageY - y)+'px'});
 		}
 		$(window).mousemove(dragEvent);
 		$(window).one('mouseup', function(event) {
-			that.data.x = offset.left + event.pageX - x - $('#sidebar').width() + that.padding;
-			that.data.y = offset.top + event.pageY - y + that.padding;
-			if (that.data.x > 0) {
+			if (that.wasDragging) {
+				that.data.x = offset.left + event.pageX - x - $('#sidebar').width() + that.padding;
+				that.data.y = offset.top + event.pageY - y + that.padding;
+				if (that.data.x > 0) {
+					// see vonline.Document
+					vonline.events.trigger('drop', that.data);
+				}
+			}
+			else {
+				that.data.x = $('#canvas').width() / 2 - that.size / 2;
+				that.data.y = $('#canvas').height() / 2 - that.size / 2
 				// see vonline.Document
 				vonline.events.trigger('drop', that.data);
 			}
-			element.detach();
+			that.wasDragging = false;
 			$(window).unbind('mousemove', dragEvent);
+			element.detach();
 		});
 	});
 }
