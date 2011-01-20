@@ -56,12 +56,17 @@ vonline.CategoryEditView.prototype.close = function() {
 	// TODO: save the visible categories
 }
 
+/**
+ * @return {boolean} if view was closed
+ */
 vonline.CategoryEditView.prototype.toggle = function() {
 	if (this.container) {
 		this.close();
+		return true;
 	}
 	else {
 		this.open();
+		return false;
 	}
 	$(window).trigger('resize');
 }

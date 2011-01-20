@@ -25,7 +25,7 @@ vonline.Base.defaultData = {
 	height: 50,
 	rotation: 0,
 	/** see: http://raphaeljs.com/reference.html#colour */
-	color: 'white',
+	color: '90-#ddd-#fff',
 	text: null,
 	/** [width, color] */
 	border: null,

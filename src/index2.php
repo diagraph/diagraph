@@ -30,7 +30,7 @@ else {
 	db::connect();
 	
 	switch ($_POST['task']) {
-		case 'getCategories':
+		case 'loadCategories':
 			// TODO: move in seperate class
 			
 			// check if the document restricts the visible categories
@@ -56,6 +56,18 @@ else {
 				}
 			}
 			echo json_encode($json);
+			break;
+		case 'saveCategories':
+			if(!isset($_POST['categories'])) {
+				echo "-1";
+				break;
+			}
+			
+			$data = stripslashes($_POST['categories']);
+			
+			$result = db::query('UPDATE documents SET categories = '.db::value($data).' WHERE id = '.db::value($_POST['documentID']));
+			echo $result[0];
+			
 			break;
 		case 'getSnapshots':
 			if(!post_isset('documentID')) break;
