@@ -298,7 +298,7 @@ vonline.Base.prototype.setClickEventMode = function(active) {
  */
 vonline.Base.prototype.setRotationMode = function(active) {
 	var bbox = this.obj.getBBox(),
-	radius = Math.max(bbox.width / 2, bbox.height / 2) + 25,
+	radius = Math.sqrt(Math.pow(bbox.width / 2, 2) + Math.pow(bbox.height / 2, 2)) + 20,
 	centerX = bbox.x + bbox.width / 2,
 	centerY = bbox.y + bbox.height / 2,
 	that = this;
@@ -309,7 +309,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 		 */
 		this.updateRotationHandles = function() {
 			var newBBox = that.obj.getBBox(),
-			newRadius = Math.max(newBBox.width / 2, newBBox.height / 2) + 25,
+			newRadius = Math.sqrt(Math.pow(newBBox.width / 2, 2) + Math.pow(newBBox.height / 2, 2)) + 20,
 			newCenterX = newBBox.x + newBBox.width / 2,
 			newCenterY = newBBox.y + newBBox.height / 2;
 			if (that.rotationCircle) {
@@ -336,8 +336,16 @@ vonline.Base.prototype.setRotationMode = function(active) {
 		
 		this.rotationCircle = this.canvas.getPaper().circle(centerX, centerY, radius).attr('stroke', 'orange').attr('stroke-width', '2');
 		this.rotationHandle = this.canvas.getPaper().circle(centerX, centerY - radius, 4).attr('stroke', 'none').attr('fill', 'orange').attr('cursor', 'pointer').rotate(this.data.rotation, centerX, centerY);
+		this.rotationInfo = this.canvas.getPaper().text(0, 0, "").attr('font-size', 16).attr('font-weight', 'bold').attr('fill', 'orangered').hide();
 		$(this.rotationHandle.node).mousedown(function(event) {
 			event.stopPropagation();
+			
+			// disable/hide everything, but the rotation controls
+			that.setConnectionMode(false);
+			that.setAnnotationMode(false);
+			that.setTextMode(false);
+			that.canvas.selection.setSelectionMode(false);
+			that.rotationInfo.show();
 			
 			var deg = that.data.rotation,
 			rotationEvent = function(event) {
@@ -348,14 +356,26 @@ vonline.Base.prototype.setRotationMode = function(active) {
 				that.rotationHandle.rotate(deg, centerX, centerY);
 				that.obj.rotate(deg, true);
 				that.rotationHandle.attr({fill: 'yellow'});
+				
+				var angle = -deg * Math.PI/180; 
+				var infoPos = { x: -(radius+25)*Math.sin(angle), y: -(radius+25)*Math.cos(angle) };
+				that.rotationInfo.attr({text: Math.round(deg)+'°', x: centerX+infoPos.x, y: centerY+infoPos.y});
 			};
 			$(window).mousemove(rotationEvent);
 			$(window).one('mouseup', function() {
-				that.rotationHandle.attr({fill: 'orange'});
 				$(window).unbind('mousemove', rotationEvent);
 				var command = new vonline.RotateCommand(that, deg);
 				command.execute();
 				vonline.events.trigger('commandexec', command);
+				
+				// enable/show everything again
+				that.setConnectionMode(true);
+				that.setAnnotationMode(true);
+				that.setTextMode(true);
+				that.canvas.selection.setSelectionMode(true);
+				
+				that.rotationHandle.attr({fill: 'orange'});
+				that.rotationInfo.hide();
 			});
 		})
 		.mouseover(function(event) {
@@ -390,6 +410,7 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 			if (that.connectionHandle) {
 				newBBox = that.obj.getBBox();
 				that.connectionHandle.translate(newBBox.x - bbox.x + newBBox.width - bbox.width, newBBox.y - bbox.y + newBBox.height - bbox.height);
+				that.connectionHandle.rotate(that.data.rotation, newBBox.x + newBBox.width/2, newBBox.y + newBBox.height/2);
 				bbox = newBBox;
 			}
 		}
@@ -399,6 +420,7 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 		this.connectionHandle = this.canvas.getPaper().path('M25.06,13.719c-0.944-5.172-5.461-9.094-10.903-9.094v4c3.917,0.006,7.085,3.176,7.094,7.094c-0.009,3.917-3.177,7.085-7.094,7.093v4.002c5.442-0.004,9.959-3.926,10.903-9.096h4.69v-3.999H25.06zM20.375,15.719c0-3.435-2.784-6.219-6.219-6.219c-2.733,0-5.05,1.766-5.884,4.218H1.438v4.001h6.834c0.833,2.452,3.15,4.219,5.884,4.219C17.591,21.938,20.375,19.153,20.375,15.719z').attr({fill: "green", stroke: "none"}).scale(.6,.6,0,0).attr('cursor', 'pointer');
 		var handleBBox = this.connectionHandle.getBBox();
 		this.connectionHandle.translate(bbox.x + bbox.width - handleBBox.width - 3, bbox.y + bbox.height - handleBBox.height - 5);
+		this.connectionHandle.rotate(this.data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
 		
 		// handles events
 		$(this.connectionHandle.node).mousedown(function(event) {
@@ -437,6 +459,7 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
 			if (that.annotationHandle) {
 				newBBox = that.obj.getBBox();
 				that.annotationHandle.translate(newBBox.x - bbox.x + newBBox.width - bbox.width, newBBox.y - bbox.y + newBBox.height - bbox.height);
+				that.annotationHandle.rotate(that.data.rotation, newBBox.x + newBBox.width/2, newBBox.y + newBBox.height/2);
 				bbox = newBBox;
 			}
 		}
@@ -446,6 +469,7 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
 		this.annotationHandle = this.canvas.getPaper().path('M14.263,2.826H7.904L2.702,8.028v6.359L18.405,30.09l11.561-11.562L14.263,2.826zM6.495,8.859c-0.619-0.619-0.619-1.622,0-2.24C7.114,6,8.117,6,8.736,6.619c0.62,0.62,0.619,1.621,0,2.241C8.117,9.479,7.114,9.479,6.495,8.859z').attr({fill: "black", stroke: "none"}).scale(.6,.6,0,0).attr('cursor', 'pointer');
 		var handleBBox = this.annotationHandle.getBBox();
 		this.annotationHandle.translate(bbox.x + bbox.width - handleBBox.width - 3, bbox.y);
+		this.annotationHandle.rotate(this.data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
 		
 		// handles events
 		$(this.annotationHandle.node).mousedown(function(event) {
@@ -465,6 +489,22 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
 		$(this.obj.node).unbind('changed', this.updateAnnotationHandle);
 		this.annotationHandle.remove();
 		this.annotationHandle = null;
+	}
+}
+
+/**
+ * enables/disables the object text show/hide event
+ */
+vonline.Base.prototype.setTextMode = function(active) {
+	if (active) {
+		this.text.show();
+		$(this.obj.node).mouseenter(this.textShowEvent);
+		$(this.obj.node).mouseout(this.textHideEvent);
+	}
+	else {
+		this.text.hide();
+		$(this.obj.node).unbind('mouseenter', this.textShowEvent);
+		$(this.obj.node).unbind('mouseout', this.textHideEvent);
 	}
 }
 

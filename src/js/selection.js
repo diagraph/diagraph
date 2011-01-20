@@ -78,6 +78,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 		for (var e in this.handles) {
 			this.handles[e].remove();
 		}
+		this.scaleInfo.remove();
 	}
 	if (this.data.length > 0) {
 		this.resizeBox = this.canvas.getPaper().rect(
@@ -128,6 +129,8 @@ vonline.Selection.prototype.updateResizeBox = function() {
 			this.handles['s'].rotate(rotDeg, true).rotate(90);
 		}
 		
+		this.scaleInfo = this.canvas.getPaper().text(0, 0, "").attr('font-size', 16).attr('font-weight', 'bold').attr('fill', 'darkblue').hide();
+		
 		/** points for resizing (top-left and bottom-right) */
 		var scalingPoints = {
 			w: [bbox.x + bbox.width + this.padding / 2, bbox.y + bbox.height + this.padding / 2, bbox.x + bbox.width, bbox.y + bbox.height],
@@ -143,6 +146,15 @@ vonline.Selection.prototype.updateResizeBox = function() {
 				event.preventDefault();
 				event.stopPropagation();
 				
+				// disable connection/annotation mode (icons)
+				for(var i = 0; i < that.data.length; i++) {
+					that.data[i].setRotationMode(false);
+					that.data[i].setConnectionMode(false);
+					that.data[i].setAnnotationMode(false);
+					that.data[i].setTextMode(false);
+				}
+				that.scaleInfo.show();
+								
 				var origX = x = event.pageX,
 					origY = y = event.pageY,
 					scaleX = scaleY = 1,
@@ -156,7 +168,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					that.handles[direction].attr({fill: '#3BB9FF'});
 					
 					// compute delta
-					var delta;
+					var delta, normal_vec;
 					if(singleObject) {
 						// if singleObject: object rotation has to be unset before we scale the object (otherwise the object will be rotated around the new center)
 						that.obj.rotate(0, true);
@@ -193,10 +205,12 @@ vonline.Selection.prototype.updateResizeBox = function() {
 							case 'w':
 							case 'o':
 								delta = (event.pageX - origX);
+								normal_vec = { x: 1, y: 0 };
 								break;
 							case 'n':
 							case 's':
-								delta = (event.pageY - origY);
+								delta = -(event.pageY - origY);
+								normal_vec = { x: 0, y: 1 };
 								break;
 						}
 					}
@@ -205,6 +219,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					switch (direction) {
 						case 'w':
 							delta = -delta;
+							normal_vec = { x: -normal_vec.x, y: -normal_vec.y };
 						case 'o':
 							that.resizeBox.scale(1 + delta / (bbox.width + that.padding), 1, scalingPoints[direction][0], scalingPoints[direction][1]);
 							that.obj.scale(1 + delta / bbox.width, 1, scalingPoints[direction][2], scalingPoints[direction][3]);						
@@ -212,6 +227,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 							break;
 						case 's':
 							delta = -delta;
+							normal_vec = { x: -normal_vec.x, y: -normal_vec.y };
 						case 'n':
 							that.resizeBox.scale(1, 1 + delta / (bbox.height + that.padding), scalingPoints[direction][0], scalingPoints[direction][1]);
 							that.obj.scale(1, 1 + delta / bbox.height, scalingPoints[direction][2], scalingPoints[direction][3]);
@@ -223,9 +239,19 @@ vonline.Selection.prototype.updateResizeBox = function() {
 						// if singleObject: reset rotation again
 						that.obj.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
 						that.resizeBox.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
-						//that.handles[direction].translate(handleTranslate.x, handleTranslate.y);
 					}
-					// TODO: reposition handles
+					
+					// reposition handle
+					var hbbox = that.handles[direction].getBBox();
+					that.handles[direction].translate(-hbbox.x-hbbox.width/2, -hbbox.y-hbbox.height/2); // undo current translation
+					that.handles[direction].translate(handlePositions[direction].x + normal_vec.x*delta, handlePositions[direction].y - normal_vec.y*delta);
+					
+					// update scale info and reposition
+					that.scaleInfo.attr({
+						text: Math.round((scaleX != 1 ? scaleX : scaleY)*100)/100+'x',
+						x: handlePositions[direction].x + normal_vec.x*(delta+30),
+						y: handlePositions[direction].y - normal_vec.y*(delta+30)
+					});
 					
 					scaleFromX = scalingPoints[direction][2];
 					scaleFromY = scalingPoints[direction][3];
@@ -242,6 +268,16 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					var command = new vonline.ScaleCommand(that.data, scaleX, scaleY, scaleFromX, scaleFromY, scaleDirection);
 					command.execute();
 					vonline.events.trigger('commandexec', command);
+					
+					// reenable connection/annotation mode
+					for(var i = 0; i < that.data.length; i++) {
+						that.data[i].setRotationMode(true);
+						that.data[i].setConnectionMode(true);
+						that.data[i].setAnnotationMode(true);
+						that.data[i].setTextMode(true);
+						$(that.data[i].obj.node).trigger('changed');
+					}
+					that.scaleInfo.hide();
 				});
 			})
 			.mouseover(function(event) {
@@ -265,12 +301,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
  */
 vonline.Selection.prototype.setConnectionMode = function(active) {
 	if (active) {
-		if (this.resizeBox) {
-			this.resizeBox.hide();
-			for (var e in this.handles) {
-				this.handles[e].hide();
-			}
-		}
+		this.setSelectionMode(active);
 		$.each(this.data, function(i, object) {
 			object.setRotationMode(false);
 			object.setConnectionMode(false);
@@ -281,12 +312,7 @@ vonline.Selection.prototype.setConnectionMode = function(active) {
 		});
 	}
 	else {
-		if (this.resizeBox) {
-			this.resizeBox.show();
-			for (var e in this.handles) {
-				this.handles[e].show();
-			}
-		}
+		this.setSelectionMode(active);
 		$.each(this.data, function(i, object) {
 			object.setRotationMode(true);
 			object.setConnectionMode(true);
@@ -295,5 +321,28 @@ vonline.Selection.prototype.setConnectionMode = function(active) {
 		$.each(this.canvas.objects, function(i, object) {
 			object.setClickEventMode(true);
 		});
+	}
+}
+
+/**
+ * hides the resize box and resize handles
+ * @param {boolean} active
+ */
+vonline.Selection.prototype.setSelectionMode = function(active) {
+	if (active) {
+		if (this.resizeBox) {
+			this.resizeBox.show();
+			for (var e in this.handles) {
+				this.handles[e].show();
+			}
+		}
+	}
+	else {
+		if (this.resizeBox) {
+			this.resizeBox.hide();
+			for (var e in this.handles) {
+				this.handles[e].hide();
+			}
+		}
 	}
 }
