@@ -4,6 +4,7 @@
 vonline.Selection = function(canvas) {
 	this.canvas = canvas;
 	this.data = [];
+	this.resize = [];
 	this.obj = canvas.getPaper().set();
 	this.padding = 20;
 	this.resizeBox = null;
@@ -13,6 +14,17 @@ vonline.Selection = function(canvas) {
 	vonline.events.bind('canvaschanged', function() {
 		that.updateResizeBox();
 	});
+	
+	$(window).bind('keyup', function(event) {
+		// delete key pressed
+		if (event.keyCode == 46) {
+			var command = new vonline.DeleteCommand(canvas, that.data);
+			command.execute();
+			vonline.events.trigger('commandexec', command);
+			
+			that.clear();
+		}
+	});
 }
 
 /**
@@ -21,11 +33,15 @@ vonline.Selection = function(canvas) {
 vonline.Selection.prototype.add = function(object) {
 	var that = this;
 	this.data.push(object);
-	this.obj.push(object.obj);
+	if (object.isResizeable()) {
+		this.obj.push(object.obj);
+		this.resize.push(object);
+	}
+	object.setSelection(true);
 	object.setRotationMode(true);
 	object.setConnectionMode(true);
 	object.setAnnotationMode(true);
-	object.setDragEventMode(this.data, function() {
+	object.setDragEventMode(this.resize, function() {
 		that.updateResizeBox();
 	});
 	
@@ -37,15 +53,17 @@ vonline.Selection.prototype.add = function(object) {
  */
 vonline.Selection.prototype.remove = function(object) {
 	this.data = $.without(this.data, object);
+	this.resize = $.without(this.resize, object);
 	var hold = $.without(this.obj, object.obj);
 	this.obj = this.canvas.getPaper().set(hold);
+	object.setSelection(false);
 	object.setRotationMode(false);
 	object.setConnectionMode(false);
 	object.setAnnotationMode(false);
 	object.setDragEventMode(object);
 	
 	for (var i = 0, len = this.data.length; i < len; i++) {
-		this.data[i].setDragEventMode(this.data);
+		this.data[i].setDragEventMode(this.resize);
 	}
 
 	this.updateResizeBox();
@@ -80,7 +98,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 		}
 		this.scaleInfo.remove();
 	}
-	if (this.data.length > 0) {
+	if (this.resize.length > 0) {
 		this.resizeBox = this.canvas.getPaper().rect(
 			bbox.x - this.padding / 2,
 			bbox.y - this.padding / 2,

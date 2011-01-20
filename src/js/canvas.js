@@ -20,6 +20,10 @@ vonline.Canvas = function() {
 	$(window).bind('resize', onResize);
 }
 
+vonline.Canvas.prototype.getObjects = function() {
+	return this.objects;
+}
+
 /**
  * loads a document from its json representation
  * @param {array} json array containing the components
@@ -93,7 +97,7 @@ vonline.Canvas.prototype.getPaper = function() {
  */
 vonline.Canvas.prototype.getObjectById = function(id) {
 	for (var i = 0, len = this.objects.length; i < len; i++) {
-		if (this.objects[i].data.id == id) {
+		if (this.objects[i].getId() == id) {
 			return this.objects[i];
 		}
 	}

@@ -24,13 +24,19 @@ vonline.Base = function() {
 		/** [width, color] */
 		border: null,
 		/** [id, id] */
-		connect: null
+		connect: []
 	};
 	this.obj = null;
+	// overwrite in subclass for connections and annotations
+	this.resizeable = true;
 }
 
 vonline.Base.prototype.getId = function() {
 	return this.data.id;
+}
+
+vonline.Base.prototype.isResizeable = function() {
+	return this.resizeable;
 }
 
 /**
@@ -195,7 +201,19 @@ vonline.Base.prototype.toJSON = function() {
 }
 
 /**
- * @param {array / vonline.Base} objects
+ * @param {boolean} active
+ */
+vonline.Base.prototype.setSelection = function(active) {
+	if (active) {
+		this.obj.attr('stroke', 'red');
+	}
+	else {
+		this.obj.attr('stroke', 'black');
+	}
+}
+
+/**
+ * @param {vonline.Base / array} objects
  * @param {function} ondrag is executed on drag (e.g. for updating interface)
  */
 vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
@@ -481,7 +499,7 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
 			var annotation = window.prompt('Enter an annotation:');
 			if (annotation) {
 				// see vonline.Document
-				vonline.events.trigger('drop', {type:'annotation', text: annotation, connect: that.data.id, x: that.data.width + 20, y: 0});
+				vonline.events.trigger('drop', {type:'annotation', text: annotation, connect: [that.data.id], x: that.data.width + 20, y: 0});
 			}
 		});
 	}
@@ -519,4 +537,17 @@ vonline.Base.prototype.fitsIn = function(bounding) {
 	return (bbox.x >= bounding.x && bbox.y >= bounding.y
 			&& bbox.x + bbox.width <= bounding.x + bounding.width
 			&& bbox.y + bbox.height <= bounding.y + bounding.height);
+}
+
+/**
+ * tests if an object with given id is connected to the current object
+ * @param {vonline.Base} obj
+ */
+vonline.Base.prototype.isConnectedTo = function(obj) {
+	for (var i = 0, len = this.data.connect.length; i < len; i++) {
+		if (this.data.connect[i] == obj.getId()) {
+			return true;
+		}
+	}
+	return false;
 }

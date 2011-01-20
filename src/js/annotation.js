@@ -5,6 +5,7 @@
 vonline.Annotation = function(data) {
 	// inherit default values
 	this.data = $.extend({}, this.data, data);
+	this.resizeable = false;
 }
 
 vonline.Annotation.prototype = new vonline.Base();
@@ -56,3 +57,4 @@ vonline.Annotation.prototype.setClickEventMode = function() {}
 vonline.Annotation.prototype.setRotationMode = function() {}
 vonline.Annotation.prototype.setConnectionMode = function() {}
 vonline.Annotation.prototype.setAnnotationMode = function() {}
+vonline.Connection.prototype.setTextMode = function() {}
