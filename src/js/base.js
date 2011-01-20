@@ -265,7 +265,7 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			
 			var deltaX = event.pageX - x,
 				deltaY = event.pageY - y;
-			if (!event.altKey) {
+			if (event.altKey) {
 				$.each(objects, function(i, object) {
 					var bbox = object.obj.getBBox();
 					// adjust object
