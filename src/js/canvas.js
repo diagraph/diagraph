@@ -54,6 +54,9 @@ vonline.Canvas.prototype.createObject = function(data) {
 	case 'annotation':
 		return new vonline.Annotation(data);
 	break;
+	case 'path':
+		return new vonline.Path(data);
+	break;
 	}
 }
 
@@ -61,10 +64,10 @@ vonline.Canvas.prototype.createObject = function(data) {
  * @param {vonline.Base} obj
  */
 vonline.Canvas.prototype.add = function(obj) {
-	obj.setCanvas(this);
 	if (!obj.data.id) {
 		obj.data.id = ++this.maxId;
 	}
+	obj.setCanvas(this);
 	this.objects.push(obj);
 }
 

@@ -5,31 +5,33 @@
  */
 vonline.Base = function() {
 	// data and object needs to be always in sync
-	/** default values and json format specification */
-	this.data = {
-		/** unique identifier */
-		id: 0,
-		/** 'rectangle', 'circle', 'path', 'image', 'annotation', 'connection' */
-		type: null,
-		/** SVG path or further differentation of type, e.g. 'arrow', 'line' */
-		path: null,
-		x: 0,
-		y: 0,
-		width: 50,
-		height: 50,
-		rotation: 0,
-		/** see: http://raphaeljs.com/reference.html#colour */
-		color: 'white',
-		text: null,
-		/** [width, color] */
-		border: null,
-		/** [id, id] */
-		connect: []
-	};
+	this.data = vonline.Base.defaultData;
 	this.obj = null;
 	// overwrite in subclass for connections and annotations
 	this.resizeable = true;
 }
+
+/** default values and json format specification */
+vonline.Base.defaultData = {
+	/** unique identifier */
+	id: 0,
+	/** 'rectangle', 'circle', 'path', 'image', 'annotation', 'connection' */
+	type: null,
+	/** SVG path or further differentation of type, e.g. 'arrow', 'line' */
+	path: null,
+	x: 0,
+	y: 0,
+	width: 50,
+	height: 50,
+	rotation: 0,
+	/** see: http://raphaeljs.com/reference.html#colour */
+	color: 'white',
+	text: null,
+	/** [width, color] */
+	border: null,
+	/** [id, id] */
+	connect: []
+};
 
 vonline.Base.prototype.getId = function() {
 	return this.data.id;
@@ -197,7 +199,14 @@ vonline.Base.prototype.adjustText = function() {
  * @return {json} this.data 
  */
 vonline.Base.prototype.toJSON = function() {
-	return this.data;
+	// clean up (remove default values)
+	var json = {};
+	for (var property in this.data) {
+		if (this.data[property] != vonline.Base.defaultData[property]) {
+			json[property] = this.data[property];
+		}
+	}
+	return json;
 }
 
 /**

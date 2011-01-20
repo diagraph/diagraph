@@ -36,11 +36,8 @@ vonline.Document = function(id) {
 		vonline.events.trigger('commandexec', command);
 	});
 	
-	// example
-	this.canvas.load([
-	                  {type:'rectangle', id:1, x: 100, y:50, text: 'rectangle'},
-	                  {type:'rectangle', id:2, x: 200, y:100},
-	                  ]);
+	// load
+	this.loadSnapshot(-1);
 }
 
 /**

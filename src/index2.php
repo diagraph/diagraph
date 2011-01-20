@@ -40,10 +40,15 @@ else {
 			$result = db::query('SELECT id, name FROM categories');
 			foreach ($result as $row) {
 				// category objects
-				$result2 = db::query('SELECT name, data FROM objects WHERE category = '.$row['id']);
+				$result2 = db::query('SELECT name, data, path FROM objects WHERE category = '.$row['id']);
 				$elements = array();
 				foreach ($result2 as $row2) {
-					$elements[$row2['name']] = $row2['data'];
+					if ($row2['data'] == 'path') {
+						$elements[$row2['name']] = $row2['path'];
+					}
+					else {
+						$elements[$row2['name']] = $row2['data'];
+					}
 				}
 				$json[$row['name']] = array('id'=>$row['id'], 'show'=>false, 'elements'=>$elements);
 				if (in_array($row['id'], $categories_result)) {
@@ -86,6 +91,9 @@ else {
 			}
 			
 			$result = db::query('select data from snapshots where id = '.db::value($_POST['snapshotID']).' limit 1');
+			if (!$result) {
+				$result = json_encode(array('objects'=>array()));
+			}
 			echo $result;
 			break;
 		default: break;
