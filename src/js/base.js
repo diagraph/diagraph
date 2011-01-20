@@ -128,7 +128,9 @@ vonline.Base.prototype.setColor = function(color) {
 vonline.Base.prototype.createText = function() {
 	var that = this;
 	this.textShowEvent = function() {
-		that.text.show();
+		if (that.selected) {
+			that.text.show();
+		}
 	};
 	this.textHideEvent = function(event) {
 		if (!$(event.relatedTarget).is('tspan')) {
@@ -215,9 +217,11 @@ vonline.Base.prototype.toJSON = function() {
 vonline.Base.prototype.setSelection = function(active) {
 	if (active) {
 		this.obj.attr('stroke', 'red');
+		this.selected = true;
 	}
 	else {
 		this.obj.attr('stroke', 'black');
+		this.selected = false;
 	}
 }
 
