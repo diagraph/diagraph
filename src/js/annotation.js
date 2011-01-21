@@ -34,7 +34,7 @@ vonline.Annotation.prototype.createObject = function(canvas) {
 }
 
 vonline.Annotation.prototype.updateLayout = function() {
-	var textwidth = $(this.text.node).width();
+	var textwidth = Math.ceil(this.text.getBBox().width);
 	this.obj.attr('width', textwidth + 10);
 	this.setPosition(this.data.x, this.data.y);
 }
@@ -53,7 +53,7 @@ vonline.Annotation.prototype.setPosition = function(x, y) {
 //TODO: better inheritance
 vonline.Annotation.prototype.setScale = function(x, y, origX, origY) {}
 vonline.Annotation.prototype.setRotation = function(deg) {}
-vonline.Annotation.prototype.setClickEventMode = function() {}
+//vonline.Annotation.prototype.setClickEventMode = function() {}
 vonline.Annotation.prototype.setRotationMode = function() {}
 vonline.Annotation.prototype.setConnectionMode = function() {}
 vonline.Annotation.prototype.setAnnotationMode = function() {}

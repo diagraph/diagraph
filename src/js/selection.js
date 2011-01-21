@@ -128,10 +128,10 @@ vonline.Selection.prototype.updateResizeBox = function() {
 		}
 		
 		this.handles = {
-			w: handle.clone().translate(handlePositions['w'].x, handlePositions['w'].y).scale(.5, .5),
-			o: handle.clone().translate(handlePositions['o'].x, handlePositions['o'].y).scale(.5, .5),
-			n: handle.clone().translate(handlePositions['n'].x, handlePositions['n'].y).scale(.5, .5).rotate(90),
-			s: handle.clone().translate(handlePositions['s'].x, handlePositions['s'].y).scale(.5, .5).rotate(90)
+			w: handle.clone().translate(handlePositions['w'].x, handlePositions['w'].y).scale(.5, .5).attr('cursor', 'w-resize'),
+			o: handle.clone().translate(handlePositions['o'].x, handlePositions['o'].y).scale(.5, .5).attr('cursor', 'e-resize'),
+			n: handle.clone().translate(handlePositions['n'].x, handlePositions['n'].y).scale(.5, .5).rotate(90).attr('cursor', 'n-resize'),
+			s: handle.clone().translate(handlePositions['s'].x, handlePositions['s'].y).scale(.5, .5).rotate(90).attr('cursor', 's-resize')
 		}
 		handle.remove();
 		

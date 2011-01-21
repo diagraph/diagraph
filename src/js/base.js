@@ -146,6 +146,7 @@ vonline.Base.prototype.createText = function() {
 		this.text.hide();
 		$(this.obj.node).mouseenter(this.textShowEvent);
 		$(this.obj.node).mouseout(this.textHideEvent);
+		$(this.obj.node).bind('unselect', this.textHideEvent)
 	}
 	
 	// redirect events to object
@@ -218,10 +219,12 @@ vonline.Base.prototype.setSelection = function(active) {
 	if (active) {
 		this.obj.attr('stroke', 'red');
 		this.selected = true;
+		$(this.obj.node).trigger('select');
 	}
 	else {
 		this.obj.attr('stroke', 'black');
 		this.selected = false;
+		$(this.obj.node).trigger('unselect');
 	}
 }
 
