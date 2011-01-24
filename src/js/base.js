@@ -262,7 +262,6 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			object.setRotationMode(false);
 			object.setConnectionMode(false);
 			object.setAnnotationMode(false);
-			object.setTextMode(false);
 		});
 		
 		// prevent selecting text
@@ -294,6 +293,7 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			}
 			$.each(objects, function(i, object) {
 				object.setTranslation(deltaX, deltaY);
+				object.setTextMode(false);
 			});
 			x = event.pageX;
 			y = event.pageY;
@@ -305,16 +305,6 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			event.preventDefault();
 			event.stopPropagation();
 			
-			$.each(objects, function(i, object) {
-				if(object.selected) {
-					object.setRotationMode(true);
-					object.setConnectionMode(true);
-					object.setAnnotationMode(true);
-					object.setTextMode(true);
-					$(object.obj.node).trigger('changed');
-					$(object.obj.node).trigger('textchanged');
-				}
-			});
 			$(window).unbind('mousemove', moveEvent);
 			if (that.wasDragging) {
 				var translateX = (x - origX),
@@ -327,6 +317,15 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			}
 			that.obj.attr('cursor', 'pointer');
 			
+			$.each(objects, function(i, object) {
+				if(object.selected) {
+					object.setRotationMode(true);
+					object.setConnectionMode(true);
+					object.setAnnotationMode(true);
+					object.setTextMode(true);
+					$(object.obj.node).trigger('changed');
+				}
+			});
 		});
 	};
 	$(this.obj.node).mousedown(this.dragEventHandler);
