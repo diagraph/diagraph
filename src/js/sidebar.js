@@ -8,6 +8,7 @@ vonline.Sidebar = function(container) {
 	this.categories  = $('<div/>').appendTo(this.container).addClass('categories').css('width', '200px'),
 	this.extraview = $('<div/>').appendTo(this.container).addClass('extraview').hide().css('width', '200px'),
 	this.bottommenu  = $('<div/>').appendTo(this.container);
+	this.extraviewVisible = false;
 	
 	function onResize() {
 		var height = $(window).height() - that.topmenu.height() - that.bottommenu.height();
@@ -34,6 +35,7 @@ vonline.Sidebar.prototype.addCategory = function(category) {
  * @return extraview reference to dom-object
  */
 vonline.Sidebar.prototype.setExtraView = function(mode) {
+	this.extraviewVisible = mode;
 	if (mode) {
 		this.container.css('width', '400px');
 		return this.extraview.show();
@@ -42,4 +44,12 @@ vonline.Sidebar.prototype.setExtraView = function(mode) {
 		this.container.css('width', '200px');
 		this.extraview.hide();
 	}
+}
+
+vonline.Sidebar.prototype.isExtraViewVisible = function() {
+	return this.extraviewVisible;
+}
+
+vonline.Sidebar.prototype.getTopMenu = function() {
+	return this.topmenu;
 }

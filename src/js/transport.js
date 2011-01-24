@@ -124,3 +124,22 @@ vonline.Transport.prototype.loadSnapshot = function(id, callback) {
 		}
 	}
 }
+
+vonline.Transport.prototype.getSnapshots = function(callback) {
+	if (navigator.onLine) {
+		$.ajax({
+			data: {task: 'getSnapshots', documentID: this.document.id},
+			dataType: 'json',
+			success: function(json) {
+				localStorage.setItem('vonline_snapshots', JSON.stringify(json));
+				callback(json);
+			}
+		});
+	}
+	else {
+		var result = window.localStorage.getItem('vonline_snapshots');
+		if (result) {
+			callback(JSON.parse(result));
+		}
+	}
+}

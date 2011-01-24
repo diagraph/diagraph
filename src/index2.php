@@ -32,6 +32,7 @@ else {
 	switch ($_POST['task']) {
 		case 'loadCategories':
 			// TODO: move in seperate class
+			dbg_set('documentID');
 			
 			// check if the document restricts the visible categories
 			$categories_result = json_decode(db::query('select categories from documents where id = '.db::value($_POST['documentID']).' limit 1'), true);
@@ -74,9 +75,10 @@ else {
 			dbg_set('documentID');
 			
 			$json = array();
-			$result = db::query('select id, creation_date from snapshots where document = '.db::value($_POST['documentID']));
+			$json['snapshots'] = array();
+			$result = db::query('select id, creation_date from snapshots where document = '.db::value($_POST['documentID']).' order by id desc');
 			foreach ($result as $row) {
-				$json[$row['id']] = array('creation_date' => $row['creation_date']);
+				array_push($json['snapshots'], array('id' => $row['id'], 'creation_date' => $row['creation_date']));
 			}
 			echo json_encode($json);
 			

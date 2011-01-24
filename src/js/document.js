@@ -24,6 +24,7 @@ vonline.Document = function(id) {
 	// init top menu
 	this.sidebar.setTopMenu(this.initTopMenu());
 	this.updateMenu();
+	this.snapshotHistory = new vonline.SnapshotHistory(this, this.sidebar, this.transport);
 
 	// init bottom menu
 	this.sidebar.setBottomMenu(this.initBottomMenu());
@@ -38,7 +39,7 @@ vonline.Document = function(id) {
 		vonline.events.trigger('commandexec', command);
 	});
 	
-	// load
+	// load latest snapshot
 	this.loadSnapshot(-1);
 }
 
@@ -64,8 +65,7 @@ vonline.Document.prototype.initTopMenu = function() {
 		that.saveSnapshot();
 	}));
 	topmenu.addItem(new vonline.MenuItem('view the history of the current document', 'images/menu/open_history', function() {
-		// TODO: init history view
-		that.loadSnapshot(-1); // for the moment: just load a snapshot
+		that.snapshotHistory.toggle();
 	}));
 	return topmenu;
 }

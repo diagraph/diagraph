@@ -15,16 +15,23 @@ vonline.Selection = function(canvas) {
 		that.updateResizeBox();
 	});
 	
-	$(window).bind('keyup', function(event) {
-		// delete key pressed
-		if (event.keyCode == 46) {
+	var deleteObjFunc = function(event) {
+		// delete or backspace key pressed
+		if (event.keyCode == 46 || event.keyCode == 8) {
+			// also: prevent browser from navigating backwards
+			event.preventDefault();
+			event.stopPropagation();
+			
 			var command = new vonline.DeleteCommand(canvas, that.data);
 			command.execute();
 			vonline.events.trigger('commandexec', command);
 			
 			that.clear();
 		}
-	});
+	};
+	// bind to keypress and keydown for compatibility reasons
+	$(window).bind('keypress', deleteObjFunc);
+	$(window).bind('keydown', deleteObjFunc);
 }
 
 /**

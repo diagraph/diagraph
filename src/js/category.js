@@ -43,6 +43,10 @@ vonline.Category.prototype.toggle = function() {
 	}
 }
 
+vonline.Category.prototype.detach = function() {
+	this.container.detach();
+}
+
 /**
  * @param {string} mode
  * @param {function} onclick

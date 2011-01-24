@@ -7,9 +7,12 @@ vonline.CategoryEditView = function(sidebar, visible, notvisible) {
 	this.sidebar = sidebar;
 	this.visible = visible;
 	this.notvisible = notvisible;
+	this.container = null;
 }
 
 vonline.CategoryEditView.prototype.open = function() {
+	if(this.sidebar.isExtraViewVisible()) return;
+	
 	var that = this;
 	this.container = this.sidebar.setExtraView(true);
 	
@@ -53,6 +56,9 @@ vonline.CategoryEditView.prototype.close = function() {
 	$.each(this.visible, function(i, category) {
 		category.setMode(false);
 	});
+	$.each(this.notvisible, function(i, category) {
+		category.detach();
+	});
 	// TODO: save the visible categories
 }
 
@@ -60,15 +66,17 @@ vonline.CategoryEditView.prototype.close = function() {
  * @return {boolean} if view was closed
  */
 vonline.CategoryEditView.prototype.toggle = function() {
+	var ret = false;
 	if (this.container) {
 		this.close();
-		return true;
+		ret = true;
 	}
 	else {
 		this.open();
-		return false;
+		ret = false;
 	}
 	$(window).trigger('resize');
+	return ret;
 }
 
 /**
