@@ -9,6 +9,11 @@ vonline.Base = function() {
 	this.obj = null;
 	// overwrite in subclass for connections and annotations
 	this.resizeable = true;
+	
+	this.rotationCircle = null;
+	this.rotationHandle = null;
+	this.connectionHandle = null;
+	this.annotationHandle = null;
 }
 
 /** default values and json format specification */
@@ -92,6 +97,7 @@ vonline.Base.prototype.setTranslation = function(x, y) {
 	this.data.x += x;
 	this.data.y += y;
 	$(this.obj.node).trigger('changed');
+	$(this.obj.node).trigger('textchanged');
 }
 
 /**
@@ -252,12 +258,12 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 	this.dragEventHandler = function(event) {
 		that.obj.attr('cursor', 'move');
 		
-		for(var i = 0; i < objects.length; i++) {
-			objects[i].setRotationMode(false);
-			objects[i].setConnectionMode(false);
-			objects[i].setAnnotationMode(false);
-			objects[i].setTextMode(false);
-		}
+		$.each(objects, function(i, object) {
+			object.setRotationMode(false);
+			object.setConnectionMode(false);
+			object.setAnnotationMode(false);
+			object.setTextMode(false);
+		});
 		
 		// prevent selecting text
 		event.preventDefault();
@@ -299,6 +305,16 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			event.preventDefault();
 			event.stopPropagation();
 			
+			$.each(objects, function(i, object) {
+				if(object.selected) {
+					object.setRotationMode(true);
+					object.setConnectionMode(true);
+					object.setAnnotationMode(true);
+					object.setTextMode(true);
+					$(object.obj.node).trigger('changed');
+					$(object.obj.node).trigger('textchanged');
+				}
+			});
 			$(window).unbind('mousemove', moveEvent);
 			if (that.wasDragging) {
 				var translateX = (x - origX),
@@ -311,14 +327,6 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			}
 			that.obj.attr('cursor', 'pointer');
 			
-			for(var i = 0; i < objects.length; i++) {
-				objects[i].setRotationMode(true);
-				objects[i].setConnectionMode(true);
-				objects[i].setAnnotationMode(true);
-				objects[i].setTextMode(true);
-				$(objects[i].node).trigger('changed');
-				$(objects[i].node).trigger('textchanged');
-			}
 		});
 	};
 	$(this.obj.node).mousedown(this.dragEventHandler);
@@ -353,6 +361,18 @@ vonline.Base.prototype.setRotationMode = function(active) {
 	centerY = bbox.y + bbox.height / 2,
 	that = this;
 	
+	
+	if (this.rotationCircle || this.rotationHandle) {
+		$(this.obj.node).unbind('changed', this.updateRotationHandles);
+		if (this.rotationCircle) {
+			this.rotationCircle.remove();
+			this.rotationCircle = null;
+		}
+		if (this.rotationHandle) {
+			this.rotationHandle.remove();
+			this.rotationHandle = null;
+		}
+	}
 	if (active) {
 		/**
 		 * updates rotation-circle and rotation-handle on object changes
@@ -435,17 +455,6 @@ vonline.Base.prototype.setRotationMode = function(active) {
 			that.rotationHandle.attr({fill: 'orange'});
 		});
 	}
-	else {
-		$(this.obj.node).unbind('changed', this.updateRotationHandles);
-		if (this.rotationCircle) {
-			this.rotationCircle.remove();
-			this.rotationCircle = null;
-		}
-		if (this.rotationHandle) {
-			this.rotationHandle.remove();
-			this.rotationHandle = null;
-		}
-	}
 }
 
 /**
@@ -454,6 +463,11 @@ vonline.Base.prototype.setRotationMode = function(active) {
 vonline.Base.prototype.setConnectionMode = function(active) {
 	var that = this
 	
+	if(this.connectionHandle) {
+		$(this.obj.node).unbind('changed', this.updateConnectionHandles);
+		this.connectionHandle.remove();
+		this.connectionHandle = null;
+	}
 	if (active) {
 		var bbox = this.obj.getBBox();
 		this.updateConnectionHandles = function() {
@@ -490,11 +504,6 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 			});
 		});
 	}
-	else {
-		$(this.obj.node).unbind('changed', this.updateConnectionHandles);
-		this.connectionHandle.remove();
-		this.connectionHandle = null;
-	}
 }
 
 /**
@@ -503,6 +512,11 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 vonline.Base.prototype.setAnnotationMode = function(active) {
 	var that = this
 	
+	if(this.annotationHandle) {
+		$(this.obj.node).unbind('changed', this.updateAnnotationHandle);
+		this.annotationHandle.remove();
+		this.annotationHandle = null;
+	}
 	if (active) {
 		var bbox = this.obj.getBBox();
 		this.updateAnnotationHandle = function() {
@@ -534,11 +548,6 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
 				vonline.events.trigger('drop', {type:'annotation', text: annotation, connect: [that.data.id], x: that.data.width + 20, y: 0});
 			}
 		});
-	}
-	else {
-		$(this.obj.node).unbind('changed', this.updateAnnotationHandle);
-		this.annotationHandle.remove();
-		this.annotationHandle = null;
 	}
 }
 
