@@ -252,6 +252,13 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 	this.dragEventHandler = function(event) {
 		that.obj.attr('cursor', 'move');
 		
+		for(var i = 0; i < objects.length; i++) {
+			objects[i].setRotationMode(false);
+			objects[i].setConnectionMode(false);
+			objects[i].setAnnotationMode(false);
+			objects[i].setTextMode(false);
+		}
+		
 		// prevent selecting text
 		event.preventDefault();
 		event.stopPropagation();
@@ -303,6 +310,15 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 				}, 0);
 			}
 			that.obj.attr('cursor', 'pointer');
+			
+			for(var i = 0; i < objects.length; i++) {
+				objects[i].setRotationMode(true);
+				objects[i].setConnectionMode(true);
+				objects[i].setAnnotationMode(true);
+				objects[i].setTextMode(true);
+				$(objects[i].node).trigger('changed');
+				$(objects[i].node).trigger('textchanged');
+			}
 		});
 	};
 	$(this.obj.node).mousedown(this.dragEventHandler);

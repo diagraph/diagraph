@@ -7,7 +7,7 @@ use visio_online;
 -- visio online tables
 create table base (
 	db_version integer not null primary key default 1
-);
+) engine = InnoDB;
 insert into base values (default);
 
 create table users (
@@ -16,12 +16,12 @@ create table users (
 	email varchar(128) unique not null, -- 128 chars have to suffice for now
 	password varchar(128) not null, -- SHA512
 	type integer default 1 check (type between 0 and 1) -- 0: root, 1: user
-);
+) engine = InnoDB;
 
 create table categories (
 	id integer not null primary key auto_increment,
 	name varchar(32) unique not null
-);
+) engine = InnoDB;
 
 create table objects (
 	id integer not null primary key auto_increment,
@@ -29,7 +29,7 @@ create table objects (
 	name tinytext not null,
 	path text not null, -- svg path (size does not matter)
 	data tinytext not null -- TODO: what data?
-);
+) engine = InnoDB;
 
 create table documents (
 	id integer not null primary key auto_increment,
@@ -38,14 +38,14 @@ create table documents (
 	creation_date timestamp default now(),
 	modification_date timestamp default 0, -- TODO: write procedure to update this on snapshots change
 	categories tinytext default "" -- JSON data (stores which categories are visible for this document)
-);
+) engine = InnoDB;
 
 create table snapshots (
 	id integer not null primary key auto_increment,
 	document integer not null references documents(id) on delete cascade,
 	creation_date timestamp default now(),
-	data text not null
-);
+	data longtext not null
+) engine = InnoDB;
 
 -- data for debugging purposes
 insert into users values (default, "root", "root@localhost", '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', 0); -- pw == "123"
