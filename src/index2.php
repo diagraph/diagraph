@@ -41,14 +41,14 @@ else {
 			$result = db::query('SELECT id, name FROM categories');
 			foreach ($result as $row) {
 				// category objects
-				$result2 = db::query('SELECT name, data, path FROM objects WHERE category = '.$row['id']);
+				$result2 = db::query('SELECT name, type, path FROM objects WHERE category = '.$row['id']);
 				$elements = array();
 				foreach ($result2 as $row2) {
-					if ($row2['data'] == 'path') {
+					if ($row2['type'] == 'path') {
 						$elements[$row2['name']] = $row2['path'];
 					}
 					else {
-						$elements[$row2['name']] = $row2['data'];
+						$elements[$row2['name']] = $row2['type'];
 					}
 				}
 				$json[$row['name']] = array('id'=>$row['id'], 'show'=>false, 'elements'=>$elements);
