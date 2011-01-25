@@ -14,6 +14,7 @@ vonline.Base = function() {
 	this.rotationHandle = null;
 	this.connectionHandle = null;
 	this.annotationHandle = null;
+	this.inlineTextHandle = null;
 }
 
 /** default values and json format specification */
@@ -97,7 +98,7 @@ vonline.Base.prototype.setTranslation = function(x, y) {
 	this.data.x += x;
 	this.data.y += y;
 	$(this.obj.node).trigger('changed');
-	$(this.obj.node).trigger('textchanged');
+	//$(this.obj.node).trigger('textchanged');
 }
 
 /**
@@ -133,53 +134,26 @@ vonline.Base.prototype.setColor = function(color) {
  */
 vonline.Base.prototype.createText = function() {
 	var that = this;
-	this.textShowEvent = function() {
-		if (that.selected) {
-			that.text.show();
-		}
-	};
-	this.textHideEvent = function(event) {
-		if (!$(event.relatedTarget).is('tspan')) {
-			that.text.hide();
-		}
-	};
 	
 	if (this.data.text) {
 		this.text = this.canvas.getPaper().text(this.data.x, this.data.y, this.data.text);
+		
+		// redirect events to object
+		$(this.text.node).click(function(event) {
+			$(that.obj.node).trigger(event);
+		});
+		$(this.text.node).mousedown(function(event) {
+			$(that.obj.node).trigger(event);
+		});
+		
+		// reposition on change
+		this.adjustText();
+		$(this.obj.node).bind('changed', function() {
+			that.adjustText();
+		});
+		
+		$(this.obj.node).trigger('textchanged');
 	}
-	else {
-		this.text = this.canvas.getPaper().text(this.data.x, this.data.y, 'dblclick\nto add');
-		this.text.hide();
-		$(this.obj.node).mouseenter(this.textShowEvent);
-		$(this.obj.node).mouseout(this.textHideEvent);
-		$(this.obj.node).bind('unselect', this.textHideEvent)
-	}
-	
-	// redirect events to object
-	$(this.text.node).click(function(event) {
-		$(that.obj.node).trigger(event);
-	});
-	$(this.text.node).mousedown(function(event) {
-		$(that.obj.node).trigger(event);
-	});
-	
-	// reposition on change
-	this.adjustText();
-	$(this.obj.node).bind('changed', function() {
-		that.adjustText();
-	});
-	
-	// text changing
-	$(this.text.node).dblclick(function() {
-		var entered = window.prompt('Enter a new value:');
-		if (entered !== null) {
-			var command = new vonline.TextChangeCommand(that, entered);
-			command.execute();
-			vonline.events.trigger('commandexec', command);
-		}
-	});
-	
-	$(this.obj.node).trigger('textchanged');
 }
 
 /**
@@ -187,9 +161,9 @@ vonline.Base.prototype.createText = function() {
  */
 vonline.Base.prototype.changeText = function(text) {
 	this.data.text = text;
-	this.text.remove();
-	$(this.obj.node).unbind('mouseenter', this.textShowEvent);
-	$(this.obj.node).unbind('mouseout', this.textHideEvent);
+	if (this.text) {
+		this.text.remove();
+	}
 	this.createText();
 }
 
@@ -226,11 +200,21 @@ vonline.Base.prototype.setSelection = function(active) {
 		this.obj.attr('stroke', 'red');
 		this.selected = true;
 		$(this.obj.node).trigger('select');
+		
+		this.setRotationMode(true);
+		this.setConnectionMode(true);
+		this.setAnnotationMode(true);
+		this.setTextMode(true);
 	}
 	else {
 		this.obj.attr('stroke', 'black');
 		this.selected = false;
 		$(this.obj.node).trigger('unselect');
+		
+		this.setRotationMode(false);
+		this.setConnectionMode(false);
+		this.setAnnotationMode(false);
+		this.setTextMode(false);
 	}
 }
 
@@ -262,6 +246,7 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			object.setRotationMode(false);
 			object.setConnectionMode(false);
 			object.setAnnotationMode(false);
+			object.setTextMode(false);
 		});
 		
 		// prevent selecting text
@@ -293,7 +278,6 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			}
 			$.each(objects, function(i, object) {
 				object.setTranslation(deltaX, deltaY);
-				object.setTextMode(false);
 			});
 			x = event.pageX;
 			y = event.pageY;
@@ -462,7 +446,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 vonline.Base.prototype.setConnectionMode = function(active) {
 	var that = this
 	
-	if(this.connectionHandle) {
+	if (this.connectionHandle) {
 		$(this.obj.node).unbind('changed', this.updateConnectionHandles);
 		this.connectionHandle.remove();
 		this.connectionHandle = null;
@@ -471,7 +455,7 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 		var bbox = this.obj.getBBox();
 		this.updateConnectionHandles = function() {
 			if (that.connectionHandle) {
-				newBBox = that.obj.getBBox();
+				var newBBox = that.obj.getBBox();
 				that.connectionHandle.translate(newBBox.x - bbox.x + newBBox.width - bbox.width, newBBox.y - bbox.y + newBBox.height - bbox.height);
 				that.connectionHandle.rotate(that.data.rotation, newBBox.x + newBBox.width/2, newBBox.y + newBBox.height/2);
 				bbox = newBBox;
@@ -520,7 +504,7 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
 		var bbox = this.obj.getBBox();
 		this.updateAnnotationHandle = function() {
 			if (that.annotationHandle) {
-				newBBox = that.obj.getBBox();
+				var newBBox = that.obj.getBBox();
 				that.annotationHandle.translate(newBBox.x - bbox.x + newBBox.width - bbox.width, newBBox.y - bbox.y + newBBox.height - bbox.height);
 				that.annotationHandle.rotate(that.data.rotation, newBBox.x + newBBox.width/2, newBBox.y + newBBox.height/2);
 				bbox = newBBox;
@@ -554,19 +538,45 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
  * enables/disables the object text show/hide event
  */
 vonline.Base.prototype.setTextMode = function(active) {
-	if (active) {
-		if (!this.data.text) {
-			$(this.obj.node).mouseenter(this.textShowEvent);
-			$(this.obj.node).mouseout(this.textHideEvent);
-		}
-		else {
-			this.text.show();
-		}
+	var that = this
+	
+	if (this.inlineTextHandle) {
+		$(this.obj.node).unbind('changed', this.updateInlineTextHandle);
+		this.inlineTextHandle.remove();
+		this.inlineTextHandle = null;
 	}
-	else {
-		this.text.hide();
-		$(this.obj.node).unbind('mouseenter', this.textShowEvent);
-		$(this.obj.node).unbind('mouseout', this.textHideEvent);
+	if (active) {
+		var bbox = this.obj.getBBox();
+		this.updateInlineTextHandle = function() {
+			if (that.inlineTextHandle) {
+				var newBBox = that.obj.getBBox();
+				that.inlineTextHandle.translate(newBBox.x - bbox.x + newBBox.width - bbox.width, newBBox.y - bbox.y + newBBox.height - bbox.height);
+				that.inlineTextHandle.rotate(that.data.rotation, newBBox.x + newBBox.width/2, newBBox.y + newBBox.height/2);
+				bbox = newBBox;
+			}
+		}
+		$(this.obj.node).bind('changed', this.updateInlineTextHandle);
+		
+		// create connection handle
+		this.inlineTextHandle = this.canvas.getPaper().path('M0,0 L10,0 L10,3 L6,3 L6,10 L4,10 L4,3 L0,3z').attr({fill: "black", stroke: "none"}).attr('cursor', 'pointer');
+		var handleBBox = this.inlineTextHandle.getBBox();
+		this.inlineTextHandle.translate(bbox.x, bbox.y + bbox.height - handleBBox.height - 5);
+		this.inlineTextHandle.rotate(this.data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
+		
+		// handles events
+		$(this.inlineTextHandle.node).mousedown(function(event) {
+			event.stopPropagation();
+		});
+		$(this.inlineTextHandle.node).click(function(event) {
+			event.stopPropagation();
+			
+			var entered = window.prompt('Enter a new inline text:');
+			if (entered !== null) {
+				var command = new vonline.TextChangeCommand(that, entered);
+				command.execute();
+				vonline.events.trigger('commandexec', command);
+			}
+		});
 	}
 }
 

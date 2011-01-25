@@ -57,4 +57,4 @@ vonline.Annotation.prototype.setRotation = function(deg) {}
 vonline.Annotation.prototype.setRotationMode = function() {}
 vonline.Annotation.prototype.setConnectionMode = function() {}
 vonline.Annotation.prototype.setAnnotationMode = function() {}
-vonline.Connection.prototype.setTextMode = function() {}
+vonline.Annotation.prototype.setTextMode = function() {}

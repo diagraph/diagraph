@@ -44,10 +44,8 @@ vonline.Selection.prototype.add = function(object) {
 		this.obj.push(object.obj);
 		this.resize.push(object);
 	}
+	
 	object.setSelection(true);
-	object.setRotationMode(true);
-	object.setConnectionMode(true);
-	object.setAnnotationMode(true);
 	object.setDragEventMode(this.resize, function() {
 		that.updateResizeBox();
 	});
@@ -63,10 +61,8 @@ vonline.Selection.prototype.remove = function(object) {
 	this.resize = $.without(this.resize, object);
 	var hold = $.without(this.obj, object.obj);
 	this.obj = this.canvas.getPaper().set(hold);
+	
 	object.setSelection(false);
-	object.setRotationMode(false);
-	object.setConnectionMode(false);
-	object.setAnnotationMode(false);
 	object.setDragEventMode(object);
 	
 	for (var i = 0, len = this.data.length; i < len; i++) {
@@ -172,7 +168,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 				event.stopPropagation();
 				
 				// disable connection/annotation mode (icons)
-				for(var i = 0; i < that.data.length; i++) {
+				for (var i = 0; i < that.data.length; i++) {
 					that.data[i].setRotationMode(false);
 					that.data[i].setConnectionMode(false);
 					that.data[i].setAnnotationMode(false);
