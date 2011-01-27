@@ -35,7 +35,7 @@ vonline.SnapshotHistory.prototype.open = function() {
 	var that = this;
 	this.container = this.sidebar.setExtraView(true);
 	this.container.append(this.history);
-	this.loadButton.show();
+	this.loadButton.show().css('display', 'inline-block');
 	this.history.show();
 	
 	// clear history and get/add new snapshots
