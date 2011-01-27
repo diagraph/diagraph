@@ -61,5 +61,22 @@ else {
 <div id="sidebar"></div>
 <div id="canvas"></div>
 
+
+<?php if (config::debug_mode): ?>
+<script type="text/javascript" src="js/lib/Stats.js"></script>
+<script>
+var stats = new Stats();
+
+	//Align top-right
+	stats.domElement.style.position = "absolute";
+	stats.domElement.style.top = "10px";
+	stats.domElement.style.right = "10px";
+
+	document.body.appendChild(stats.domElement);
+
+	window.setInterval(function () { stats.update(); }, 1000 / 60);
+</script>
+<?php endif;?>
+
 </body>
 </html>
