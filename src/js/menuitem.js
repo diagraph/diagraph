@@ -8,11 +8,12 @@ vonline.MenuItem = function(name, src, clickHandler) {
 	image = $('<img/>').appendTo(li).bind('load', function() {
 		$(window).trigger('resize'); // layout changes if images are loaded (see sidebar)
 	}),
-	onclick = function() {
+	enabled = false;
+	
+	function onclick() {
 		// get the correct context (this object instead of the li-element)
 		clickHandler.apply(that);
-	},
-	enabled = false;
+	}
 	
 	this.getHTML = function() {
 		this.enable();

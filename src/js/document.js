@@ -1,7 +1,7 @@
 /**
  * application class, cares on initialization and maintenance
  * @namespace
- * @param {int} id
+ * @param {number} id the document id
  */
 vonline.Document = function(id) {
 	this.id = id;
@@ -45,7 +45,7 @@ vonline.Document = function(id) {
 
 /**
  * initializes the top-menu
- * @return vonline.Menu
+ * @return {vonline.Menu}
  */
 vonline.Document.prototype.initTopMenu = function() {
 	var that = this,  // reference to current context (need to get the correct scope in click-hanlder functions)
@@ -72,7 +72,7 @@ vonline.Document.prototype.initTopMenu = function() {
 
 /**
  * initializes the bottom-menu
- * @return vonline.Menu
+ * @return {vonline.Menu}
  */
 vonline.Document.prototype.initBottomMenu = function() {
 	var bottommenu = new vonline.Menu(),
@@ -147,6 +147,7 @@ vonline.Document.prototype.redoCommand = function() {
 
 /**
  * loads specific snapshot and display the corresponding document
+ * @param {number} id the snapshot id (-1 for latest snapshot)
  */
 vonline.Document.prototype.loadSnapshot = function(id) {
 	var that = this;
@@ -192,7 +193,6 @@ vonline.Document.prototype.saveSnapshot = function() {
 
 /**
  * load the categories for the document
- * @deprecated should be placed in another class
  */
 vonline.Document.prototype.loadCategories = function() {
 	var that = this;

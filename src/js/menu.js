@@ -3,13 +3,20 @@
  * @namespace
  */
 vonline.Menu = function() {
-	var container = $('<ul/>').addClass('menu');
-	
-	this.getHTML = function() {
-		return container;
-	}
-	
-	this.addItem = function(item) {
-		container.append(item.getHTML());
-	}
+	this.container = $('<ul/>').addClass('menu');
+}
+
+/**
+ * returns html representation
+ */
+vonline.Menu.prototype.getHTML = function() {
+	return this.container;
+}
+
+/**
+ * adds an item to the menu
+ * @param {vonline.MenuItem} item
+ */
+vonline.Menu.prototype.addItem = function(item) {
+	this.container.append(item.getHTML());
 }

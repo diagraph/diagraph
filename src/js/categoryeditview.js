@@ -16,7 +16,7 @@ vonline.CategoryEditView.prototype.open = function() {
 	var that = this;
 	this.container = this.sidebar.setExtraView(true);
 	
-	var add = function(category) {
+	function add(category) {
 		that.notvisible = $.without(that.notvisible, category);
 		that.visible.push(category);
 		category.getHTML().detach();
@@ -24,8 +24,9 @@ vonline.CategoryEditView.prototype.open = function() {
 		category.setMode('remove', function() {
 			remove(category);
 		});
-	},
-	remove = function(category) {
+	}
+	
+	function remove(category) {
 		that.visible = $.without(that.visible, category);
 		that.notvisible.push(category);
 		category.getHTML().detach();
@@ -34,7 +35,7 @@ vonline.CategoryEditView.prototype.open = function() {
 		category.setMode('add', function() {
 			add(category);
 		});
-	};
+	}
 	
 	$.each(this.notvisible, function(i, category) {
 		that.container.append(category.getHTML());

@@ -220,14 +220,11 @@ vonline.Base.prototype.setSelection = function(active) {
 
 /**
  * @param {vonline.Base / array} objects
- * @param {function} ondrag is executed on drag (e.g. for updating interface)
+ * @param {function} ondrag (optional) is executed on drag (e.g. for updating interface)
  */
 vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 	if (!$.isArray(objects)) {
 		objects = [objects];
-	}
-	if (!ondrag) {
-		ondrag = function() {};
 	}
 	
 	var that = this;
@@ -282,7 +279,9 @@ vonline.Base.prototype.setDragEventMode = function(objects, ondrag) {
 			x = event.pageX;
 			y = event.pageY;
 			
-			ondrag();
+			if (ondrag) {
+				ondrag();
+			}
 		} 
 		$(window).mousemove(moveEvent);
 		$(window).one('mouseup', function(event) {
@@ -406,8 +405,9 @@ vonline.Base.prototype.setRotationMode = function(active) {
 			that.canvas.selection.setSelectionMode(false);
 			that.rotationInfo.show();
 			
-			var deg = that.data.rotation,
-			rotationEvent = function(event) {
+			var deg = that.data.rotation;
+			
+			function rotationEvent(event) {
 				event = that.canvas.normalizeEvent(event);
 				deg = Raphael.angle(centerX, centerY, event.offsetX, event.offsetY);
 				deg -= 90;
@@ -419,7 +419,8 @@ vonline.Base.prototype.setRotationMode = function(active) {
 				var angle = -deg * Math.PI/180; 
 				var infoPos = { x: -(radius+25)*Math.sin(angle), y: -(radius+25)*Math.cos(angle) };
 				that.rotationInfo.attr({text: Math.round(deg)+'°', x: centerX+infoPos.x, y: centerY+infoPos.y});
-			};
+			}
+			
 			$(window).mousemove(rotationEvent);
 			$(window).one('mouseup', function() {
 				$(window).unbind('mousemove', rotationEvent);
