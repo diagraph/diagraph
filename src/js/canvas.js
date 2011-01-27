@@ -146,9 +146,13 @@ vonline.Canvas.prototype.initRectangleSelection = function() {
 		}
 		that.container.mousemove(moveEvent);
 		
-		that.container.one('mouseup', function() {
+		that.container.one('mouseup', function(event) {
 			that.container.unbind('mousemove', moveEvent);
-			that.selection.clear();
+			
+			if (!event.shiftKey) {
+				that.selection.clear();
+			}
+			
 			var bbox = rect.getBBox();
 			rect.remove();
 			for (var i = 0, count = that.objects.length; i < count; i++) {

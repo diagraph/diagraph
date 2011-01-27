@@ -325,7 +325,13 @@ vonline.Base.prototype.setClickEventMode = function(active) {
 			event.preventDefault();
 			event.stopPropagation();
 			
-			vonline.document.canvas.selection.toggle(that);
+			if (event.shiftKey) {
+				vonline.document.canvas.selection.toggle(that);
+			}
+			else {
+				vonline.document.canvas.selection.clear();
+				vonline.document.canvas.selection.add(that);
+			}
 		}
 		$(this.obj.node).click(this.clickEventHandler);
 	}
