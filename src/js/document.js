@@ -186,6 +186,7 @@ vonline.Document.prototype.saveSnapshot = function() {
 			
 			var status = 'Snapshot saved ' + currentTime.getFullYear() + '/' + month + '/' + day + ' ' + hours + ':' + mins + ':' + secs;
 			vonline.notification.add(status);
+			vonline.events.trigger('snapshotsaved');
 		}
 		else window.status = 'Saving Snapshot failed!';
 	});

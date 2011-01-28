@@ -26,19 +26,29 @@ vonline.SnapshotHistory = function(document, sidebar, transport) {
 	
 	//
 	this.history = $('<div/>').addClass('history');
+	
+	//
+	vonline.events.bind('snapshotsaved', function() {
+		that.update();
+	});
 }
 
 vonline.SnapshotHistory.prototype.open = function() {
 	if(this.sidebar.isExtraViewVisible()) return;
 	
 	// init menu, enable everything
-	var that = this;
 	this.container = this.sidebar.setExtraView(true);
 	this.container.append(this.history);
 	this.loadButton.show().css('display', 'inline-block');
 	this.history.show();
-	
+	this.update();
+}
+
+vonline.SnapshotHistory.prototype.update = function() {
+	if(this.container == null) return;
+
 	// clear history and get/add new snapshots
+	var that = this;
 	this.history.empty();
 	this.transport.getSnapshots(function(json) {
 		var num = json.snapshots.length;

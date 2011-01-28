@@ -278,7 +278,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					scaleFromY = scalingPoints[direction][3];
 					x = event.pageX;
 					y = event.pageY;
-				} 
+				}
 				$(window).mousemove(moveEvent);
 				$(window).one('mouseup', function(event) {
 					event.preventDefault();

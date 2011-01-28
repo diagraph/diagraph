@@ -10,6 +10,14 @@ vonline.Connection = function(data) {
 
 vonline.Connection.prototype = new vonline.Base();
 
+vonline.Connection.prototype.setCanvas = function(canvas) {
+	vonline.Base.prototype.setCanvas.call(this, canvas);
+	if(canvas && this.obj) {
+		this.obj.node.id = 'connection_'+this.data.id;
+		this.setColor('none');
+	}
+}
+
 /**
  * Creates the object on the given canvas
  * @param {vonline.Canvas} canvas
@@ -32,17 +40,40 @@ vonline.Connection.prototype.createObject = function(canvas) {
 }
 
 vonline.Connection.prototype.getPath = function() {
-	// TODO: calc better path
 	var sourceBBox = this.sourceObject.obj.getBBox(),
 	targetBBox = this.targetObject.obj.getBBox();
-	return 'M' + (sourceBBox.x+sourceBBox.width/2) +
-	' ' + (sourceBBox.y+sourceBBox.height/2) +
-	'L' + (targetBBox.x+targetBBox.width/2) +
-	' ' + (targetBBox.y+targetBBox.height/2);
+	return vonline.Connection.computePath(sourceBBox.x+sourceBBox.width/2, sourceBBox.y+sourceBBox.height/2,
+										  targetBBox.x+targetBBox.width/2, targetBBox.y+targetBBox.height/2);
 }
 
 vonline.Connection.prototype.updatePath = function() {
 	this.obj.attr('path', this.getPath());
+}
+
+/**
+ * Static method to compute/generate a path between the two points (x1, y1) and (x2, y2)
+ * @param {float} x1
+ * @param {float} y1
+ * @param {float} x2
+ * @param {float} y2
+ */
+vonline.Connection.computePath = function(x1, y1, x2, y2) {
+	var path = 'M0,0';
+	var start = { x: x1, y: y1 };
+	var end = { x: x2, y: y2 };
+	if(Math.abs(start.x - end.x) < 50 || Math.abs(start.y - end.y) < 50) {
+		// if angle is too shallow, use a straight line
+		path = 'M' + start.x + ' ' + start.y +
+			   'L' + end.x + ' ' + end.y;
+	}
+	else {
+		// else: use a nice bezier curve
+		var c = { x: (end.x - start.x)/4, y: (end.y - start.y)/4 };
+		path = 'M' + start.x + ' ' + start.y +
+		       'C' + (start.x+c.x*3) + ' ' + (start.y+c.y) + ' ' + (start.x+c.x) + ' ' + (start.y+c.y*3) + ' ' + end.x + ' ' + end.y;
+	}
+	
+	return path;
 }
 
 // TODO: better inheritance

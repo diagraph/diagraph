@@ -10,6 +10,13 @@ vonline.Annotation = function(data) {
 
 vonline.Annotation.prototype = new vonline.Base();
 
+vonline.Annotation.prototype.setCanvas = function(canvas) {
+	vonline.Base.prototype.setCanvas.call(this, canvas);
+	if(canvas && this.obj) {
+		this.obj.node.id = 'annotation_'+this.data.id;
+	}
+}
+
 /**
  * Creates the object on the given canvas
  * @param {vonline.Canvas} canvas

@@ -15,6 +15,7 @@ vonline.Base = function() {
 	this.connectionHandle = null;
 	this.annotationHandle = null;
 	this.inlineTextHandle = null;
+	this.connectionPath = null;
 }
 
 /** default values and json format specification */
@@ -451,7 +452,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
  * show connection handles
  */
 vonline.Base.prototype.setConnectionMode = function(active) {
-	var that = this
+	var that = this;
 	
 	if (this.connectionHandle) {
 		$(this.obj.node).unbind('changed', this.updateConnectionHandles);
@@ -477,14 +478,65 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 		this.connectionHandle.rotate(this.data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
 		
 		// handles events
+		if(this.connectionPath == null) {
+			this.connectionPath = this.canvas.getPaper().path('M0,0').toBack();
+		}
+		this.connectionPath.attr('path', 'M0,0').hide();
+		
+		var targetObj = null, targetStrokeColor = null, targetStrokeWidth = null;
+		var restoreTargetObj = function() {
+			if(targetObj) {
+				targetObj.obj.attr('stroke', (targetStrokeColor ? targetStrokeColor : '#000'));
+				targetObj.obj.attr('stroke-width', (targetStrokeWidth ? targetStrokeWidth : '1'));
+				targetObj = null, targetStrokeColor = null, targetStrokeWidth = null;
+			}
+		}
+		var connectionMoveEvent = function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			event = that.canvas.normalizeEvent(event);
+			
+			that.connectionPath.show();
+			
+			// highlight target object
+			if (event.target.id && event.target.id.substr(0, 7) == 'object_' && that.obj.node.id != event.target.id) {
+				var newTargetObj = that.canvas.getObjectById(event.target.id.replace(/object_/, ''));
+				
+				if(newTargetObj != targetObj) {
+					// if an old target object exists, restore old values
+					restoreTargetObj();
+					
+					targetObj = newTargetObj;
+					targetStrokeColor = targetObj.obj.attr('stroke');
+					targetStrokeWidth = targetObj.obj.attr('stroke-width');
+				}
+				
+				targetObj.obj.attr('stroke', 'red').attr('stroke-width', '2');
+				
+				// update path
+				var targetBBox = targetObj.obj.getBBox();
+				that.connectionPath.attr('path', vonline.Connection.computePath(bbox.x+bbox.width/2, bbox.y+bbox.height/2, targetBBox.x+targetBBox.width/2, targetBBox.y+targetBBox.height/2));
+			}
+			else {
+				restoreTargetObj();
+				
+				// update path
+				that.connectionPath.attr('path', vonline.Connection.computePath(bbox.x+bbox.width/2, bbox.y+bbox.height/2, event.offsetX, event.offsetY));
+			}
+		}
 		$(this.connectionHandle.node).mousedown(function(event) {
 			event.stopPropagation();
+			$(window).bind('mousemove', connectionMoveEvent);
 		});
 		$(this.connectionHandle.node).click(function(event) {
 			event.stopPropagation();
 			
 			that.canvas.selection.setConnectionMode(true);
 			that.canvas.container.one('click', function(event) {
+				$(window).unbind('mousemove', connectionMoveEvent);
+				that.connectionPath.hide();
+				restoreTargetObj(); // if a target object exists, restore old values
+				
 				that.canvas.selection.setConnectionMode(false);
 				// abort if user clicks on canvas or the same object
 				if (event.target.id && event.target.id.substr(0, 7) == 'object_' && that.obj.node.id != event.target.id) {
