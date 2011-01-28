@@ -13,7 +13,12 @@ vonline.Transport = function(document) {
 	if (navigator.onLine) {
 		that.sync();
 	}
-		 
+	
+	// if IE 8< is used, return here
+	if($.browser.msie && parseInt(jQuery.browser.version) <= 8) {
+		return;
+	}
+	
 	window.addEventListener("online", function() {
 		that.sync();
 	}, true);

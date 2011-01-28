@@ -65,7 +65,8 @@ else {
 <?php if (config::debug_mode): ?>
 <script type="text/javascript" src="js/lib/Stats.js"></script>
 <script>
-var stats = new Stats();
+if(!$.browser.msie) {
+	var stats = new Stats();
 
 	//Align top-right
 	stats.domElement.style.position = "absolute";
@@ -75,6 +76,7 @@ var stats = new Stats();
 	document.body.appendChild(stats.domElement);
 
 	window.setInterval(function () { stats.update(); }, 1000 / 60);
+}
 </script>
 <?php endif;?>
 

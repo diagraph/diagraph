@@ -128,7 +128,7 @@
 button {
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#ddd));
 	background-image: -moz-linear-gradient(top, #fff, #ddd);
-	background-color: transparent;
+	background-color: #eee;
 	
 	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.8);
 	-moz-box-shadow: 0 1px 2px rgba(0,0,0,0.8);
@@ -147,9 +147,11 @@ button {
 button:hover {
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ddd), to(#fff));
 	background-image: -moz-linear-gradient(top, #ddd, #fff);
+	background-color: #fff;
 }
 
 button:active {
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ccc), to(#eee));
 	background-image: -moz-linear-gradient(top, #ccc, #eee);
+	background-color: #ccc;
 }
