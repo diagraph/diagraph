@@ -413,6 +413,9 @@ vonline.Base.prototype.setRotationMode = function(active) {
 				deg = Raphael.angle(centerX, centerY, event.offsetX, event.offsetY);
 				deg -= 90;
 				deg = deg < 0 ? 360 + deg : deg;
+				if (!event.altKey) {
+					deg = Raphael.snapTo(45, deg, 20);
+				}
 				that.rotationHandle.rotate(deg, centerX, centerY);
 				that.obj.rotate(deg, true);
 				that.rotationHandle.attr({fill: 'yellow'});
