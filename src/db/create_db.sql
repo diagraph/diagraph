@@ -6,7 +6,7 @@ use visio_online;
 
 -- visio online tables
 create table base (
-	db_version integer not null primary key default 1
+	db_version integer not null primary key default 2
 ) engine = InnoDB;
 insert into base values (default);
 

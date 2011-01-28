@@ -15,8 +15,15 @@ function dbg_set($name) {
 	}
 }
 
-
 if (!post_isset('task')) {
+	// check db version
+	db::connect();
+	$db_version = db::query('select db_version from base limit 1');
+	db::disconnect();
+	if($db_version != config::db_version) {
+		die("DB version mismatch: DB: v".$db_version." != PHP: v".config::db_version);
+	}
+	
 	// for debugging
 	if (!isset($_GET['documentID'])) {
 		header('Location: ?documentID=1');
