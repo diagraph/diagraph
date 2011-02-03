@@ -129,9 +129,15 @@ else {
 		case 'deleteDocument':
 			$id = $_POST['id'];
 			db::query('DELETE FROM documents WHERE id = '.db::value($id));
+			db::query('DELETE FROM snapshots WHERE document = '.db::value($id));
 		
 		case 'loadDocuments':
-			$result = db::query('SELECT id, name, creation_date, modification_date FROM documents WHERE author = '.db::value($userid));
+			$result = db::query('SELECT id, name, creation_date, id as temp, (SELECT creation_date FROM snapshots WHERE document = temp ORDER BY creation_date DESC LIMIT 1) as modification_date FROM documents WHERE author = '.db::value($userid));
+			for ($i = 0, $count = count($result); $i < $count; $i++) {
+				if (!$result[$i]['modification_date']) {
+					$result[$i]['modification_date'] = $result[$i]['creation_date'];
+				}
+			}
 			echo json_encode($result);
 			break;
 		
