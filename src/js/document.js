@@ -118,7 +118,7 @@ vonline.Document.prototype.updateMenu = function() {
  * redirect browser to document list
  */
 vonline.Document.prototype.openDocumentView = function() {
-	// TODO
+	window.location.href = '.';
 }
 
 /**

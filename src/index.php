@@ -3,6 +3,8 @@
 require_once 'php/config.inc.php';
 require_once 'php/db.php';
 
+$userid = 1;
+
 function post_isset($name) {
 	if(!isset($_POST[$name]) && ((config::debug_mode && !isset($_GET[$name])) || !config::debug_mode)) {
 		return false;
@@ -26,10 +28,12 @@ if (!post_isset('task')) {
 	
 	// for debugging
 	if (!isset($_GET['documentID'])) {
-		header('Location: ?documentID=1');
+		include_once 'html/list.phtml';
 	}
-	// display the html page
-	include_once 'html/template.phtml';
+	else {
+		// display the html page
+		include_once 'html/document.phtml';
+	}
 }
 else {
 	dbg_set('task');
@@ -75,10 +79,12 @@ else {
 			
 			$result = db::query('UPDATE documents SET categories = '.db::value($data).' WHERE id = '.db::value($_POST['documentID']));
 			echo $result[0];
-			
 			break;
+			
 		case 'getSnapshots':
-			if(!post_isset('documentID')) break;
+			if(!post_isset('documentID')) {
+				break;
+			}
 			dbg_set('documentID');
 			
 			$json = array();
@@ -98,17 +104,19 @@ else {
 			
 			$data = stripslashes($_POST['documentData']);
 			
-			$result = db::query('insert into snapshots values (default, 1, default, '.db::value($data).')');
+			$result = db::query('insert into snapshots (document, data) values ('.db::value($_POST['documentID']).', '.db::value($data).')');
 			echo $result[0];
 			
 			break;
 		case 'loadSnapshot':
-			if(!post_isset('snapshotID')) break;
+			if(!post_isset('snapshotID')) {
+				break;
+			}
 			dbg_set('snapshotID');
 			
 			if($_POST['snapshotID'] == -1) {
 				// find latest snapshot
-				$_POST['snapshotID'] = db::query('select id from snapshots order by id desc limit 1');
+				$_POST['snapshotID'] = db::query('select id from snapshots where document = '.db::value($_POST['documentID']).' order by id desc limit 1');
 			}
 			
 			$result = db::query('select data from snapshots where id = '.db::value($_POST['snapshotID']).' limit 1');
@@ -117,6 +125,22 @@ else {
 			}
 			echo $result;
 			break;
+
+		case 'deleteDocument':
+			$id = $_POST['id'];
+			db::query('DELETE FROM documents WHERE id = '.db::value($id));
+		
+		case 'loadDocuments':
+			$result = db::query('SELECT id, name, creation_date, modification_date FROM documents WHERE author = '.db::value($userid));
+			echo json_encode($result);
+			break;
+		
+		case 'createDocument':
+			$name = $_POST['name'];
+			$result = db::query('INSERT INTO documents (name, author, categories) VALUES ('.db::value($name).', '.db::value($userid).', '.db::value(json_encode(array(1))).')');
+			echo $result['insertid'];
+			break;
+
 		default: break;
 	}
 	

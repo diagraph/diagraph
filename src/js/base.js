@@ -416,6 +416,9 @@ vonline.Base.prototype.setRotationMode = function(active) {
 				if (!event.altKey) {
 					deg = Raphael.snapTo(45, deg, 20);
 				}
+				if (deg == 360) {
+					deg = 0;
+				}
 				that.rotationHandle.rotate(deg, centerX, centerY);
 				that.obj.rotate(deg, true);
 				that.rotationHandle.attr({fill: 'yellow'});
@@ -428,9 +431,11 @@ vonline.Base.prototype.setRotationMode = function(active) {
 			$(window).mousemove(rotationEvent);
 			$(window).one('mouseup', function() {
 				$(window).unbind('mousemove', rotationEvent);
-				var command = new vonline.RotateCommand(that, deg);
-				command.execute();
-				vonline.events.trigger('commandexec', command);
+				if (deg > 0) {
+					var command = new vonline.RotateCommand(that, deg);
+					command.execute();
+					vonline.events.trigger('commandexec', command);
+				}
 				
 				// enable/show everything again
 				that.setConnectionMode(true);
