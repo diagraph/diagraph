@@ -140,6 +140,12 @@ else {
 			$result = db::query('INSERT INTO documents (name, author, categories) VALUES ('.db::value($name).', '.db::value($userid).', '.db::value(json_encode(array(1))).')');
 			echo $result['insertid'];
 			break;
+		
+		case 'renameDocument':
+			$newname = $_POST['newname'];
+			$id = $_POST['id'];
+			db::query('UPDATE documents SET name = '.db::value($newname).' WHERE id = '.db::value($id).' AND author = '.db::value($userid));
+			break;
 
 		default: break;
 	}

@@ -5,7 +5,7 @@
 vonline.DocumentItem = function(obj) {
 	this.container = $('<tr/>');
 	this.values = obj;
-	
+	this.valcontainer = {};
 	
 }
 
@@ -13,10 +13,10 @@ vonline.DocumentItem.prototype.getHTML = function() {
 	var that = this;
 	$.each(this.values, function(i, e) {
 		if (vonline.DocumentList.header[i]) {
-			var td = $('<td>').text(e);
-			that.container.append(td);
+			that.valcontainer[i] = $('<td>').text(e);
+			that.container.append(that.valcontainer[i]);
 			if (i == 'name') {
-				td.click(function() {
+				that.valcontainer[i].click(function() {
 					window.location.href = '?documentID='+that.values.id;
 				}).css('cursor', 'pointer');
 			}
@@ -29,6 +29,10 @@ vonline.DocumentItem.prototype.getHTML = function() {
 	
 	menu.addItem(new vonline.MenuItem('open document', 'images/menu/document_open', function() {
 		window.location.href = '?documentID='+that.values.id;
+	}));
+	
+	menu.addItem(new vonline.MenuItem('rename document', 'images/menu/document_rename', function() {
+		that.rename();
 	}));
 	
 	menu.addItem(new vonline.MenuItem('delete document', 'images/menu/document_delete', function() {
@@ -48,4 +52,19 @@ vonline.DocumentItem.prototype.remove = function() {
 			vonline.events.trigger('document_deleted', [json]);
 		}
 	});
+}
+
+vonline.DocumentItem.prototype.rename = function() {
+	var that = this;
+	var newname = window.prompt('Enter a new name for the document');
+	if (newname && newname != '') {
+		$.ajax({
+			type: 'post',
+			dataType: 'json',
+			data: {task: 'renameDocument', id: this.values.id, newname: newname},
+			success: function(json) {
+				that.valcontainer.name.text(newname);
+			}
+		});
+	}
 }
