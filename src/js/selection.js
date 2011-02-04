@@ -15,7 +15,7 @@ vonline.Selection = function(canvas) {
 		that.updateResizeBox();
 	});
 	
-	var deleteObjFunc = function(event) {
+	function deleteObjFunc(event) {
 		// delete or backspace key pressed
 		if (event.keyCode == 46 || event.keyCode == 8) {
 			// also: prevent browser from navigating backwards

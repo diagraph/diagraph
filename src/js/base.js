@@ -406,7 +406,8 @@ vonline.Base.prototype.setRotationMode = function(active) {
 			that.canvas.selection.setSelectionMode(false);
 			that.rotationInfo.show();
 			
-			var deg = that.data.rotation;
+			var deg = that.data.rotation,
+			origDeg = that.data.rotation;
 			
 			function rotationEvent(event) {
 				event = that.canvas.normalizeEvent(event);
@@ -431,7 +432,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 			$(window).mousemove(rotationEvent);
 			$(window).one('mouseup', function() {
 				$(window).unbind('mousemove', rotationEvent);
-				if (deg > 0) {
+				if (deg != origDeg) {
 					var command = new vonline.RotateCommand(that, deg);
 					command.execute();
 					vonline.events.trigger('commandexec', command);

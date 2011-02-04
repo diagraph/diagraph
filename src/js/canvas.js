@@ -85,6 +85,7 @@ vonline.Canvas.prototype.remove = function(obj) {
  * Deletes all object from canvas
  */
 vonline.Canvas.prototype.clear = function() {
+	this.selection.clear();
 	for (var i = this.objects.length - 1; i >= 0; i--) {
 		this.remove(this.objects[i]);
 	}
