@@ -32,8 +32,13 @@ vonline.Transport.prototype.sync = function() {
 	for (var i = 0, len = localStorage.length; i < len; i++) {
 		if (localStorage.key(i).substr(0, 17) == 'vonline_snapshot_') {
 			var data = localStorage.getItem(localStorage.key(i));
-			// TODO: add correct modification time
-			this.saveSnapshot(data, function(){});
+			$.ajax({
+				data: {task: 'saveSnapshot', documentID: this.document.id, documentData: documentData, timestamp: parseInt(localStorage.key(i).replace(/vonline_snapshot_/, '') / 1000, 10)},
+				dataType: 'json',
+				success: function(json) {
+					callback(json);
+				}
+			});	
 		}
 	}
 	// deletes local storage

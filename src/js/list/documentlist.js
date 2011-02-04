@@ -13,13 +13,9 @@ vonline.DocumentList = function() {
 	this.loadDocuments();
 	
 	var that = this;
-	vonline.events.bind('document_deleted', function(event, json) {
+	vonline.events.bind('documentlist_changed', function() {
 		that.clear();
-		var documents = [];
-		$.each(json, function(i, e) {
-			documents.push(new vonline.DocumentItem(e));
-		});
-		that.addDocuments(documents);
+		that.loadDocuments();
 	});
 }
 

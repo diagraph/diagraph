@@ -51,16 +51,16 @@ vonline.SnapshotHistory.prototype.update = function() {
 	var that = this;
 	this.history.empty();
 	this.transport.getSnapshots(function(json) {
-		var num = json.snapshots.length;
+		var num = json.length;
 		that.snapshotList = $('<ul/>').addClass('snapshotList');
-		that.snapshotListItems = new Array();
-		for(var snapshot in json.snapshots) {
+		that.snapshotListItems = [];
+		for (var i in json) {
 			that.snapshotListItems.push(
 				$('<li/>')
 				.addClass('snapshotListItem')
-				.attr('id', 'snapshot'+json.snapshots[snapshot].id)
-				.attr('title', json.snapshots[snapshot].id)
-				.append('#'+num+' '+json.snapshots[snapshot].creation_date)
+				.attr('id', 'snapshot'+json[i].id)
+				.attr('title', json[i].id)
+				.append('#'+num+' '+json[i].creation_date)
 				.bind('click', function(event) {
 					that.selectSnapshot(event.currentTarget.id);
 				})

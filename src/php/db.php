@@ -1,5 +1,4 @@
 <?php
-include("global.php");
 
 //
 class db {

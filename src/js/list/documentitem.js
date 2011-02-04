@@ -31,8 +31,16 @@ vonline.DocumentItem.prototype.getHTML = function() {
 		window.location.href = '?documentID='+that.values.id;
 	}));
 	
+	menu.addItem(new vonline.MenuItem('copy document', 'images/menu/document_copy', function() {
+		that.copy();
+	}));
+	
 	menu.addItem(new vonline.MenuItem('rename document', 'images/menu/document_rename', function() {
 		that.rename();
+	}));
+	
+	menu.addItem(new vonline.MenuItem('export document', 'images/menu/document_export', function() {
+		that.download();
 	}));
 	
 	menu.addItem(new vonline.MenuItem('delete document', 'images/menu/document_delete', function() {
@@ -44,12 +52,13 @@ vonline.DocumentItem.prototype.getHTML = function() {
 }
 
 vonline.DocumentItem.prototype.remove = function() {
+	var that = this;
 	$.ajax({
 		type: 'post',
 		dataType: 'json',
 		data: {task: 'deleteDocument', id: this.values.id},
 		success: function(json) {
-			vonline.events.trigger('document_deleted', [json]);
+			that.container.detach();
 		}
 	});
 }
@@ -67,4 +76,27 @@ vonline.DocumentItem.prototype.rename = function() {
 			}
 		});
 	}
+}
+
+vonline.DocumentItem.prototype.copy = function() {
+	var that = this;
+	var copyname = window.prompt('Enter a name for the copied document', 'copy of '+this.values.name);
+	if (copyname && copyname != '') {
+		$.ajax({
+			type: 'post',
+			dataType: 'json',
+			data: {task: 'copyDocument', id: this.values.id, copyname: copyname},
+			success: function(json) {
+				vonline.events.trigger('documentlist_changed');
+			}
+		});
+	}
+}
+
+vonline.DocumentItem.prototype.download = function() {
+	var form = $('<form/>').attr({method:'post', action:''}).appendTo('body');
+	$('<input/>').attr({type:'hidden', name:'id', value: this.values.id}).appendTo(form);
+	$('<input/>').attr({type:'hidden', name:'task', value: 'exportDocument'}).appendTo(form);
+	form.submit();
+	form.detach();
 }
