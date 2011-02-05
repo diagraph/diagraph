@@ -16,6 +16,9 @@ vonline.Selection = function(canvas) {
 	});
 	
 	function deleteObjFunc(event) {
+		if ($('input:focus').length) {
+			return;
+		}
 		// delete or backspace key pressed
 		if (event.keyCode == 46 || event.keyCode == 8) {
 			// also: prevent browser from navigating backwards

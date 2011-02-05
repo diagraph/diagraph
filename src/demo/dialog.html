@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Dialog Demo</title>
+<script type="text/javascript" src="../js/lib/jquery-1.4.4.min.js"></script>
+
+<script type="text/javascript" src="../js/vonline.js"></script>
+<script type="text/javascript" src="../js/dialog.js"></script>
+
+<link href="../css/main.css" rel="stylesheet" type="text/css" />
+<link href="../css/dialog.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+
+<p>
+<button id="dialog1">open dialog</button>
+</p>
+
+<p>
+<button id="dialog2">open confirmation dialog</button>
+</p>
+
+<p>
+<button id="dialog3">open input dialog</button>
+</p>
+
+<script>
+
+$('#dialog1').click(function() {
+	new vonline.Dialog({text: 'Hello World!'});
+});
+
+$('#dialog2').click(function() {
+	new vonline.ConfirmDialog({text: 'Hello World!'});
+});
+
+$('#dialog3').click(function() {
+	new vonline.InputDialog({text: 'insert text:', value: 'test', confirm: function(t) {console.log(t);}});
+});
+
+</script>
+</body>
+</html>

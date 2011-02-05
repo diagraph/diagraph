@@ -124,34 +124,3 @@
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#7cb5e2), to(#5d93d9));
 	background-image: -moz-linear-gradient(top, #7cb5e2, #5d93d9);
 }
-
-button {
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#ddd));
-	background-image: -moz-linear-gradient(top, #fff, #ddd);
-	background-color: #eee;
-	
-	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.8);
-	-moz-box-shadow: 0 1px 2px rgba(0,0,0,0.8);
-	box-shadow: 0 1px 2px rgba(0,0,0,0.8);
-	
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	
-	margin: 0px;
-	padding: 3px 10px;
-	border: none;
-	color: #000;
-	cursor: pointer;
-}
-
-button:hover {
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ddd), to(#fff));
-	background-image: -moz-linear-gradient(top, #ddd, #fff);
-	background-color: #fff;
-}
-
-button:active {
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ccc), to(#eee));
-	background-image: -moz-linear-gradient(top, #ccc, #eee);
-	background-color: #ccc;
-}

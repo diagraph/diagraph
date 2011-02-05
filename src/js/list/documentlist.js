@@ -84,15 +84,16 @@ vonline.DocumentList.prototype.refreshView = function() {
 }
 
 vonline.DocumentList.prototype.createDocument = function() {
-	var name = window.prompt('enter a name for the document');
-	if (name && name != '') {
-		$.ajax({
-			type: 'post',
-			dataType: 'json',
-			data: {task: 'createDocument', name: name},
-			success: function(json) {
-				window.location.href = '?documentID='+json;
-			}
-		});
-	}
+	new vonline.InputDialog({text: 'Enter a name for the document', confirm: function(name) {
+		if (name != '') {
+			$.ajax({
+				type: 'post',
+				dataType: 'json',
+				data: {task: 'createDocument', name: name},
+				success: function(json) {
+					window.location.href = '?documentID='+json;
+				}
+			});
+		}
+	}});
 }

@@ -65,32 +65,34 @@ vonline.DocumentItem.prototype.remove = function() {
 
 vonline.DocumentItem.prototype.rename = function() {
 	var that = this;
-	var newname = window.prompt('Enter a new name for the document');
-	if (newname && newname != '') {
-		$.ajax({
-			type: 'post',
-			dataType: 'json',
-			data: {task: 'renameDocument', id: this.values.id, newname: newname},
-			success: function(json) {
-				that.valcontainer.name.text(newname);
-			}
-		});
-	}
+	new vonline.InputDialog({text: 'Enter a new name for the document', confirm: function(newname) {
+		if (newname != '') {
+			$.ajax({
+				type: 'post',
+				dataType: 'json',
+				data: {task: 'renameDocument', id: that.values.id, newname: newname},
+				success: function(json) {
+					that.valcontainer.name.text(newname);
+				}
+			});
+		}
+	}});	
 }
 
 vonline.DocumentItem.prototype.copy = function() {
 	var that = this;
-	var copyname = window.prompt('Enter a name for the copied document', 'copy of '+this.values.name);
-	if (copyname && copyname != '') {
-		$.ajax({
-			type: 'post',
-			dataType: 'json',
-			data: {task: 'copyDocument', id: this.values.id, copyname: copyname},
-			success: function(json) {
-				vonline.events.trigger('documentlist_changed');
-			}
-		});
-	}
+	new vonline.InputDialog({text: 'Enter a name for the copied document', value: 'copy of '+this.values.name, confirm: function(copyname) {
+		if (copyname != '') {
+			$.ajax({
+				type: 'post',
+				dataType: 'json',
+				data: {task: 'copyDocument', id: that.values.id, copyname: copyname},
+				success: function(json) {
+					vonline.events.trigger('documentlist_changed');
+				}
+			});
+		}
+	}});
 }
 
 vonline.DocumentItem.prototype.download = function() {

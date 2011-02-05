@@ -593,11 +593,12 @@ vonline.Base.prototype.setAnnotationMode = function(active) {
 		$(this.annotationHandle.node).click(function(event) {
 			event.stopPropagation();
 			
-			var annotation = window.prompt('Enter an annotation:');
-			if (annotation) {
-				// see vonline.Document
-				vonline.events.trigger('drop', {type:'annotation', text: annotation, connect: [that.data.id], x: that.data.width + 20, y: 0});
-			}
+			new vonline.InputDialog({text: 'Enter an annotation:', confirm: function(annotation) {
+				if (annotation != '') {
+					// see vonline.Document
+					vonline.events.trigger('drop', {type:'annotation', text: annotation, connect: [that.data.id], x: that.data.width + 20, y: 0});
+				}
+			}});
 		});
 	}
 }
@@ -638,12 +639,11 @@ vonline.Base.prototype.setTextMode = function(active) {
 		$(this.inlineTextHandle.node).click(function(event) {
 			event.stopPropagation();
 			
-			var entered = window.prompt('Enter a new inline text:');
-			if (entered !== null) {
-				var command = new vonline.TextChangeCommand(that, entered);
+			new vonline.InputDialog({text: 'Enter a new inline text:', confirm: function(inlinetext) {
+				var command = new vonline.TextChangeCommand(that, inlinetext);
 				command.execute();
 				vonline.events.trigger('commandexec', command);
-			}
+			}});
 		});
 	}
 }

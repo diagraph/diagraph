@@ -7,7 +7,6 @@ vonline.Rectangle = function(data) {
 	this.data = $.extend({}, this.data, data);
 }
 
-//vonline.Rectangle.prototype = new vonline.Base();
 vonline.Rectangle.prototype = new vonline.Base();
 
 /**
