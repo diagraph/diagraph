@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Sidebar Demo</title>
+<script type="text/javascript" src="../../js/lib/jquery-1.4.4.min.js"></script>
+<script>
+window.vonline = {};
+</script>
+<script type="text/javascript" src="../../js/sidebar.js"></script>
+<link href="../../css/sidebar.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="../../js/menu.js"></script>
+<script type="text/javascript" src="../../js/menuitem.js"></script>
+
+<script type="text/javascript" src="../../js/category.js"></script>
+<style>
+html, body {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
+	font: 12px "Lucida Grande", "Lucida Sans Unicode", "DejaVu", sans-serif;
+	text-rendering: optimizeLegibility;
+}
+</style>
+</head>
+<body>
+
+<div id="sidebar"></div>
+
+<script>
+var sidebar = new vonline.Sidebar('#sidebar');
+
+var topmenu = new vonline.Menu();
+topmenu.addItem(new vonline.MenuItem('open', '../../images/menu/open_document_view', function() {}));
+topmenu.addItem(new vonline.MenuItem('undo', '../../images/menu/undo', function() {}));
+topmenu.addItem(new vonline.MenuItem('redo', '../../images/menu/redo', function() {}));
+topmenu.addItem(new vonline.MenuItem('save', '../../images/menu/save', function() {}));
+topmenu.addItem(new vonline.MenuItem('history', '../../images/menu/open_history', function() {}));
+
+sidebar.setTopMenu(topmenu);
+
+
+var bottommenu = new vonline.Menu();
+bottommenu.addItem(new vonline.MenuItem('edit categories', '../../images/menu/open_category_edit_view', function() {}));
+bottommenu.addItem(new vonline.MenuItem('zoom in', '../../images/menu/zoom_in', function() {}));
+bottommenu.addItem(new vonline.MenuItem('zoom out', '../../images/menu/zoom_out', function() {}));
+bottommenu.addItem(new vonline.MenuItem('zoom fit best', '../../images/menu/zoom_fit_best', function() {}));
+
+sidebar.setBottomMenu(bottommenu);
+
+var category = new vonline.Category('Test');
+sidebar.addCategory(category);
+</script>
+</body>
+</html>
