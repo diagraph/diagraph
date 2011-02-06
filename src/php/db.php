@@ -16,25 +16,6 @@ class db {
 		mysql_close(self::$db_connection);
 	}
 	
-	//public static function run() {}
-	public static function get_categories() {
-		$categories = array();
-		
-		$cat_res = mysql_query("select * from categories")
-		or die("Couldn't execute get_categories query: " . mysql_error());
-		
-		while($row = mysql_fetch_row($cat_res)) {
-			array_push($categories, array($row[0], $row[1]));
-		}
-		
-		mysql_free_result($cat_res);
-		
-		return $categories;
-	}
-	public static function get_category_objects($category_id) {
-		return array();
-	}
-	
 	/**
 	 * modified version of mysql_query:
 	 * - returns result of query as an (associative) array
@@ -107,5 +88,3 @@ class db {
 		return $string;
 	}
 }
-
-?>

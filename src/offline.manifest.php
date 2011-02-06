@@ -22,4 +22,3 @@ $dirs = array('css', 'images', 'js');
 foreach ($dirs as $dir) {
 	recursive_list_dirs($dir);
 }
-?>

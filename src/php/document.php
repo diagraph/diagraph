@@ -82,6 +82,7 @@ class Document {
 		global $user;
 		
 		db::query('UPDATE documents SET name = '.db::value($newname).' WHERE id = '.db::value($this->id).' AND author = '.db::value($user->getId()));
+		$this->name = filter_var($newname, FILTER_SANITIZE_STRING);
 	}
 	
 	public function delete() {
