@@ -133,11 +133,26 @@ class Document {
 		return $document;
 	}
 	
-	public static function create($name) {
+	public static function create($name, $creation_date = false) {
 		global $user;
 		
-		$result = db::query('INSERT INTO documents (name, author, categories) VALUES ('.db::value($name).', '.db::value($user->getId()).', '.db::value(json_encode(self::$standard_categories)).')');
+		if (!$creation_date) {
+			$creation_date = 'default';
+		}
+		else {
+			$creation_date = db::value($creation_date);
+		}
+		
+		$result = db::query('INSERT INTO documents (name, author, creation_date, categories) VALUES ('.db::value($name).', '.db::value($user->getId()).', '.$creation_date.', '.db::value(json_encode(self::$standard_categories)).')');
 		return self::fromDatabase($result['insertid']);
+	}
+	
+	public static function import(array $data) {
+		$document = self::create($data['name'], $data['creation_date']);
+		$document->changeCategories($data['categories']);
+		foreach ($data['snapshots'] as $snapshot) {
+			Snapshot::create($document, $snapshot['data'], strtotime($snapshot['creation_date']));
+		}
 	}
 	
 	public static function getList($type = self::FORMAT_JSON, $filter = null, $sorting = self::SORT_ID_ASC) {

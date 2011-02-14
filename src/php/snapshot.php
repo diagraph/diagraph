@@ -54,7 +54,7 @@ class Snapshot {
 	}
 	
 	public static function export(Document $document) {
-		$json = db::query('SELECT id, creation_date, data FROM snapshots WHERE document = '.db::value($document->getId()).' ORDER BY creation_date DESC');
+		$json = db::query('SELECT creation_date, data FROM snapshots WHERE document = '.db::value($document->getId()).' ORDER BY creation_date DESC');
 		foreach ($json as $i => $row) {
 			$json[$i]['data'] = json_decode($row['data']);
 		}

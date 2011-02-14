@@ -81,6 +81,10 @@ else {
 			
 			echo json_encode($document->export());
 			break;
+
+		case 'importDocument':
+			Document::import(json_decode(stripslashes($_POST['data']), true));
+			break;
 			
 		default: break;
 	}

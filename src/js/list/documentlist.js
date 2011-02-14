@@ -97,3 +97,14 @@ vonline.DocumentList.prototype.createDocument = function() {
 		}
 	}});
 }
+
+vonline.DocumentList.prototype.importDocument = function(data) {
+	$.ajax({
+		type: 'post',
+		dataType: 'json',
+		data: {task: 'importDocument', data: data},
+		success: function(json) {
+			vonline.events.trigger('documentlist_changed');
+		}
+	});
+}
