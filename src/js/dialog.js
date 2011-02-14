@@ -62,6 +62,7 @@ vonline.ConfirmDialog.prototype.createButtons = function() {
 	});
 
 	function keyHandler (event) {
+		event.stopPropagation();
 		if (event.keyCode == 13) {
 			that.submit.triggerHandler('click');
 			$(window).unbind('keydown', keyHandler);

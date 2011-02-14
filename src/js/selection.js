@@ -48,12 +48,14 @@ vonline.Selection.prototype.add = function(object) {
 		this.resize.push(object);
 	}
 	
-	object.setSelection(true);
+	object.setSelection(true, this.resize.length);
 	object.setDragEventMode(this.resize, function() {
 		that.updateResizeBox();
 	});
 	
 	this.updateResizeBox();
+	
+	vonline.events.trigger('selection_changed', this.resize.length);
 }
 
 /**
@@ -64,6 +66,8 @@ vonline.Selection.prototype.remove = function(object) {
 	this.resize = $.without(this.resize, object);
 	var hold = $.without(this.obj, object.obj);
 	this.obj = this.canvas.getPaper().set(hold);
+	
+	vonline.events.trigger('selection_changed', this.resize.length);
 	
 	object.setSelection(false);
 	object.setDragEventMode(object);
@@ -110,7 +114,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 			bbox.y - this.padding / 2,
 			bbox.width + this.padding,
 			bbox.height + this.padding
-		).attr('stroke', 'blue').attr('stroke-width', 2);
+		).attr('stroke', 'blue').attr('stroke-width', 1);
 		var handle = this.canvas.getPaper().path(this.handlePath).attr({fill: 'blue', stroke: 'none'}).hide();
 		var handlebox = handle.getBBox();
 		var angle = -this.data[0].data.rotation * Math.PI/180; 

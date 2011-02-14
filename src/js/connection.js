@@ -36,7 +36,7 @@ vonline.Connection.prototype.createObject = function(canvas) {
 		that.updatePath();
 	});
 	
-	return canvas.getPaper().path(this.getPath()).toBack();
+	return canvas.getPaper().path(this.getPath()).toBack().attr('stroke-width', 2);
 }
 
 vonline.Connection.prototype.getPath = function() {
