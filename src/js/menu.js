@@ -20,3 +20,15 @@ vonline.Menu.prototype.getHTML = function() {
 vonline.Menu.prototype.addItem = function(item) {
 	this.container.append(item.getHTML());
 }
+
+/**
+ * remove an item from the menu
+ * @param {vonline.MenuItem} item
+ */
+vonline.Menu.prototype.removeItem = function(item) {
+	this.container.find('li').each(function(i, e) {
+		if (e == item.getHTML()[0]) {
+			$(e).detach();
+		}
+	});
+}
