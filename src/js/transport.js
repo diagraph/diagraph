@@ -6,6 +6,7 @@ vonline.Transport = function(document) {
 	// initialize...
 	var that = this;
 	this.document = document;
+	this.prefix = 'vonline_'+document.id+'_';
 	
 	// use always POST-method on ajax calls
 	$.ajaxSetup({type: 'post'});
@@ -29,44 +30,48 @@ vonline.Transport = function(document) {
 }
 
 vonline.Transport.prototype.sync = function() {
+	var prefix = this.prefix + 'snapshot_';
+	
 	for (var i = 0, len = localStorage.length; i < len; i++) {
-		if (localStorage.key(i).substr(0, 17) == 'vonline_snapshot_') {
+		if (localStorage.key(i).substr(0, prefix.length) == prefix) {
 			var data = localStorage.getItem(localStorage.key(i));
 			$.ajax({
-				data: {task: 'saveSnapshot', documentID: this.document.id, documentData: documentData, timestamp: parseInt(localStorage.key(i).replace(/vonline_snapshot_/, '') / 1000, 10)},
+				data: {task: 'saveSnapshot', documentID: this.document.id, documentData: documentData, timestamp: parseInt(localStorage.key(i).slice(prefix.length) / 1000, 10)},
 				dataType: 'json',
 				success: function(json) {
-					callback(json);
+					//callback(json);
 				}
 			});	
 		}
 	}
+	
 	// deletes local storage
 	for (var i = 0, len = localStorage.length; i < len; i++) {
-		if (localStorage.key(i).substr(0, 17) == 'vonline_snapshot_') {
+		if (localStorage.key(i).substr(0, prefix.length) == prefix) {
 			localStorage.removeItem(localStorage.key(i));
 		}
 	}
 	
-	if (localStorage.getItem('vonline_visible_categories')) {
-		this.saveCategories(JSON.parse(localStorage.getItem('vonline_visible_categories')))
-		localStorage.removeItem('vonline_visible_categories')
+	if (localStorage.getItem(this.prefix+'visible_categories')) {
+		this.saveCategories(JSON.parse(localStorage.getItem(this.prefix+'visible_categories')));
+		localStorage.removeItem(this.prefix+'visible_categories');
 	}
 }
 
 vonline.Transport.prototype.loadCategories = function(callback) {
 	if (navigator.onLine) {
+		var that = this;
 		$.ajax({
 			data: {task: 'loadCategories', documentID: this.document.id},
 			dataType: 'json',
 			success: function(json) {
-				localStorage.setItem('vonline_categories', JSON.stringify(json));
+				localStorage.setItem(that.prefix+'categories', JSON.stringify(json));
 				callback(json);
 			}
 		});
 	}
 	else {
-		var result = window.localStorage.getItem('vonline_categories');
+		var result = window.localStorage.getItem(this.prefix+'categories');
 		if (result) {
 			callback(JSON.parse(result));
 		}
@@ -81,9 +86,9 @@ vonline.Transport.prototype.saveCategories = function(categories) {
 		});
 	}
 	else {
-		window.localStorage.setItem('vonline_visible_categories', JSON.stringify(categories));
+		window.localStorage.setItem(this.prefix+'visible_categories', JSON.stringify(categories));
 	}
-	var offlinedata = JSON.parse(window.localStorage.getItem('vonline_categories'));
+	var offlinedata = JSON.parse(window.localStorage.getItem(this.prefix+'categories'));
 	for (var name in offlinedata) {
 		if ($.inArray(offlinedata[name].id, categories) != -1) {
 			offlinedata[name].show = true;
@@ -92,7 +97,7 @@ vonline.Transport.prototype.saveCategories = function(categories) {
 			offlinedata[name].show = false;
 		}
 	}
-	localStorage.setItem('vonline_categories', JSON.stringify(offlinedata));
+	localStorage.setItem(this.prefix+'categories', JSON.stringify(offlinedata));
 }
 
 /**
@@ -111,24 +116,25 @@ vonline.Transport.prototype.saveSnapshot = function(documentData, callback) {
 	}
 	else {
 		var unixtime = (new Date()).getTime();
-		window.localStorage.setItem("vonline_snapshot_"+unixtime, documentData);
+		window.localStorage.setItem(this.prefix+'snapshot_'+unixtime, documentData);
 	}
-	localStorage.setItem('vonline_last_snapshot', documentData);
+	localStorage.setItem(this.prefix+'last_snapshot', documentData);
 }
 
 vonline.Transport.prototype.loadSnapshot = function(id, callback) {
 	if (navigator.onLine) {
+		var that = this;
 		$.ajax({
 			data: {task: 'loadSnapshot', snapshotID: id, documentID: this.document.id},
 			dataType: 'json',
 			success: function(json) {
-				localStorage.setItem('vonline_last_snapshot', JSON.stringify(json));
+				localStorage.setItem(that.prefix+'last_snapshot', JSON.stringify(json));
 				callback(json);
 			}
 		});
 	}
 	else if (id == -1) {
-		var result = window.localStorage.getItem('vonline_last_snapshot');
+		var result = window.localStorage.getItem(this.prefix+'last_snapshot');
 		if (result) {
 			callback(JSON.parse(result));
 		}
@@ -137,17 +143,18 @@ vonline.Transport.prototype.loadSnapshot = function(id, callback) {
 
 vonline.Transport.prototype.getSnapshots = function(callback) {
 	if (navigator.onLine) {
+		var that = this;
 		$.ajax({
 			data: {task: 'getSnapshots', documentID: this.document.id},
 			dataType: 'json',
 			success: function(json) {
-				localStorage.setItem('vonline_snapshots', JSON.stringify(json));
+				localStorage.setItem(that.prefix+'snapshots', JSON.stringify(json));
 				callback(json);
 			}
 		});
 	}
 	else {
-		var result = window.localStorage.getItem('vonline_snapshots');
+		var result = window.localStorage.getItem(this.prefix+'snapshots');
 		if (result) {
 			callback(JSON.parse(result));
 		}
