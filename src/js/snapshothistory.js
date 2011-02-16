@@ -51,24 +51,26 @@ vonline.SnapshotHistory.prototype.update = function() {
 	var that = this;
 	this.history.empty();
 	this.transport.getSnapshots(function(json) {
-		var num = json.length;
+		var num = 1;
 		that.snapshotList = $('<ul/>').addClass('snapshotList');
 		that.snapshotListItems = [];
-		for (var i in json) {
+		$.each(json, function(i, e) {
 			that.snapshotListItems.push(
-				$('<li/>')
-				.addClass('snapshotListItem')
-				.attr('id', 'snapshot'+json[i].id)
-				.attr('title', json[i].id)
-				.append('#'+num+' '+json[i].creation_date)
-				.bind('click', function(event) {
-					that.selectSnapshot(event.currentTarget.id);
-				})
-			);
-			
-			that.snapshotList.append(that.snapshotListItems[that.snapshotListItems.length-1]);
-			num--;
-		}
+					$('<li/>')
+					.addClass('snapshotListItem')
+					.attr('id', 'snapshot'+e.id)
+					.attr('title', e.id)
+					.append('#'+num+' '+e.creation_date)
+					.bind('click', function(event) {
+						that.selectSnapshot(event.currentTarget.id);
+					})
+					.append($('<img/>').attr('src', 'images/canvas/edit_delete.png')
+							.click(function() {that.deleteSnapshot(e.id);}))
+				);
+				
+				that.snapshotList.prepend(that.snapshotListItems[that.snapshotListItems.length-1]);
+				num++;
+		});
 		that.history.append(that.snapshotList);
 	});
 }
@@ -102,20 +104,24 @@ vonline.SnapshotHistory.prototype.toggle = function() {
 }
 
 vonline.SnapshotHistory.prototype.loadSnapshot = function() {
-	if(this.selectedSnapshot != -1) {
+	if (this.selectedSnapshot != -1) {
 		this.document.loadSnapshot(this.selectedSnapshot);
 	}
 	this.toggle();
 }
 
 vonline.SnapshotHistory.prototype.selectSnapshot = function(id) {
-	if(!this.snapshotListItems) return;
+	if (!this.snapshotListItems) return;
 	
-	for(var i = 0; i < this.snapshotListItems.length; i++) {
+	for (var i = 0; i < this.snapshotListItems.length; i++) {
 		this.snapshotListItems[i].removeClass('selected');
 		if(this.snapshotListItems[i].attr('id') == id) {
 			this.snapshotListItems[i].addClass('selected');
 			this.selectedSnapshot = parseInt(this.snapshotListItems[i].attr('title'));
 		}
 	}
+}
+
+vonline.SnapshotHistory.prototype.deleteSnapshot = function(id) {
+	this.transport.deleteSnapshot(id);
 }
