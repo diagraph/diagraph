@@ -119,6 +119,7 @@ vonline.Canvas.prototype.exportJSON = function() {
 vonline.Canvas.prototype.initRectangleSelection = function() {
 	var that = this;
 	this.container.mousedown(function(event) {
+		event.preventDefault();
 		event = that.normalizeEvent(event);
 		var x = event.offsetX,
 			y = event.offsetY,
