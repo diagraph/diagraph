@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<title>Visio Online :: Importer</title>
+		
+		<!-- Libraries -->
+		<script type="text/javascript" src="../js/lib/jquery-1.5.min.js"></script>
+		<script type="text/javascript" src="../js/lib/raphael-min.js"></script>
+		
+		<script type="text/javascript" src="../js/importer.js"></script>
+		
+		<!-- CSS -->
+		<link href="../css/main.css" rel="stylesheet" type="text/css" />
+		<link href="../css/importer.css" rel="stylesheet" type="text/css" />
+	</head>
+	
+	<body>
+		<form id="import_form" method="post" enctype="multipart/form-data">
+			<div id="importer_content">
+				<div>
+					<h1 style="text-align:center;">Visio-Online Importer</h1>
+				</div>
+				<div class="importer_form_field">
+					<div class="importer_description">
+						Name:
+						<p class="helper_text">Name of the new object.</p>
+					</div>
+					<div class="importer_form_object">
+						<input name="import_name" type="text" id="import_name">
+					</div>
+				</div>
+				<div class="importer_form_field">
+					<div class="importer_description" style="height:110px">
+						File:
+						<p class="helper_text">Import a local SVG file from your computer.
+						Note: this SVG file must contain a path, all other shapes will be ignored.
+						</p>
+					</div>
+					<div class="importer_preview">
+						<div id="preview"></div>
+					</div>
+					<div class="importer_form_object" style="max-width:75%;">
+						<input name="import_file" type="file" id="import_file" accept="image/svg+xml">
+					</div>
+				</div>
+				<div class="importer_form_field">
+					<div class="importer_description">
+						Data:
+						<p class="helper_text">Enter the <a href="http://www.w3.org/TR/SVG/paths.html#PathData">SVG path data</a> here or click on the file import button above to edit its path data here. As soon as you have entered a valid SVG path, you'll see a preview on the right side.</p>
+					</div>
+					<div class="importer_form_object">
+						<textarea name="import_text" id="import_text" rows="24"></textarea>
+					</div>
+				</div>
+				<div class="importer_form_field">
+					<div class="importer_description">
+						Category:
+						<p class="helper_text">Choose the category to which you want to add the new object to or click on 'Add Category' to create a new category.</p>
+					</div>
+					<div class="importer_form_object">
+						<select name="import_category" id="import_category">
+						</select>
+						<button id="import_add_category" type="button">Add Category</button>
+					</div>
+				</div>
+				<div>
+					<button id="import_button" type="submit">Import</button>
+				</div>
+			</div>
+		</form>
+	</body>
+</html>
