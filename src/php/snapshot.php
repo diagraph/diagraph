@@ -3,7 +3,11 @@
 class Snapshot {
 	
 	public static function getList(Document $document) {
-		return db::query('SELECT id, creation_date FROM snapshots WHERE document = '.db::value($document->getId()).' ORDER BY creation_date DESC');
+		$json = db::query('SELECT id, creation_date, data FROM snapshots WHERE document = '.db::value($document->getId()).' ORDER BY id ASC');
+		foreach ($json as $i => $row) {
+			$json[$i]['data'] = json_decode($row['data']);
+		}
+		return $json;
 	}
 	
 	public static function create(Document $document, array $data, $timestamp = null) {
@@ -36,8 +40,10 @@ class Snapshot {
 		
 		$result = db::query('SELECT data FROM snapshots WHERE id = '.db::value($id).' LIMIT 1');
 		if (!$result) {
-			return json_encode(array('objects'=>array()));
+			return array('objects'=>array());
 		}
+		$result = json_decode($result, true);
+		$result['id'] = $id;
 		return $result;
 	}
 	

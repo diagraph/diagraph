@@ -36,11 +36,8 @@ vonline.Transport.prototype.sync = function() {
 		if (localStorage.key(i).substr(0, prefix.length) == prefix) {
 			var data = localStorage.getItem(localStorage.key(i));
 			$.ajax({
-				data: {task: 'saveSnapshot', documentID: this.document.id, documentData: documentData, timestamp: parseInt(localStorage.key(i).slice(prefix.length) / 1000, 10)},
-				dataType: 'json',
-				success: function(json) {
-					//callback(json);
-				}
+				data: {task: 'saveSnapshot', documentID: this.document.id, documentData: data, timestamp: parseInt(localStorage.key(i).slice(prefix.length) / 1000, 10)},
+				dataType: 'json'
 			});	
 		}
 	}
@@ -51,6 +48,8 @@ vonline.Transport.prototype.sync = function() {
 			localStorage.removeItem(localStorage.key(i));
 		}
 	}
+	
+	this.getSnapshots();
 	
 	if (localStorage.getItem(this.prefix+'visible_categories')) {
 		this.saveCategories(JSON.parse(localStorage.getItem(this.prefix+'visible_categories')));
@@ -117,31 +116,62 @@ vonline.Transport.prototype.saveSnapshot = function(documentData, callback) {
 	else {
 		var unixtime = (new Date()).getTime();
 		window.localStorage.setItem(this.prefix+'snapshot_'+unixtime, documentData);
+		
+		var snapshots = this.getOfflineSnapshots();
+		snapshots.push({
+			// temporary id for offline work
+			id: snapshots[snapshots.length-1].id + 1,
+			creation_date: format_time(new Date()),
+			data: JSON.parse(documentData)
+		});
+		localStorage.setItem(this.prefix+'snapshots', JSON.stringify(snapshots));
 	}
-	localStorage.setItem(this.prefix+'last_snapshot', documentData);
 }
 
 vonline.Transport.prototype.loadSnapshot = function(id, callback) {
+	var that = this;
 	if (navigator.onLine) {
-		var that = this;
 		$.ajax({
 			data: {task: 'loadSnapshot', snapshotID: id, documentID: this.document.id},
 			dataType: 'json',
 			success: function(json) {
-				localStorage.setItem(that.prefix+'last_snapshot', JSON.stringify(json));
+				// reload local storage if id is newer than the saved one
+				var saved = that.getOfflineSnapshots();
+				if (saved.length == 0 || saved[saved.length - 1].id != json.id) {
+					that.getSnapshots();
+				}
 				callback(json);
 			}
 		});
 	}
 	else if (id == -1) {
-		var result = window.localStorage.getItem(this.prefix+'last_snapshot');
-		if (result) {
-			callback(JSON.parse(result));
+		var saved = that.getOfflineSnapshots();
+		if (saved) {
+			callback(saved[saved.length - 1].data);
 		}
+	}
+	else {
+		var saved = that.getOfflineSnapshots();
+		$.each(saved, function(i, e) {
+			if (e.id == id) {
+				callback(e.data);
+			}
+		});
 	}
 }
 
+vonline.Transport.prototype.getOfflineSnapshots = function() {
+	var result = window.localStorage.getItem(this.prefix+'snapshots');
+	if (result) {
+		return JSON.parse(result);
+	}
+	return [];
+}
+
 vonline.Transport.prototype.getSnapshots = function(callback) {
+	if (!callback) {
+		callback = function() {};
+	}
 	if (navigator.onLine) {
 		var that = this;
 		$.ajax({
@@ -154,9 +184,13 @@ vonline.Transport.prototype.getSnapshots = function(callback) {
 		});
 	}
 	else {
-		var result = window.localStorage.getItem(this.prefix+'snapshots');
+		var result = this.getOfflineSnapshots();
 		if (result) {
-			callback(JSON.parse(result));
+			callback(result);
 		}
 	}
+}
+
+vonline.Transport.prototype.deleteSnapshot = function(id) {
+	// TODO
 }

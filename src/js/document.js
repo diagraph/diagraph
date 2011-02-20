@@ -14,6 +14,7 @@ vonline.Document = function(id) {
 		that.undoList.push(command);
 		that.redoList = [];
 		that.updateMenu();
+		that.saveItem.enable();
 	});
 	
 	this.transport = new vonline.Transport(this);
@@ -61,9 +62,10 @@ vonline.Document.prototype.initTopMenu = function() {
 		that.redoCommand();
 	});
 	topmenu.addItem(this.redoItem);
-	topmenu.addItem(new vonline.MenuItem('save a snapshot of the current document', 'images/menu/save', function() {
+	this.saveItem = new vonline.MenuItem('save a snapshot of the current document', 'images/menu/save', function() {
 		that.saveSnapshot();
-	}));
+	});
+	topmenu.addItem(this.saveItem);
 	topmenu.addItem(new vonline.MenuItem('view the history of the current document', 'images/menu/open_history', function() {
 		that.snapshotHistory.toggle();
 	}));
@@ -170,26 +172,12 @@ vonline.Document.prototype.saveSnapshot = function() {
 	// TODO: add other stuff that needs to be saved
 	
 	this.transport.saveSnapshot(documentData, function(data) {
-		//
-		if(data == '1') {
-			var currentTime = new Date();
-			var month = currentTime.getMonth()+1;
-			var day = currentTime.getDate();
-			var hours = currentTime.getHours();
-			var mins = currentTime.getMinutes();
-			var secs = currentTime.getSeconds();
-			if(month < 10) month = '0'+month;
-			if(day < 10) day = '0'+day;
-			if(hours < 10) hours = '0'+hours;
-			if(mins < 10) mins = '0'+mins;
-			if(secs < 10) secs = '0'+secs;
-			
-			var status = 'Snapshot saved ' + currentTime.getFullYear() + '/' + month + '/' + day + ' ' + hours + ':' + mins + ':' + secs;
-			vonline.notification.add(status);
-			vonline.events.trigger('snapshotsaved');
-		}
-		else window.status = 'Saving Snapshot failed!';
+		var status = 'Snapshot saved ' + format_time(new Date());
+		vonline.notification.add(status);
+		vonline.events.trigger('snapshotsaved');
 	});
+	
+	this.saveItem.disable();
 }
 
 /**

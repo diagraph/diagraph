@@ -45,7 +45,7 @@ else {
 			
 		case 'loadSnapshot':
 			$document = Document::fromDatabase($_POST['documentID']);
-			echo Snapshot::getData($document, $_POST['snapshotID']);
+			echo json_encode(Snapshot::getData($document, $_POST['snapshotID']));
 			break;
 
 		case 'deleteDocument':

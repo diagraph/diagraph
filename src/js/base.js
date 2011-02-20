@@ -146,6 +146,11 @@ vonline.Base.prototype.createText = function() {
 		$(this.text.node).mousedown(function(event) {
 			$(that.obj.node).trigger(event);
 		});
+		$(this.text.node).mousemove(function(event) {
+			// fix for connection-path
+			event.target = that.obj.node;
+			$(that.obj.node).trigger(event);
+		});
 		
 		// reposition on change
 		this.adjustText();
@@ -522,6 +527,11 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 			event = that.canvas.normalizeEvent(event);
 			
 			that.connectionPath.show();
+			
+			if ($(event.target).is('tspan')) {
+				// fix for wrong connection when mousepointer over test
+				return;
+			}
 			
 			// highlight target object
 			if (event.target.id && event.target.id.substr(0, 7) == 'object_' && that.obj.node.id != event.target.id) {
