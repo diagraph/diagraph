@@ -120,7 +120,7 @@ vonline.Document.prototype.updateMenu = function() {
  * redirect browser to document list
  */
 vonline.Document.prototype.openDocumentView = function() {
-	window.location.href = '.';
+	window.location.href = 'index.php';
 }
 
 /**

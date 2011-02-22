@@ -19,7 +19,9 @@ vonline.CategoryItem = function(name, data) {
 		bbox = path.getBBox(),
 		// scale
 		scale = Math.min(this.size / bbox.width, this.size / bbox.height);
-		path.scale(scale, scale, 0, 0).translate(this.padding-bbox.x, this.padding-bbox.y);
+		path.scale(scale, scale, 0, 0);
+		bbox = path.getBBox(); // new bbox after scaling
+		path.translate(this.padding-bbox.x, this.padding-bbox.y);
 		this.data = {type: 'path', path: path.attr('path')}
 		break;
 	}
