@@ -10,14 +10,17 @@ vonline.Canvas = function() {
 	this.maxId = 0;
 	this.selection = new vonline.Selection(this);
 	this.offset = {x:0, y:0};
+	this.viewport = {width:0, height:0}
 	this.zoom = 1.0;
 	this.initRectangleSelection();
 	this.initDragging();
 	
 	function onResize() {
 		var sidebarwidth = $('#sidebar').width(),
-			documentwidth = ($(window).width() - that.offset.x) * 1.5,
-			documentheight = ($(window).height() - that.offset.y) * 1.5;
+		documentwidth = ($(window).width() - that.offset.x) * 1.5,
+		documentheight = ($(window).height() - that.offset.y) * 1.5;
+		that.viewport.width = $(window).width() - sidebarwidth;
+		that.viewport.height = $(window).height();
 		that.container.css({width: (documentwidth-sidebarwidth)+'px', height: documentheight + 'px', marginLeft: sidebarwidth+'px'});
 		that.paper.setSize(that.container.width(), that.container.height());
 	}
@@ -217,17 +220,58 @@ vonline.Canvas.prototype.initDragging = function() {
 			that.container.unbind('mousemove', moveEvent);
 			that.container.css('cursor', 'auto');
 			
-			that.offset.x = (that.offset.x - deltaX) >= 0 ? 0 : (that.offset.x - deltaX);
-			that.offset.y = (that.offset.y - deltaY) >= 0 ? 0 : (that.offset.y - deltaY);
+			that.setOffset(that.offset.x - deltaX, that.offset.y - deltaY);
 			
 			$(window).trigger('resize');
 		})
 	});
 }
 
+vonline.Canvas.prototype.setOffset = function(x, y) {
+	x = x >= 0 ? 0 : x;
+	y = y >= 0 ? 0 : y
+	this.container.css({
+		left: x + 'px',
+		top: y + 'px'
+	});
+	this.offset.x = x;
+	this.offset.y = y;
+}
+
 vonline.Canvas.prototype.setZoom = function(zoom) {
+	if (zoom == 'fit') {
+		this.paper.setZoom(1);
+		var objects = this.objects;
+		var tofit = [];
+		$.each(objects, function(i, obj) {
+			tofit.push(obj.obj);
+		});
+		tofit = this.paper.set(tofit);
+		tofit = tofit.getBBox();
+		zoom = Math.min(this.viewport.width / (tofit.width + 25), this.viewport.height / (tofit.height + 25));
+		this.paper.setZoom(zoom);
+		this.setOffset(-(tofit.x-10) * zoom, -(tofit.y-10) * zoom);
+		$(window).trigger('resize');
+		return;
+	}
 	this.paper.setZoom(zoom);
+	
+	var delta = zoom / this.zoom;
+	if (delta > 1) {
+		this.setOffset(
+			this.offset.x * delta - this.viewport.width / delta,
+			this.offset.y * delta - this.viewport.height / delta
+		);
+	}
+	else if (delta < 1) {
+		this.setOffset(
+			(this.offset.x + this.viewport.width * delta) * delta,
+			(this.offset.y + this.viewport.height * delta) * delta
+		);
+	}
+	
 	this.zoom = zoom;
+	$(window).trigger('resize');
 }
 
 vonline.Canvas.prototype.getZoom = function() {

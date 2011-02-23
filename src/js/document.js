@@ -97,8 +97,12 @@ vonline.Document.prototype.initBottomMenu = function() {
 			that.canvas.setZoom(zoom / 2);
 		}
 	}));
+	bottommenu.addItem(new vonline.MenuItem('zoom to original', 'images/menu/zoom_original', function() {
+		that.canvas.setZoom(1);
+		that.canvas.setOffset(0, 0);
+	}));
 	bottommenu.addItem(new vonline.MenuItem('zoom fit best', 'images/menu/zoom_fit_best', function() {
-		// TODO: canvas viewport manipulation
+		that.canvas.setZoom('fit');
 	}));
 	return bottommenu;
 }
