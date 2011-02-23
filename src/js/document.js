@@ -192,7 +192,7 @@ vonline.Document.prototype.loadCategories = function() {
 		for (var name in json) {
 			var category = new vonline.Category(name, json[name].id)
 			for (var item in json[name].elements) {
-				category.add(new vonline.CategoryItem(item, json[name].elements[item]));
+				category.add(new vonline.CategoryItem(item, json[name].elements[item], that.canvas));
 			}
 			
 			if (json[name].show) {

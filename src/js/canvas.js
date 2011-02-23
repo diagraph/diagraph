@@ -9,12 +9,15 @@ vonline.Canvas = function() {
 	this.objects = [];
 	this.maxId = 0;
 	this.selection = new vonline.Selection(this);
+	this.offset = {x:0, y:0};
 	this.initRectangleSelection();
+	this.initDragging();
 	
 	function onResize() {
 		var sidebarwidth = $('#sidebar').width(),
-			documentwidth = $(window).width();
-		that.container.css({width: (documentwidth-sidebarwidth)+'px', marginLeft: sidebarwidth+'px'});
+			documentwidth = ($(window).width() - that.offset.x) * 1.5,
+			documentheight = ($(window).height() - that.offset.y) * 1.5;
+		that.container.css({width: (documentwidth-sidebarwidth)+'px', height: documentheight + 'px', marginLeft: sidebarwidth+'px'});
 		that.paper.setSize(that.container.width(), that.container.height());
 	}
 	$(window).bind('resize', onResize);
@@ -120,6 +123,9 @@ vonline.Canvas.prototype.initRectangleSelection = function() {
 	var that = this;
 	this.container.mousedown(function(event) {
 		event.preventDefault();
+		if (event.which == 3) {
+			return;
+		}
 		event = that.normalizeEvent(event);
 		var x = event.offsetX,
 			y = event.offsetY,
@@ -178,4 +184,42 @@ vonline.Canvas.prototype.normalizeEvent = function(event) {
 		event.offsetY = event.pageY - offset.top;
 	}
 	return event;
+}
+
+vonline.Canvas.prototype.initDragging = function() {
+	var that = this;
+	this.container.bind('contextmenu', function(event) {
+		event.preventDefault();
+	});
+	this.container.mousedown(function(event) {
+		event.preventDefault();
+		if (event.which != 3) {
+			return;
+		}
+		var x = event.pageX,
+		y = event.pageY,
+		deltaX = 0,
+		deltaY = 0;
+		
+		var moveEvent = function(event) {
+			that.container.css('cursor', 'move');
+			deltaX = x - event.pageX;
+			deltaY = y - event.pageY;
+			that.container.css({
+				left: (that.offset.x - deltaX) >= 0 ? 0 : (that.offset.x - deltaX) + 'px',
+				top: (that.offset.y - deltaY) >= 0 ? 0 : (that.offset.y - deltaY) + 'px'
+			});
+		}
+		that.container.mousemove(moveEvent);
+		
+		that.container.one('mouseup', function(event) {
+			that.container.unbind('mousemove', moveEvent);
+			that.container.css('cursor', 'auto');
+			
+			that.offset.x = (that.offset.x - deltaX) >= 0 ? 0 : (that.offset.x - deltaX);
+			that.offset.y = (that.offset.y - deltaY) >= 0 ? 0 : (that.offset.y - deltaY);
+			
+			$(window).trigger('resize');
+		})
+	});
 }

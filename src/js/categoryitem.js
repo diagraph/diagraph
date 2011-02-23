@@ -1,7 +1,7 @@
 /**
  * @namespace
  */
-vonline.CategoryItem = function(name, data) {
+vonline.CategoryItem = function(name, data, canvas) {
 	var that = this;
 	this.container = $('<div/>').addClass('item').attr('title', name);
 	this.size = 50;
@@ -39,8 +39,8 @@ vonline.CategoryItem = function(name, data) {
 		$(window).mousemove(dragEvent);
 		$(window).one('mouseup', function(event) {
 			if (that.wasDragging) {
-				that.data.x = offset.left + event.pageX - x - $('#sidebar').width() + that.padding;
-				that.data.y = offset.top + event.pageY - y + that.padding;
+				that.data.x = offset.left + event.pageX - x - $('#sidebar').width() + that.padding - canvas.offset.x;
+				that.data.y = offset.top + event.pageY - y + that.padding - canvas.offset.y;
 				if (that.data.x > 0) {
 					// see vonline.Document
 					vonline.events.trigger('drop', that.data);

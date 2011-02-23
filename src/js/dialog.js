@@ -4,7 +4,7 @@
 vonline.Dialog = function(options) {
 	this.options = this.getOptions(options);
 	this.background = $('<div/>').addClass('dialog_background').appendTo('body');
-	this.container = $('<div/>').addClass('dialog_container').appendTo('body');
+	this.container = $('<div/>').addClass('dialog_container').appendTo(this.background);
 	this.content = $('<div/>').html(this.options.text).appendTo(this.container);
 	this.buttons = $('<div/>').addClass('dialog_buttons').appendTo(this.container);
 	
@@ -15,8 +15,8 @@ vonline.Dialog = function(options) {
 	var that = this;
 	function onResize() {
 		that.container.css({
-			top: $(window).height() / 2 - that.container.outerHeight() + 'px',
-			left: ($(window).width() - that.container.outerWidth()) / 2 + 'px'
+			top: $('body').height() / 2 - that.container.outerHeight() + 'px',
+			left: ($('body').width() - that.container.outerWidth()) / 2 + 'px'
 		});
 	}
 	onResize();
