@@ -5,11 +5,12 @@
 vonline.Canvas = function() {
 	var that = this;
 	this.container = $('#canvas');
-	this.paper = Raphael('canvas', this.container.width(), this.container.height());
+	this.paper = Raphael('canvas', this.container.width(), this.container.height()).initZoom();
 	this.objects = [];
 	this.maxId = 0;
 	this.selection = new vonline.Selection(this);
 	this.offset = {x:0, y:0};
+	this.zoom = 1.0;
 	this.initRectangleSelection();
 	this.initDragging();
 	
@@ -222,4 +223,13 @@ vonline.Canvas.prototype.initDragging = function() {
 			$(window).trigger('resize');
 		})
 	});
+}
+
+vonline.Canvas.prototype.setZoom = function(zoom) {
+	this.paper.setZoom(zoom);
+	this.zoom = zoom;
+}
+
+vonline.Canvas.prototype.getZoom = function() {
+	return this.zoom;
 }

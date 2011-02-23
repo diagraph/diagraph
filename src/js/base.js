@@ -62,10 +62,11 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 		return;
 	}
 	this.canvas = canvas;
-	this.obj = this.createObject(canvas);
+	this.obj = this.createObject(canvas).initZoom();
 	this.setPosition(this.data.x, this.data.y);
 	this.setRotation(this.data.rotation);
 	this.setColor(this.data.color);
+	this.setBorder();
 	this.createText(canvas);
 	
 	this.setClickEventMode(true);
@@ -128,6 +129,11 @@ vonline.Base.prototype.setRotation = function(deg) {
 vonline.Base.prototype.setColor = function(color) {
 	this.obj.attr({fill: color});
 	this.data.color = color;
+}
+
+vonline.Base.prototype.setBorder = function() {
+	this.obj.setAttr('stroke-width', 1);
+	this.obj.setAttr('stroke', 'black');
 }
 
 /**

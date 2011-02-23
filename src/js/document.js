@@ -86,10 +86,16 @@ vonline.Document.prototype.initBottomMenu = function() {
 		}
 	}));
 	bottommenu.addItem(new vonline.MenuItem('zoom in', 'images/menu/zoom_in', function() {
-		// TODO: canvas viewport manipulation
+		var zoom = that.canvas.getZoom();
+		if (zoom * 2 <= 16) {
+			that.canvas.setZoom(zoom * 2);
+		}
 	}));
 	bottommenu.addItem(new vonline.MenuItem('zoom out', 'images/menu/zoom_out', function() {
-		// TODO: canvas viewport manipulation
+		var zoom = that.canvas.getZoom();
+		if (zoom / 2 >= 0.125) {
+			that.canvas.setZoom(zoom / 2);
+		}
 	}));
 	bottommenu.addItem(new vonline.MenuItem('zoom fit best', 'images/menu/zoom_fit_best', function() {
 		// TODO: canvas viewport manipulation
