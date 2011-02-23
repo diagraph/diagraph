@@ -20,6 +20,11 @@ vonline.Sidebar = function(container) {
 
 vonline.Sidebar.prototype.setTopMenu = function(menu) {
 	this.topmenu.html(menu.getHTML());
+	this._topmenu = menu;
+}
+
+vonline.Sidebar.prototype.getTopMenu = function() {
+	return this._topmenu;
 }
 
 vonline.Sidebar.prototype.setBottomMenu = function(menu) {
@@ -48,8 +53,4 @@ vonline.Sidebar.prototype.setExtraView = function(mode) {
 
 vonline.Sidebar.prototype.isExtraViewVisible = function() {
 	return this.extraviewVisible;
-}
-
-vonline.Sidebar.prototype.getTopMenu = function() {
-	return this.topmenu;
 }

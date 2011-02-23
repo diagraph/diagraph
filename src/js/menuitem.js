@@ -23,6 +23,7 @@ vonline.MenuItem = function(name, src, clickHandler) {
 	this.disable = function() {
 		if (enabled) {
 			image.attr('src', src + '_disabled.png');
+			li.removeClass('enabled');
 			li.unbind('click', onclick);
 			enabled = false;
 		}
@@ -31,6 +32,7 @@ vonline.MenuItem = function(name, src, clickHandler) {
 	this.enable = function() {
 		if (!enabled) {
 			image.attr('src', src + '.png');
+			li.addClass('enabled');
 			li.click(onclick);
 			enabled = true;
 		}

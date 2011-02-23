@@ -14,15 +14,10 @@ vonline.SnapshotHistory = function(document, sidebar, transport) {
 	
 	//
 	var that = this;
-	this.loadButton = $('<button/>').attr('title', 'load snapshot').addClass('loadButton')
-	.bind('load', function() {
-		$(window).trigger('resize');
-	})
-	.bind('click', function() {
+	this.loadButton = new vonline.MenuItem('load snapshot', 'images/menu/revert', function() {
 		that.loadSnapshot();
-	})
-	.append('load').hide();
-	this.sidebar.getTopMenu().children().append(this.loadButton);
+	});
+	this.loadButton.getHTML().css('margin-left', '90px');
 	
 	//
 	this.history = $('<div/>').addClass('history');
@@ -37,9 +32,9 @@ vonline.SnapshotHistory.prototype.open = function() {
 	if(this.sidebar.isExtraViewVisible()) return;
 	
 	// init menu, enable everything
+	this.sidebar.getTopMenu().addItem(this.loadButton);
 	this.container = this.sidebar.setExtraView(true);
 	this.container.append(this.history);
-	this.loadButton.show().css('display', 'inline-block');
 	this.history.show();
 	this.update();
 }
@@ -76,9 +71,9 @@ vonline.SnapshotHistory.prototype.update = function() {
 }
 
 vonline.SnapshotHistory.prototype.close = function() {
+	this.sidebar.getTopMenu().removeItem(this.loadButton);
 	this.sidebar.setExtraView(false);
 	this.container = null;
-	this.loadButton.hide();
 	this.history.hide();
 	this.history.detach();
 	this.snapshotList = null;
