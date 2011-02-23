@@ -32,6 +32,6 @@ $(function() {
 	}));
 	
 	$('#about').click(function() {
-		new vonline.Dialog({text: '<div style="text-align:center"><p><b>Visio-Online prototype</b></p><p>2011 Leander Tentrup, Forian Ziesche</p></div><p>credits:<ul><li><a href="http://jquery.com/">jQuery</a></li><li><a href="http://raphaeljs.com/">RaphaelJS</a></li><li><a href="http://www.oxygen-icons.org/">Oxygen Icon Set</a></li></ul></p>'});
+		new vonline.Dialog({text: '<div style="text-align:center"><p><b>Visio-Online prototype</b></p><p>2011 Leander Tentrup, Forian Ziesche</p></div><p>credits:<ul><li><a href="http://jquery.com/">jQuery</a></li><li><a href="http://raphaeljs.com/">RaphaelJS</a></li><li><a href="https://github.com/wout/raphael-zoom">Raphael Zoom Plugin</a></li><li><a href="http://www.oxygen-icons.org/">Oxygen Icon Set</a></li></ul></p>'});
 	});
 });
