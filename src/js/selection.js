@@ -124,16 +124,20 @@ vonline.Selection.prototype.updateResizeBox = function() {
 		
 		//
 		var handlePositions = {
-			w: { x: bbox.x - this.padding + handlebox.width/4, y: bbox.y + bbox.height/2 },
-			o: { x: bbox.x + bbox.width + this.padding - handlebox.width/4, y: bbox.y + bbox.height/2 },
+			nw: { x: bbox.x - this.padding + handlebox.width/3, y: bbox.y - this.padding + handlebox.height/1.5 },
 			n: { x: bbox.x + bbox.width/2, y: bbox.y - this.padding + handlebox.height/2 },
+			ne: { x: bbox.x + bbox.width + this.padding - handlebox.width/3, y: bbox.y - this.padding + handlebox.height/1.5 },
+			e: { x: bbox.x + bbox.width + this.padding - handlebox.width/4, y: bbox.y + bbox.height/2 },
+			se: { x: bbox.x + bbox.width + this.padding - handlebox.width/3, y: bbox.y + bbox.height + this.padding - handlebox.height/1.5 },
 			s: { x: bbox.x + bbox.width/2, y: bbox.y + bbox.height + this.padding - handlebox.height/2 },
+			sw: { x: bbox.x - this.padding + handlebox.width/3, y: bbox.y + bbox.height + this.padding - handlebox.height/1.5},
+			w: { x: bbox.x - this.padding + handlebox.width/4, y: bbox.y + bbox.height/2 }
 		}
 		// if only one object is selected, the resize box + handles will be rotated according to the object
-		if(this.data.length == 1) {
+		if (this.data.length == 1) {
 			// rotate handles manually (-> compute rotated position on the resize box)
 			var p = { x: bbox.x + bbox.width/2, y: bbox.y + bbox.height/2 };
-			for(var h in handlePositions) {
+			for (var h in handlePositions) {
 				var tp = { x: handlePositions[h].x - p.x, y: -(handlePositions[h].y - p.y) };
 				handlePositions[h].x = p.x + tp.x*Math.cos(angle) - tp.y*Math.sin(angle);
 				handlePositions[h].y = p.y - (tp.x*Math.sin(angle) + tp.y*Math.cos(angle));
@@ -141,33 +145,51 @@ vonline.Selection.prototype.updateResizeBox = function() {
 		}
 		
 		this.handles = {
-			w: handle.clone().translate(handlePositions['w'].x, handlePositions['w'].y).scale(.5, .5).attr('cursor', 'w-resize'),
-			o: handle.clone().translate(handlePositions['o'].x, handlePositions['o'].y).scale(.5, .5).attr('cursor', 'e-resize'),
-			n: handle.clone().translate(handlePositions['n'].x, handlePositions['n'].y).scale(.5, .5).rotate(90).attr('cursor', 'n-resize'),
-			s: handle.clone().translate(handlePositions['s'].x, handlePositions['s'].y).scale(.5, .5).rotate(90).attr('cursor', 's-resize')
+			nw: handle.clone().translate(handlePositions.nw.x, handlePositions.nw.y).scale(.5, .5).rotate(45).attr('cursor', 'nw-resize'),
+			n: handle.clone().translate(handlePositions.n.x, handlePositions.n.y).scale(.5, .5).rotate(90).attr('cursor', 'n-resize'),
+			ne: handle.clone().translate(handlePositions.ne.x, handlePositions.ne.y).scale(.5, .5).rotate(-45).attr('cursor', 'ne-resize'),
+			e: handle.clone().translate(handlePositions.e.x, handlePositions.e.y).scale(.5, .5).attr('cursor', 'e-resize'),
+			se: handle.clone().translate(handlePositions.se.x, handlePositions.se.y).scale(.5, .5).rotate(45).attr('cursor', 'se-resize'),
+			s: handle.clone().translate(handlePositions.s.x, handlePositions.s.y).scale(.5, .5).rotate(90).attr('cursor', 's-resize'),
+			sw: handle.clone().translate(handlePositions.sw.x, handlePositions.sw.y).scale(.5, .5).rotate(-45).attr('cursor', 'sw-resize'),
+			w: handle.clone().translate(handlePositions.w.x, handlePositions.w.y).scale(.5, .5).attr('cursor', 'w-resize')
 		}
 		handle.remove();
 		
 		// rotate resize box and handles
-		if(this.data.length == 1) {
+		if (this.data.length == 1) {
 			var rotDeg = this.data[0].data.rotation,
-				rotOrigX = bbox.x + bbox.width/2,
-				rotOrigY = bbox.y + bbox.height/2;
+			rotOrigX = bbox.x + bbox.width/2,
+			rotOrigY = bbox.y + bbox.height/2;
 			this.resizeBox.rotate(rotDeg, rotOrigX, rotOrigY);
-			this.handles['w'].rotate(rotDeg, true);
-			this.handles['o'].rotate(rotDeg, true);
-			this.handles['n'].rotate(rotDeg, true).rotate(90);
-			this.handles['s'].rotate(rotDeg, true).rotate(90);
+			this.handles.w.rotate(rotDeg, true);
+			this.handles.e.rotate(rotDeg, true);
+			this.handles.n.rotate(rotDeg, true).rotate(90);
+			this.handles.s.rotate(rotDeg, true).rotate(90);
+			this.handles.nw.rotate(rotDeg, true).rotate(45);
+			this.handles.se.rotate(rotDeg, true).rotate(45);
+			this.handles.ne.rotate(rotDeg, true).rotate(-45);
+			this.handles.sw.rotate(rotDeg, true).rotate(-45);
 		}
 		
 		this.scaleInfo = this.canvas.getPaper().text(0, 0, "").attr('font-size', 16).attr('font-weight', 'bold').attr('fill', 'darkblue').hide();
 		
-		/** points for resizing (top-left and bottom-right) */
+		/** points for resizing */
 		var scalingPoints = {
-			w: [bbox.x + bbox.width + this.padding / 2, bbox.y + bbox.height + this.padding / 2, bbox.x + bbox.width, bbox.y + bbox.height],
-			o: [bbox.x - this.padding / 2, bbox.y - this.padding / 2, bbox.x, bbox.y],
+			// bottom-right
+			nw: [bbox.x + bbox.width + this.padding / 2, bbox.y + bbox.height + this.padding / 2, bbox.x + bbox.width, bbox.y + bbox.height],
 			n: [bbox.x + bbox.width + this.padding / 2, bbox.y + bbox.height + this.padding / 2, bbox.x + bbox.width, bbox.y + bbox.height],
-			s: [bbox.x - this.padding / 2, bbox.y - this.padding / 2, bbox.x, bbox.y]
+			// bottom-left
+			ne: [bbox.x - this.padding / 2, bbox.y + bbox.height + this.padding / 2,  bbox.x, bbox.y + bbox.height],
+			// top-left
+			e: [bbox.x - this.padding / 2, bbox.y - this.padding / 2, bbox.x, bbox.y],
+			se: [bbox.x - this.padding / 2, bbox.y - this.padding / 2, bbox.x, bbox.y],
+			// top-left
+			s: [bbox.x - this.padding / 2, bbox.y - this.padding / 2, bbox.x, bbox.y],
+			// top-right
+			sw:[bbox.x + bbox.width + this.padding / 2, bbox.y - this.padding / 2, bbox.x + bbox.width, bbox.y],
+			// bottom-right
+			w: [bbox.x + bbox.width + this.padding / 2, bbox.y + bbox.height + this.padding / 2, bbox.x + bbox.width, bbox.y + bbox.height]
 		};
 		
 		/** Handles the resize of the resizeBox via the handles */
@@ -176,6 +198,12 @@ vonline.Selection.prototype.updateResizeBox = function() {
 				// prevent selecting text
 				event.preventDefault();
 				event.stopPropagation();
+				
+				for (var dir in that.handles) {
+					if (dir != direction) {
+						that.handles[dir].hide();
+					}
+				}
 				
 				// disable connection/annotation mode (icons)
 				for (var i = 0; i < that.data.length; i++) {
@@ -187,20 +215,20 @@ vonline.Selection.prototype.updateResizeBox = function() {
 				that.scaleInfo.show();
 								
 				var origX = x = event.pageX,
-					origY = y = event.pageY,
-					scaleX = scaleY = 1,
-					scaleFromX = scaleFromY = 0,
-					singleObject = (that.data.length == 1),
-					scaleDirection = direction;
-				var moveEvent = function(event) {
+				origY = y = event.pageY,
+				scaleX = scaleY = 1,
+				scaleFromX = scaleFromY = 0,
+				singleObject = (that.data.length == 1),
+				scaleDirection = direction,
+				moveEvent = function(event) {
 					event.preventDefault();
 					event.stopPropagation();
 					
 					that.handles[direction].attr({fill: '#3BB9FF'});
 					
 					// compute delta
-					var delta, normal_vec;
-					if(singleObject) {
+					var delta, normal_vec, deltaX, deltaY;
+					if (singleObject) {
 						// if singleObject: object rotation has to be unset before we scale the object (otherwise the object will be rotated around the new center)
 						that.obj.rotate(0, true);
 						that.resizeBox.rotate(0, true);
@@ -211,7 +239,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 						var normal_vec = { x: Math.cos(angle), y: Math.sin(angle) }; // normal from the line
 						
 						// swap line/normal vector for north/south scale
-						if(direction == 'n' || direction == 's') {
+						if (direction == 'n' || direction == 's') {
 							var tmp = line_vec;
 							line_vec = normal_vec;
 							normal_vec = tmp;
@@ -224,17 +252,33 @@ vonline.Selection.prototype.updateResizeBox = function() {
 						delta = Math.sqrt(dist_vec.x*dist_vec.x + dist_vec.y*dist_vec.y);
 						
 						// normalize delta vector, compute on which side we're on and multiply with delta
-						var delta_vec_len = Math.sqrt(delta_vec.x*delta_vec.x + delta_vec.y*delta_vec.y);
-						delta_vec.x /= delta_vec_len;
-						delta_vec.y /= delta_vec_len;
-						var side = (delta_vec.x*normal_vec.x + delta_vec.y*normal_vec.y) < 0 ? -1 : 1;
+						var norm_delta_vec = vonline.vector.normalize(delta_vec);
+						var side = (norm_delta_vec.x*normal_vec.x + norm_delta_vec.y*normal_vec.y) < 0 ? -1 : 1;
 						delta *= side;
+						if (direction.length == 2) {
+							deltaX = delta;
+							
+							// project delta vector onto line vector and compute the distance
+							var proj_len = (delta_vec.x * normal_vec.x + delta_vec.y * normal_vec.y);
+							var proj_vec = { x: proj_len*normal_vec.x, y: proj_len*normal_vec.y };
+							var dist_vec = { x: delta_vec.x-proj_vec.x, y: delta_vec.y-proj_vec.y };
+							deltaY = Math.sqrt(dist_vec.x*dist_vec.x + dist_vec.y*dist_vec.y);
+							
+							// normalize delta vector, compute on which side we're on and multiply with delta
+							var side = (norm_delta_vec.x*line_vec.x + norm_delta_vec.y*line_vec.y) < 0 ? -1 : 1;
+							deltaY *= side;
+							delta = 1;
+							normal_vec = {x: deltaX, y: deltaY};
+							if (direction == 'se' || direction == 'nw') {
+								deltaX = -deltaX;
+							}
+						}
 					}
 					else {
 						// if multiple objects are selected, the resize box isn't rotated, so the delta is simply the x or y distance
 						switch (direction) {
 							case 'w':
-							case 'o':
+							case 'e':
 								delta = (event.pageX - origX);
 								normal_vec = { x: 1, y: 0 };
 								break;
@@ -242,6 +286,20 @@ vonline.Selection.prototype.updateResizeBox = function() {
 							case 's':
 								delta = -(event.pageY - origY);
 								normal_vec = { x: 0, y: 1 };
+								break;
+							case 'ne':
+							case 'sw':
+								deltaX = (event.pageX - origX);
+								deltaY = -(event.pageY - origY);
+								normal_vec = { x: deltaX, y: deltaY };
+								delta = 1;
+								break;
+							case 'nw':
+							case 'se':
+								deltaX = -(event.pageX - origX);
+								deltaY = -(event.pageY - origY);
+								normal_vec = { x: -deltaX, y: deltaY };
+								delta = 1;
 								break;
 						}
 					}
@@ -251,7 +309,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 						case 'w':
 							delta = -delta;
 							normal_vec = { x: -normal_vec.x, y: -normal_vec.y };
-						case 'o':
+						case 'e':
 							that.resizeBox.scale(1 + delta / (bbox.width + that.padding), 1, scalingPoints[direction][0], scalingPoints[direction][1]);
 							that.obj.scale(1 + delta / bbox.width, 1, scalingPoints[direction][2], scalingPoints[direction][3]);						
 							scaleX = 1 + delta / bbox.width;
@@ -264,25 +322,52 @@ vonline.Selection.prototype.updateResizeBox = function() {
 							that.obj.scale(1, 1 + delta / bbox.height, scalingPoints[direction][2], scalingPoints[direction][3]);
 							scaleY = 1 + delta / bbox.height;
 							break;
+						case 'sw':
+							delta = -delta;
+							deltaX = -deltaX;
+							deltaY = -deltaY;
+							normal_vec = { x: -normal_vec.x, y: -normal_vec.y };
+						case 'ne':
+							that.resizeBox.scale(1 + deltaX / (bbox.width + that.padding), 1 + deltaY / (bbox.height + that.padding), scalingPoints[direction][0], scalingPoints[direction][1]);
+							that.obj.scale(1 + deltaX / bbox.width, 1 + deltaY / bbox.height, scalingPoints[direction][2], scalingPoints[direction][3]);						
+							scaleX = 1 + deltaX / bbox.width;
+							scaleY = 1 + deltaY / bbox.height;
+							break;
+						case 'se':
+							delta = -delta;
+							deltaX = -deltaX;
+							deltaY = -deltaY;
+							normal_vec = { x: -normal_vec.x, y: -normal_vec.y };
+						case 'nw':
+							that.resizeBox.scale(1 + deltaX / (bbox.width + that.padding), 1 + deltaY / (bbox.height + that.padding), scalingPoints[direction][0], scalingPoints[direction][1]);
+							that.obj.scale(1 + deltaX / bbox.width, 1 + deltaY / bbox.height, scalingPoints[direction][2], scalingPoints[direction][3]);						
+							scaleX = 1 + deltaX / bbox.width;
+							scaleY = 1 + deltaY / bbox.height;
+							break;
 					}
 					
-					if(singleObject) {
+					if (singleObject) {
 						// if singleObject: reset rotation again
 						that.obj.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
 						that.resizeBox.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
 					}
-					
+					console.log(normal_vec.x, normal_vec.y, deltaX, deltaY);
 					// reposition handle
 					var hbbox = that.handles[direction].getBBox();
 					that.handles[direction].translate(-hbbox.x-hbbox.width/2, -hbbox.y-hbbox.height/2); // undo current translation
 					that.handles[direction].translate(handlePositions[direction].x + normal_vec.x*delta, handlePositions[direction].y - normal_vec.y*delta);
 					
 					// update scale info and reposition
-					that.scaleInfo.attr({
-						text: Math.round((scaleX != 1 ? scaleX : scaleY)*100)/100+'x',
-						x: handlePositions[direction].x + normal_vec.x*(delta+30),
-						y: handlePositions[direction].y - normal_vec.y*(delta+30)
-					});
+					if (delta != 1 && delta != -1) {
+						that.scaleInfo.attr({
+							text: Math.round((scaleX != 1 ? scaleX : scaleY)*100)/100+'x',
+							x: handlePositions[direction].x + normal_vec.x*(delta+30),
+							y: handlePositions[direction].y - normal_vec.y*(delta+30)
+						});
+					}
+					else {
+						that.scaleInfo.hide();
+					}
 					
 					scaleFromX = scalingPoints[direction][2];
 					scaleFromY = scalingPoints[direction][3];
@@ -301,12 +386,14 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					vonline.events.trigger('commandexec', command);
 					
 					// reenable connection/annotation mode
-					for(var i = 0; i < that.data.length; i++) {
-						that.data[i].setRotationMode(true);
-						that.data[i].setConnectionMode(true);
-						that.data[i].setAnnotationMode(true);
-						that.data[i].setTextMode(true);
+					for (var i = 0; i < that.data.length; i++) {
 						$(that.data[i].obj.node).trigger('changed');
+					}
+					if (that.data.length == 1) {
+						that.data[0].setRotationMode(true);
+						that.data[0].setConnectionMode(true);
+						that.data[0].setAnnotationMode(true);
+						that.data[0].setTextMode(true);
 					}
 					that.scaleInfo.hide();
 				});
@@ -319,10 +406,14 @@ vonline.Selection.prototype.updateResizeBox = function() {
 			});
 		}
 		
-		handleResize('o');
+		handleResize('e');
 		handleResize('w');
 		handleResize('n');
 		handleResize('s');
+		handleResize('ne');
+		handleResize('sw');
+		handleResize('nw');
+		handleResize('se');
 	}	
 }
 
