@@ -351,7 +351,6 @@ vonline.Selection.prototype.updateResizeBox = function() {
 						that.obj.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
 						that.resizeBox.rotate(that.data[0].data.rotation, bbox.x + bbox.width/2, bbox.y + bbox.height/2);
 					}
-					console.log(normal_vec.x, normal_vec.y, deltaX, deltaY);
 					// reposition handle
 					var hbbox = that.handles[direction].getBBox();
 					that.handles[direction].translate(-hbbox.x-hbbox.width/2, -hbbox.y-hbbox.height/2); // undo current translation
