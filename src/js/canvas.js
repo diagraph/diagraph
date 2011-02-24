@@ -272,6 +272,7 @@ vonline.Canvas.prototype.setZoom = function(zoom) {
 	
 	this.zoom = zoom;
 	$(window).trigger('resize');
+	$(vonline.events).trigger('zoom');
 }
 
 vonline.Canvas.prototype.getZoom = function() {

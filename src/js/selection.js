@@ -14,6 +14,9 @@ vonline.Selection = function(canvas) {
 	vonline.events.bind('canvaschanged', function() {
 		that.updateResizeBox();
 	});
+	vonline.events.bind('zoom', function() {
+		that.updateResizeBox();
+	});
 	
 	function deleteObjFunc(event) {
 		if ($('input:focus').length) {

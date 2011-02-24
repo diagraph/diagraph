@@ -143,7 +143,8 @@ vonline.Base.prototype.createText = function() {
 	var that = this;
 	
 	if (this.data.text) {
-		this.text = this.canvas.getPaper().text(this.data.x, this.data.y, this.data.text);
+		this.text = this.canvas.getPaper().text(this.data.x, this.data.y, this.data.text).initZoom();
+		this.text.setAttr('font-size', 10);
 		
 		// redirect events to object
 		$(this.text.node).click(function(event) {
@@ -161,6 +162,9 @@ vonline.Base.prototype.createText = function() {
 		// reposition on change
 		this.adjustText();
 		$(this.obj.node).bind('changed', function() {
+			that.adjustText();
+		});
+		$(vonline.events).bind('zoom', function() {
 			that.adjustText();
 		});
 		
