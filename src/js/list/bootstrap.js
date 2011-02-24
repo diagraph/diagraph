@@ -13,21 +13,21 @@ $(function() {
 	}));
 	
 	// create hidden file input
-	var fileinput = $('<input/>').attr('type', 'file').css('display', 'none').appendTo('body');
+	var fileinput = $('<input/>').attr('type', 'file').css('display', 'none').appendTo('body')
+	.change(function(event) {
+		if (fileinput[0].files.length) {
+			var file = fileinput[0].files[0];
+			var reader = new FileReader();
+			  
+			// Read file into memory as UTF-16      
+			reader.readAsText(file, "UTF-8");
+			
+			reader.onload = function(event) {
+				documentlist.importDocument(event.target.result);
+			};
+		}
+	});
 	topmenu.addItem(new vonline.MenuItem('import document', 'images/menu/document_import', function() {
-		fileinput.change(function(event) {
-			if (fileinput[0].files.length) {
-				var file = fileinput[0].files[0];
-				var reader = new FileReader();
-				  
-				// Read file into memory as UTF-16      
-				reader.readAsText(file, "UTF-8");
-				
-				reader.onload = function(event) {
-					documentlist.importDocument(event.target.result);
-				};
-			}
-		});
 		fileinput.click();
 	}));
 	

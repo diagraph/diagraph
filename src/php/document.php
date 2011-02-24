@@ -152,6 +152,7 @@ class Document {
 	public static function import(array $data) {
 		$document = self::create($data['name'], $data['creation_date']);
 		$document->changeCategories($data['categories']);
+		$data['snapshots'] = array_reverse($data['snapshots']);
 		foreach ($data['snapshots'] as $snapshot) {
 			Snapshot::create($document, $snapshot['data'], strtotime($snapshot['creation_date']));
 		}
