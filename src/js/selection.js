@@ -100,9 +100,13 @@ vonline.Selection.prototype.clear = function() {
 	}
 }
 
+/**
+ * creates the resize-box and handles resizing
+ * <br/><strong>Needs refactoring!</strong>
+ */
 vonline.Selection.prototype.updateResizeBox = function() {
 	var bbox = this.obj.getBBox(),
-		that = this;
+	that = this;
 	
 	if (this.resizeBox) {
 		this.resizeBox.remove();
@@ -268,7 +272,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 							var side = (norm_delta_vec.x*line_vec.x + norm_delta_vec.y*line_vec.y) < 0 ? -1 : 1;
 							deltaY *= side;
 							delta = 1;
-							normal_vec = {x: deltaX, y: deltaY};
+							normal_vec = delta_vec;
 							if (direction == 'se' || direction == 'nw') {
 								deltaX = -deltaX;
 							}
@@ -354,6 +358,7 @@ vonline.Selection.prototype.updateResizeBox = function() {
 					// reposition handle
 					var hbbox = that.handles[direction].getBBox();
 					that.handles[direction].translate(-hbbox.x-hbbox.width/2, -hbbox.y-hbbox.height/2); // undo current translation
+					console.log(normal_vec.x * delta, normal_vec.y*delta);
 					that.handles[direction].translate(handlePositions[direction].x + normal_vec.x*delta, handlePositions[direction].y - normal_vec.y*delta);
 					
 					// update scale info and reposition

@@ -31,6 +31,12 @@ vonline.ScaleCommand = function(objects, scaleX, scaleY, x, y, direction) {
 		
 		if(direction == 'w') x_diff = -x_diff;
 		if(direction == 'n') y_diff = -y_diff;
+		if (direction == 'sw') x_diff = -x_diff;
+		if (direction == 'nw') {
+			x_diff = -x_diff;
+			y_diff = -y_diff;
+		}
+		if(direction == 'ne') y_diff = -y_diff;
 		
 		// lots of sign swapping, b/c the origin isn't at the bottem left
 		var angle = -this.objects[0].data.rotation * Math.PI/180;

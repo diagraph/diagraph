@@ -424,8 +424,8 @@ vonline.Base.prototype.setRotationMode = function(active) {
 		}
 		$(this.obj.node).bind('changed', this.updateRotationHandles);
 		
-		this.rotationCircle = this.canvas.getPaper().circle(centerX, centerY, radius).attr('stroke', 'orange').attr('stroke-width', '2');
-		this.rotationHandle = this.canvas.getPaper().circle(centerX, centerY - radius, 4).attr('stroke', 'none').attr('fill', 'orange').attr('cursor', 'pointer').rotate(this.data.rotation, centerX, centerY);
+		this.rotationCircle = this.canvas.getPaper().circle(centerX, centerY, radius).attr('stroke', 'orange').attr('stroke-width', '1');
+		this.rotationHandle = this.canvas.getPaper().circle(centerX, centerY - radius, 5.5).attr('stroke', 'none').attr('fill', 'orange').attr('cursor', 'pointer').rotate(this.data.rotation, centerX, centerY);
 		this.rotationInfo = this.canvas.getPaper().text(0, 0, "").attr('font-size', 16).attr('font-weight', 'bold').attr('fill', 'orangered').hide();
 		$(this.rotationHandle.node).mousedown(function(event) {
 			event.stopPropagation();
@@ -436,6 +436,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 			that.setTextMode(false);
 			that.canvas.selection.setSelectionMode(false);
 			that.rotationInfo.show();
+			that.rotationCircle.attr('stroke-width', '2');
 			
 			var deg = that.data.rotation,
 			origDeg = that.data.rotation;
@@ -477,6 +478,7 @@ vonline.Base.prototype.setRotationMode = function(active) {
 				
 				that.rotationHandle.attr({fill: 'orange'});
 				that.rotationInfo.hide();
+				that.rotationCircle.attr('stroke-width', '1');
 			});
 		})
 		.mouseover(function(event) {
