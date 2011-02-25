@@ -5,17 +5,14 @@
 vonline.Connection = function(data) {
 	// inherit default values
 	this.data = $.extend({}, this.data, data);
+	this.data.color = 'none';
 	this.resizeable = false;
 }
 
 vonline.Connection.prototype = new vonline.Base();
 
-vonline.Connection.prototype.setCanvas = function(canvas) {
-	vonline.Base.prototype.setCanvas.call(this, canvas);
-	if(canvas && this.obj) {
-		this.obj.node.id = 'connection_'+this.data.id;
-		this.setColor('none');
-	}
+vonline.Connection.prototype.createObjectId = function() {
+	return 'connection_'+this.data.id;
 }
 
 /**

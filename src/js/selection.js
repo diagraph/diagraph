@@ -432,6 +432,7 @@ vonline.Selection.prototype.setConnectionMode = function(active) {
 			object.setRotationMode(false);
 			object.setConnectionMode(false);
 			object.setAnnotationMode(false);
+			object.setTextMode(false);
 		});
 		$.each(this.canvas.objects, function(i, object) {
 			object.setClickEventMode(false);
@@ -443,6 +444,7 @@ vonline.Selection.prototype.setConnectionMode = function(active) {
 			object.setRotationMode(true);
 			object.setConnectionMode(true);
 			object.setAnnotationMode(true);
+			object.setTextMode(true);
 		});
 		$.each(this.canvas.objects, function(i, object) {
 			object.setClickEventMode(true);

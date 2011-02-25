@@ -72,7 +72,14 @@ vonline.Base.prototype.setCanvas = function(canvas) {
 	this.setClickEventMode(true);
 	this.setDragEventMode(this);
 	
-	this.obj.node.id = 'object_'+this.data.id;
+	this.obj.node.id = this.createObjectId();
+}
+
+/**
+ * returns the object id
+ */
+vonline.Base.prototype.createObjectId = function() {
+	return 'object_'+this.data.id;
 }
 
 /**
@@ -148,6 +155,9 @@ vonline.Base.prototype.createText = function() {
 		
 		// redirect events to object
 		$(this.text.node).click(function(event) {
+			$(that.obj.node).trigger(event);
+		});
+		$(this.text.node).dblclick(function(event) {
 			$(that.obj.node).trigger(event);
 		});
 		$(this.text.node).mousedown(function(event) {
@@ -549,7 +559,7 @@ vonline.Base.prototype.setConnectionMode = function(active) {
 			if (event.target.id && event.target.id.substr(0, 7) == 'object_' && that.obj.node.id != event.target.id) {
 				var newTargetObj = that.canvas.getObjectById(event.target.id.replace(/object_/, ''));
 				
-				if(newTargetObj != targetObj) {
+				if (newTargetObj != targetObj) {
 					// if an old target object exists, restore old values
 					restoreTargetObj();
 					

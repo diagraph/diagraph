@@ -37,6 +37,7 @@ vonline.SnapshotHistory.prototype.open = function() {
 	this.container.append(this.history);
 	this.history.show();
 	this.update();
+	this.loadButton.disable();
 }
 
 vonline.SnapshotHistory.prototype.update = function() {
@@ -56,7 +57,7 @@ vonline.SnapshotHistory.prototype.update = function() {
 					.attr('id', 'snapshot'+e.id)
 					.attr('title', e.id)
 					.append('#'+num+' '+e.creation_date)
-					.bind('click', function(event) {
+					.click(function(event) {
 						that.selectSnapshot(event.currentTarget.id);
 					})
 					.append($('<img/>').attr('src', 'images/canvas/edit_delete.png')
@@ -115,6 +116,7 @@ vonline.SnapshotHistory.prototype.selectSnapshot = function(id) {
 			this.selectedSnapshot = parseInt(this.snapshotListItems[i].attr('title'));
 		}
 	}
+	this.loadButton.enable();
 }
 
 vonline.SnapshotHistory.prototype.deleteSnapshot = function(id) {

@@ -10,11 +10,8 @@ vonline.Annotation = function(data) {
 
 vonline.Annotation.prototype = new vonline.Base();
 
-vonline.Annotation.prototype.setCanvas = function(canvas) {
-	vonline.Base.prototype.setCanvas.call(this, canvas);
-	if(canvas && this.obj) {
-		this.obj.node.id = 'annotation_'+this.data.id;
-	}
+vonline.Annotation.prototype.createObjectId = function() {
+	return 'annotation_'+this.data.id;
 }
 
 /**
@@ -24,7 +21,7 @@ vonline.Annotation.prototype.setCanvas = function(canvas) {
 vonline.Annotation.prototype.createObject = function(canvas) {
 	var that = this;
 	
-	this.sourceObject = canvas.getObjectById(this.data.connect);
+	this.sourceObject = canvas.getObjectById(this.data.connect[0]);
 	var bbox = this.sourceObject.obj.getBBox();
 	
 	// event handler
@@ -35,6 +32,16 @@ vonline.Annotation.prototype.createObject = function(canvas) {
 	
 	$(obj.node).bind('textchanged', function() {
 		that.updateLayout();
+	});
+	
+	$(obj.node).dblclick(function(event) {
+		event.stopPropagation();
+		
+		new vonline.InputDialog({text: 'Enter a new inline text:', confirm: function(inlinetext) {
+			var command = new vonline.TextChangeCommand(that, inlinetext);
+			command.execute();
+			vonline.events.trigger('commandexec', command);
+		}});
 	});
 	
 	return obj;
