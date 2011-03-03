@@ -1,51 +1,122 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>diagraph</title>
+  <style>
+body {
+	margin: 0px;
+	padding: 0px;
+	font: 12px "Lucida Grande", "Lucida Sans Unicode", "DejaVu", sans-serif;
+	text-rendering: optimizeLegibility;
+	background: url(background.png);
+	text-shadow: 0 0.063em white;
+}
 
-<!DOCTYPE html> 
-<html> 
-<head> 
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
-<title>Diagraph</title> 
-<link rel="icon" href="images/favicon.png" type="image/png"> 
- 
-<!-- Libraries --> 
-<script type="text/javascript" src="js/lib/jquery-1.5.min.js"></script> 
- 
-<script type="text/javascript" src="js/vonline.js"></script> 
-<script type="text/javascript" src="js/functions.js"></script> 
-<script type="text/javascript" src="js/list/bootstrap.js"></script> 
- 
-<script type="text/javascript" src="js/menu.js"></script> 
-<script type="text/javascript" src="js/menuitem.js"></script> 
- 
-<script type="text/javascript" src="js/dialog.js"></script> 
- 
-<script type="text/javascript" src="js/list/documentlist.js"></script> 
-<script type="text/javascript" src="js/list/documentitem.js"></script> 
- 
- 
-<!-- CSS --> 
-<link href="css/main.css" rel="stylesheet" type="text/css" /> 
-<link href="css/sidebar.css" rel="stylesheet" type="text/css" /> 
-<link href="css/documentlist.css" rel="stylesheet" type="text/css" /> 
-<link href="css/dialog.css" rel="stylesheet" type="text/css" /> 
-</head> 
-<body> 
- 
-<div id="topmenu"></div> 
-<div id="documentlist"></div> 
-<div class="about"><a id="about">about Diagraph</a></div> 
+/*LINKS*/
+a {
+	color: #3366cc;
+	text-decoration: none;
+}
 
-<!-- Piwik -->
-<script type="text/javascript">
-var pkBaseURL = (("https:" == document.location.protocol) ? "https://83.169.21.126/piwik/" : "http://83.169.21.126/piwik/");
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-</script><script type="text/javascript">
-try {
-var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 3);
-piwikTracker.trackPageView();
-piwikTracker.enableLinkTracking();
-} catch( err ) {}
-</script><noscript><p><img src="http://83.169.21.126/piwik/piwik.php?idsite=3" style="border:0" alt="" /></p></noscript>
-<!-- End Piwik Tracking Code -->
+a:hover {
+	color: #f36;
+}
 
-</body> 
+.container {
+	position: relative;
+	width: 600px;
+	margin: 20px auto;
+	
+	border-radius: 20px;
+	
+	-webkit-box-shadow: 0px 1px 3px #333333;
+	-moz-box-shadow: 0px 1px 3px #333333;
+	box-shadow: 0px 1px 3px #333333;
+}
+
+.version {
+	color: white;
+	font-family: 'Reenie Beanie';
+	font-size: 30pt;
+	position: absolute;
+	left: 7px;
+	top: 20px;
+	
+	-webkit-transform: rotate(-45deg); 
+	-moz-transform: rotate(-45deg);	
+}
+
+.header {
+	height: 218px;
+	background: url(background.jpg);
+	border-radius: 20px 20px 0 0;
+}
+
+.navi {
+	text-align: center;
+	background: white;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff), to(#ccc));
+	background-image: -webkit-linear-gradient(top, #fff, #ccc);
+	background-image: -moz-linear-gradient(top, #fff, #ccc);
+}
+
+.navi ul {
+	padding: 10px 0;
+	margin: 0;
+}
+
+.navi li {
+	margin: 0;
+	display: inline;
+	list-style: none;
+}
+
+.navi li a {
+	padding: 10px;
+	font-weight: bold;
+}
+
+.navi li:hover a {
+	color: #f36;
+	cursor: pointer;
+
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ccc), to(#fff));
+	background-image: -webkit-linear-gradient(top, #ccc, #fff);
+	background-image: -moz-linear-gradient(top, #ccc, #fff);
+	
+	-webkit-box-shadow: inset -2em 0 3em -2em #999, inset 2em 0 3em -2em #999, inset 0em 1em 4em -1em #999;
+	-moz-box-shadow: inset 0 0 1em #ededed;
+	box-shadow: inset 0 0 1em #ededed;
+}
+
+.content {
+	background: white;
+	border-radius: 0 0 20px 20px;
+	padding: 20px;
+}
+
+  </style>
+  <!--<link href="http://fonts.googleapis.com/css?family=Reenie+Beanie" rel="stylesheet" type="text/css">-->
+</head>
+<body>
+<div class="container">
+  <a href="http://github.com/diagraph/diagraph"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://assets0.github.com/img/4c7dc970b89fd04b81c8e221ba88ff99a06c6b61?repo=&url=http%3A%2F%2Fs3.amazonaws.com%2Fgithub%2Fribbons%2Fforkme_right_white_ffffff.png&path=" alt="Fork me on GitHub"></a>
+  <!--<span class="version">Alpha!</span>-->
+  <div class="header"></div>
+  <div class="navi">
+    <ul>
+	  <li><a href="demo.html">Demo</a></li>
+	  <li><a href="jsdoc/index.html">Documentation</a></li>
+	  <li><a href="http://github.com/diagraph/diagraph">Code</a></li>
+	</ul>
+  </div>
+  <div class="content">
+	<p>Diagraph is a web-based <a href="http://en.wikipedia.org/wiki/Diagramming_software">Diagramming software</a> based on the latest <a href="http://en.wikipedia.org/wiki/HTML5">HTML5</a> web technology (Javascript, CSS3, AJAX) with a PHP/MySQL backend. Among other things, Diagraph uses <a href="http://dev.w3.org/html5/webstorage/">Offline Storage</a>, Inline <a href="http://www.w3.org/Graphics/SVG/">SVGs</a> and the <a href="http://www.w3.org/TR/FileAPI/">File API</a>.</p>
+	<p>You can use Diagraph to create diagrams, <a href="http://en.wikipedia.org/wiki/Concept_maps">concept maps</a>, <a href="http://www.mathworks.com/products/simulink/">SimuLink</a> like block diagrams and mind maps using a user-extendable library of vector graphics (SVGs). The Prototype supports all basic editing types like dragging, scaling, rotating, connecting and creating annotations. All Operations are fully reversible and repeatable. There is the possibility to save and load snapshots online as well as offline. Additionally, the Prototype can handle multiple documents (copying, renaming, deleting) and supports importing and exporting of documents. Since Diagraph uses vector graphics, it can easily handle scaling and zooming of objects and the document.</p>
+	<p>A wide range of browsers is supported. However, if you want to use the full extend of Visio-Onlines features, you'll have to use Firefox 3.6+, Safari 5, Chrome 8, Opera 11 or IE9.</p>
+	<p><iframe title="YouTube video player" width="550" height="400" src="http://www.youtube.com/embed/6Bv0-oAW5ic?hd=1" frameborder="0" allowfullscreen></iframe></p>
+
+  </div>
+</div>
+</body>
 </html>
