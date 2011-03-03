@@ -1,10 +1,10 @@
 ﻿
--- visio online database
-drop database if exists visio_online;
-create database visio_online default character set utf8 collate utf8_unicode_ci;
-use visio_online;
+-- diagraph database
+drop database if exists diagraph;
+create database diagraph default character set utf8 collate utf8_unicode_ci;
+use diagraph;
 
--- visio online tables
+-- diagraph tables
 create table base (
 	db_version integer not null primary key default 2
 ) engine = InnoDB;
